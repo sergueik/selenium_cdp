@@ -144,6 +144,20 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	@Test
+	public void clearBrowserCookiesTest() {
+		baseURL = "https://www.google.com";
+		driver.get(baseURL);
+		String command = "Network.clearBrowserCookies";
+		try {
+			// Act
+			driver.executeCdpCommand(command, new HashMap<>());
+			// Assert ?
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+	}
+
 	@SuppressWarnings("serial")
 	@Test
 	public void captureScreenshotTest() {

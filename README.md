@@ -65,8 +65,9 @@ It appears that the critical dependency jar of this project, [selenium-chromium-
   * [ChromeDevTools/debugger-protocol-viewer](https://github.com/ChromeDevTools/debugger-protocol-viewer)
   * [standalond java cdp clienti](https://github.com/webfolderio/cdp4j) (commecial)
   * [cdp4j/javadoc](https://webfolder.io/cdp4j/javadoc/index.html)
+  * headless chrome devtools based testing [lecture](https://habr.com/ru/company/yandex/blog/353018/) and the [video](https://youtu.be/jUycQRFoOww)(in Russan)
 
-### License
+  ### License
 This project is licensed under the terms of the MIT license.
 
 ### Author
