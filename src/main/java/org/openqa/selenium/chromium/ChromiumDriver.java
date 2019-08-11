@@ -23,9 +23,9 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.devtools.Connection;
-// need a whold DevTools class
-// import org.openqa.selenium.devtools.DevTools;
-// import org.openqa.selenium.devtools.HasDevTools;
+// need a whole DevTools class
+import org.openqa.selenium.devtools.DevTools;
+import org.openqa.selenium.devtools.HasDevTools;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.html5.Location;
 import org.openqa.selenium.html5.LocationContext;
@@ -62,130 +62,139 @@ import java.util.Optional;
  * {@link org.openqa.selenium.remote.Augmenter augmented} and then cast
  * to the appropriate interface.
  */
-public class ChromiumDriver extends RemoteWebDriver
-    implements /* HasDevTools, */ /* HasTouchScreen, */ LocationContext, NetworkConnection, WebStorage {
+public class ChromiumDriver extends RemoteWebDriver implements HasDevTools,
+		/* HasTouchScreen, */ LocationContext, NetworkConnection, WebStorage {
 
-  private final RemoteLocationContext locationContext;
-  private final RemoteWebStorage webStorage;
-  private final TouchScreen touchScreen;
-  private final RemoteNetworkConnection networkConnection;
-  private final Optional<Connection> connection;
-  // private final Optional<DevTools> devTools;
+	private final RemoteLocationContext locationContext;
+	private final RemoteWebStorage webStorage;
+	private final TouchScreen touchScreen;
+	private final RemoteNetworkConnection networkConnection;
+	private final Optional<Connection> connection;
+	private final Optional<DevTools> devTools;
 
-  protected ChromiumDriver(CommandExecutor commandExecutor, Capabilities capabilities, String capabilityKey) {
-    super(commandExecutor, capabilities);
-    locationContext = new RemoteLocationContext(getExecuteMethod());
-    webStorage = new RemoteWebStorage(getExecuteMethod());
-    touchScreen = new RemoteTouchScreen(getExecuteMethod());
-    networkConnection = new RemoteNetworkConnection(getExecuteMethod());
+	protected ChromiumDriver(CommandExecutor commandExecutor,
+			Capabilities capabilities, String capabilityKey) {
+		super(commandExecutor, capabilities);
+		locationContext = new RemoteLocationContext(getExecuteMethod());
+		webStorage = new RemoteWebStorage(getExecuteMethod());
+		touchScreen = new RemoteTouchScreen(getExecuteMethod());
+		networkConnection = new RemoteNetworkConnection(getExecuteMethod());
 
-    HttpClient.Factory factory = HttpClient.Factory.createDefault();
-    connection = ChromiumDevToolsLocator.getChromeConnector(
-        factory,
-        getCapabilities(),
-        capabilityKey);
-    // devTools = connection.map(DevTools::new);
-  }
+		HttpClient.Factory factory = HttpClient.Factory.createDefault();
+		connection = ChromiumDevToolsLocator.getChromeConnector(factory,
+				getCapabilities(), capabilityKey);
+		devTools = connection.map(DevTools::new);
+	}
 
-  @Override
-  public void setFileDetector(FileDetector detector) {
-    throw new WebDriverException(
-        "Setting the file detector only works on remote webdriver instances obtained " +
-        "via RemoteWebDriver");
-  }
+	@Override
+	public void setFileDetector(FileDetector detector) {
+		throw new WebDriverException(
+				"Setting the file detector only works on remote webdriver instances obtained "
+						+ "via RemoteWebDriver");
+	}
 
-  @Override
-  public LocalStorage getLocalStorage() {
-    return webStorage.getLocalStorage();
-  }
+	@Override
+	public LocalStorage getLocalStorage() {
+		return webStorage.getLocalStorage();
+	}
 
-  @Override
-  public SessionStorage getSessionStorage() {
-    return webStorage.getSessionStorage();
-  }
+	@Override
+	public SessionStorage getSessionStorage() {
+		return webStorage.getSessionStorage();
+	}
 
-  @Override
-  public Location location() {
-    return locationContext.location();
-  }
+	@Override
+	public Location location() {
+		return locationContext.location();
+	}
 
-  @Override
-  public void setLocation(Location location) {
-    locationContext.setLocation(location);
-  }
+	@Override
+	public void setLocation(Location location) {
+		locationContext.setLocation(location);
+	}
 
- /*  @Override
-  public TouchScreen getTouch() {
-    return touchScreen;
-  }
-*/
-  @Override
-  public ConnectionType getNetworkConnection() {
-    return networkConnection.getNetworkConnection();
-  }
+	/*  @Override
+	public TouchScreen getTouch() {
+	  return touchScreen;
+	}
+	*/
+	@Override
+	public ConnectionType getNetworkConnection() {
+		return networkConnection.getNetworkConnection();
+	}
 
-  @Override
-  public ConnectionType setNetworkConnection(ConnectionType type) {
-    return networkConnection.setNetworkConnection(type);
-  }
+	@Override
+	public ConnectionType setNetworkConnection(ConnectionType type) {
+		return networkConnection.setNetworkConnection(type);
+	}
 
-  /**
-   * Launches Chrome app specified by id.
-   *
-   * @param id Chrome app id.
-   */
-  public void launchApp(String id) {
-    execute(ChromiumDriverCommand.LAUNCH_APP, ImmutableMap.of("id", id));
-  }
+	/**
+	 * Launches Chrome app specified by id.
+	 *
+	 * @param id Chrome app id.
+	 */
+	public void launchApp(String id) {
+		execute(ChromiumDriverCommand.LAUNCH_APP, ImmutableMap.of("id", id));
+	}
 
-  /**
-   * Execute a Chrome Devtools Protocol command and get returned result. The
-   * command and command args should follow
-   * <a href="https://chromedevtools.github.io/devtools-protocol/">chrome
-   * devtools protocol domains/commands</a>.
-   */
-  public Map<String, Object> executeCdpCommand(String commandName, Map<String, Object> parameters) {
-    Objects.requireNonNull(commandName, "Command name must be set.");
-    Objects.requireNonNull(parameters, "Parameters for command must be set.");
+	/**
+	 * Execute a Chrome Devtools Protocol command and get returned result. The
+	 * command and command args should follow
+	 * <a href="https://chromedevtools.github.io/devtools-protocol/">chrome
+	 * devtools protocol domains/commands</a>.
+	 */
+	public Map<String, Object> executeCdpCommand(String commandName,
+			Map<String, Object> parameters) {
+		Objects.requireNonNull(commandName, "Command name must be set.");
+		Objects.requireNonNull(parameters, "Parameters for command must be set.");
 
-    @SuppressWarnings("unchecked")
-    Map<String, Object> toReturn = (Map<String, Object>) getExecuteMethod().execute(
-        ChromiumDriverCommand.EXECUTE_CDP_COMMAND,
-        ImmutableMap.of("cmd", commandName, "params", parameters));
+		@SuppressWarnings("unchecked")
+		Map<String, Object> toReturn = (Map<String, Object>) getExecuteMethod()
+				.execute(ChromiumDriverCommand.EXECUTE_CDP_COMMAND,
+						ImmutableMap.of("cmd", commandName, "params", parameters));
 
-    return ImmutableMap.copyOf(toReturn);
-  }
-/*
-  @Override
-  public DevTools getDevTools() {
-    return devTools.orElseThrow(() -> new WebDriverException("Unable to create DevTools connection"));
-  }
-*/
-  public String getCastSinks() {
-    Object response =  getExecuteMethod().execute(ChromiumDriverCommand.GET_CAST_SINKS, null);
-    return response.toString();
-  }
+		return ImmutableMap.copyOf(toReturn);
+	}
 
-  public String getCastIssueMessage() {
-    Object response = getExecuteMethod().execute(ChromiumDriverCommand.GET_CAST_ISSUE_MESSAGE, null);
-    return response.toString();
-  }
+	@Override
+	public DevTools getDevTools() {
+		return devTools.orElseThrow(
+				() -> new WebDriverException("Unable to create DevTools connection"));
+	}
 
-  public void selectCastSink(String deviceName) {
-    Object response =  getExecuteMethod().execute(ChromiumDriverCommand.SET_CAST_SINK_TO_USE, ImmutableMap.of("sinkName", deviceName));
-  }
+	public String getCastSinks() {
+		Object response = getExecuteMethod()
+				.execute(ChromiumDriverCommand.GET_CAST_SINKS, null);
+		return response.toString();
+	}
 
-  public void startTabMirroring(String deviceName) {
-    Object response =  getExecuteMethod().execute(ChromiumDriverCommand.START_CAST_TAB_MIRRORING, ImmutableMap.of("sinkName", deviceName));
-  }
+	public String getCastIssueMessage() {
+		Object response = getExecuteMethod()
+				.execute(ChromiumDriverCommand.GET_CAST_ISSUE_MESSAGE, null);
+		return response.toString();
+	}
 
-  public void stopCasting(String deviceName) {
-    Object response = getExecuteMethod().execute(ChromiumDriverCommand.STOP_CASTING, ImmutableMap.of("sinkName", deviceName));
-  }
+	public void selectCastSink(String deviceName) {
+		Object response = getExecuteMethod().execute(
+				ChromiumDriverCommand.SET_CAST_SINK_TO_USE,
+				ImmutableMap.of("sinkName", deviceName));
+	}
 
-  @Override
-  public void quit() {
-    connection.ifPresent(Connection::close);
-    super.quit();
-  }
+	public void startTabMirroring(String deviceName) {
+		Object response = getExecuteMethod().execute(
+				ChromiumDriverCommand.START_CAST_TAB_MIRRORING,
+				ImmutableMap.of("sinkName", deviceName));
+	}
+
+	public void stopCasting(String deviceName) {
+		Object response = getExecuteMethod().execute(
+				ChromiumDriverCommand.STOP_CASTING,
+				ImmutableMap.of("sinkName", deviceName));
+	}
+
+	@Override
+	public void quit() {
+		connection.ifPresent(Connection::close);
+		super.quit();
+	}
 }

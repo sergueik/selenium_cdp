@@ -1,6 +1,7 @@
 package com.github.sergueik.selenium;
 
 import static java.lang.System.err;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -49,6 +50,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.commons.codec.binary.Base64;
 
+import org.openqa.selenium.chromium.ChromiumDriver;
 // started with
 // https://toster.ru/q/653249?e=7897302#comment_1962398
 // https://stackoverflow.com/questions/29916054/change-user-agent-for-selenium-driver

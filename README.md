@@ -1,12 +1,12 @@
 ### Info
 
-The project practices Java Selenium 4.0 beta release [ChromiumDriver](https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/chromium/ChromiumDriver.java) for executing the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/) (cdp) commands (a entirely different set of API communicated to the Chrome browser family via `POST` [requests](https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/chromium/ChromiumDriverCommandExecutor.java) to `/session/$sessionId/goog/cdp/execute` with API-specific payload) feature.
+The project practices Java Selenium __4.0.x alpha__ release [ChromiumDriver](https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/chromium/ChromiumDriver.java) for executing the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/) (__cdp__) commands (an entirely different set of API communicated to the Chrome browser family via `POST` [requests](https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/chromium/ChromiumDriverCommandExecutor.java) to `/session/$sessionId/goog/cdp/execute` with API-specific payload) feature.
 
 ### Examples
 
 #### Override User Agent
 
-One can call cdp protocol to invoke [setUserAgentOverride](https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setUserAgentOverride) method and dynmically modify the `user-agent` header during the test:
+One can __call__ cdp protocol to invoke [setUserAgentOverride](https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setUserAgentOverride) method and dynmically modify the `user-agent` header during the test:
 
 ```java
   import org.openqa.selenium.chrome.ChromeDriver;
@@ -54,7 +54,11 @@ unhandled inspector error: {"code":-32000,"message":"PrintToPDF is not implement
 
 ### Selenum release dependency
 
-It appears that the critical dependency jar of this project, [selenium-chromium-driver](https://jcenter.bintray.com/org/seleniumhq/selenium/selenium-chromium-driver/) only available for Selenum release 4.x. The selenium-chtomium-driver is shown in interactive [maven central](https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-chromium-driver) repository search page.
+It appears that the critical dependency jar of this project, [selenium-chromium-driver](https://jcenter.bintray.com/org/seleniumhq/selenium/selenium-chromium-driver/) only available for Selenum release 4.x. The selenium-chromium-driver is shown in interactive [maven central](https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-chromium-driver) repository search page.
+
+### Downport to Selenium 3.x
+
+The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/src/org/openqa/selenium/devtools) and [chromium](https://github.com/SeleniumHQ/selenium/tree/master/java/client/src/org/openqa/selenium/chromium) subprojects of selenium client of official [seleniumhq/selenium](https://github.com/SeleniumHQ/selenium) project have no dependencies and can be cloned and built locally allowing one to use CDP API with Selenium __3.x__ e.g. Selenium __3.13.0__. This is currently attempted this way in this project. Moving away form default __4.0.0.alpha__ maven profiles is a work in progress.
 
 ### See Also
 
@@ -63,9 +67,9 @@ It appears that the critical dependency jar of this project, [selenium-chromium-
   * [puppeteer online](https://try-puppeteer.appspot.com/)
   * [GoogleChrome/puppeteer](https://github.com/GoogleChrome/puppeteer)
   * [ChromeDevTools/debugger-protocol-viewer](https://github.com/ChromeDevTools/debugger-protocol-viewer)
-  * [standalond java cdp clienti](https://github.com/webfolderio/cdp4j) (commecial)
+  * [standalond java cdp client](https://github.com/webfolderio/cdp4j) (commecial)
   * [cdp4j/javadoc](https://webfolder.io/cdp4j/javadoc/index.html)
-  * headless chrome devtools based testing [lecture](https://habr.com/ru/company/yandex/blog/353018/) and the [video](https://youtu.be/jUycQRFoOww)(in Russan)
+  * headless chrome devtools based testing [lecture](https://habr.com/ru/company/yandex/blog/353018/) and [video](https://youtu.be/jUycQRFoOww)(in Russan)
 
   ### License
 This project is licensed under the terms of the MIT license.
