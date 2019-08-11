@@ -1,6 +1,6 @@
 ### Info
 
-The project practices Java Selenium 4.0 beta release [ChromiumDriver](https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/chromium/ChromiumDriver.java) for executing the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/) (cdp) commands (a entirely different set of API communicated to the Chrome browser family via `POST` requests to `/session/$sessionId/goog/cdp/execute` with API-specific payload) feature.
+The project practices Java Selenium 4.0 beta release [ChromiumDriver](https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/chromium/ChromiumDriver.java) for executing the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/) (cdp) commands (a entirely different set of API communicated to the Chrome browser family via `POST` [requests](https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/chromium/ChromiumDriverCommandExecutor.java) to `/session/$sessionId/goog/cdp/execute` with API-specific payload) feature.
 
 ### Examples
 
@@ -54,7 +54,7 @@ unhandled inspector error: {"code":-32000,"message":"PrintToPDF is not implement
 
 ### Selenum release dependency
 
-It appears that the critical dependency jar of this project, [selenium-chromium-driver](https://jcenter.bintray.com/org/seleniumhq/selenium/selenium-chromium-driver/) only available for Selenum release 4.x.
+It appears that the critical dependency jar of this project, [selenium-chromium-driver](https://jcenter.bintray.com/org/seleniumhq/selenium/selenium-chromium-driver/) only available for Selenum release 4.x. The selenium-chtomium-driver is shown in interactive [maven central](https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-chromium-driver) repository search page.
 
 ### See Also
 
