@@ -124,12 +124,71 @@ public class ChromiumCdpTest {
 
 	private static Map<String, Object> params = null;
 
+	// see also: https://habr.com/ru/post/459112/
+	/*
+	 import sys
+	from selenium import webdriver
+	from selenium.webdriver.chrome.options import Options
+	import json, base64
+
+	def get_pdf_from_html(path, chromedriver='./chromedriver', print_options = {}):
+	# запускаем Chrome
+	webdriver_options = Options()
+	webdriver_options.add_argument('--headless')
+	webdriver_options.add_argument('--disable-gpu')
+	driver = webdriver.Chrome(chromedriver, options=webdriver_options)
+
+	# открываем заданный url
+	driver.get(path)
+
+	# задаем параметры печати
+	calculated_print_options = {
+	  'landscape': False,
+	  'displayHeaderFooter': False,
+	  'printBackground': True,
+	  'preferCSSPageSize': True,
+	}
+	calculated_print_options.update(print_options)
+
+	# запускаем печать в pdf файл
+	result = send_devtools(driver, "Page.printToPDF", calculated_print_options)
+	driver.quit()
+	# ответ приходит в base64 - декодируем
+	return base64.b64decode(result['data'])
+
+	def send_devtools(driver, cmd, params={}):
+	resource = "/session/%s/chromium/send_command_and_get_result" % driver.session_id
+	url = driver.command_executor._url + resource
+	body = json.dumps({'cmd': cmd, 'params': params})
+	response = driver.command_executor._request('POST', url, body)
+	if response['status']:
+	  raise Exception(response.get('value'))
+	return response.get('value')
+
+	if __name__ == "__main__":
+	if len(sys.argv) != 3:
+	  print ("usage: converter.py <html_page_sourse> <filename_to_save>")
+	  exit()
+
+	result = get_pdf_from_html(sys.argv[1])
+	with open(sys.argv[2], 'wb') as file:
+	  file.write(result)
+
+	 */
+	// NOTE: python uses different route than java
+	// /session/$sessionId/chromium/send_command_and_get_result
+	// vs.
+	// /session/$sessionId/goog/cdp/execute
 	@Test
 	public void printToPDFTest() {
 		baseURL = "https://www.google.com";
 		driver.get(baseURL);
 		String command = "Page.printToPDF";
 		params = new HashMap<>();
+		params.put("landscape", false);
+		params.put("displayHeaderFooter", false);
+		params.put("printBackground", true);
+		params.put("preferCSSPageSize", true);
 		try {
 			result = driver.executeCdpCommand(command, params);
 			err.println("Result: " + result.keySet());
@@ -213,6 +272,7 @@ public class ChromiumCdpTest {
 					+ result.get("cookies").toString().substring(0, 100) + "...");
 			// Assert
 			try {
+				@SuppressWarnings("unchecked")
 				List<Map<String, Object>> cookies = gson
 						.fromJson(result.get("cookies").toString(), ArrayList.class);
 
@@ -221,11 +281,17 @@ public class ChromiumCdpTest {
 			}
 			// Assert
 			try {
+				@SuppressWarnings("unchecked")
 				ArrayList<Map<String, Object>> cookies = (ArrayList<Map<String, Object>>) result
 						.get("cookies");
 				cookies.stream().limit(3).map(o -> o.keySet())
 						.forEach(System.err::println);
 				Set<String> cookieKeys = new HashSet<>();
+				for (String key : new String[] { "domain", "expires", "httpOnly",
+						"name", "path", "secure", "session", "size", "value" }) {
+					cookieKeys.add(key);
+				}
+				/*
 				cookieKeys.add("domain");
 				cookieKeys.add("expires");
 				cookieKeys.add("httpOnly");
@@ -235,7 +301,7 @@ public class ChromiumCdpTest {
 				cookieKeys.add("session");
 				cookieKeys.add("size");
 				cookieKeys.add("value");
-
+				*/
 				assertTrue(cookies.get(0).keySet().containsAll(cookieKeys));
 
 			} catch (Exception e) {
