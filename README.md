@@ -46,7 +46,6 @@ The example shows alternative API to collect the cookies available to page Javas
   (new FileOutputStream("temp.png")).write(image);
 ```
 
-
 Note: some CDP API notably `Page.printToPDF` are not curently implemented:
 ```sh
 unhandled inspector error: {"code":-32000,"message":"PrintToPDF is not implemented"}(..)
@@ -70,8 +69,11 @@ The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/sr
   * [standalond java cdp client](https://github.com/webfolderio/cdp4j) (commecial)
   * [cdp4j/javadoc](https://webfolder.io/cdp4j/javadoc/index.html)
   * headless chrome devtools based testing [lecture](https://habr.com/ru/company/yandex/blog/353018/) and [video](https://youtu.be/jUycQRFoOww)(in Russan)
+  * [HTML to PDF conversion with Chromium devtools and Selenium Python client](https://habr.com/ru/post/459112/) (in Russan)
+  * [PDF configuration](https://github.com/GoogleChrome/puppeteer/blob/v1.11.0/docs/api.md#pagepdfoptions) with [Puppeteer](https://github.com/GoogleChrome/puppeteer)
 
-  ### License
+### License
+
 This project is licensed under the terms of the MIT license.
 
 ### Author
