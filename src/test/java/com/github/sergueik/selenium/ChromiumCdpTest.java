@@ -18,10 +18,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,6 +60,7 @@ import org.openqa.selenium.chromium.ChromiumDriver;
 public class ChromiumCdpTest {
 
 	private static ChromiumDriver driver;
+	private static String osName = getOSName();
 	// currently unused
 	@SuppressWarnings("unused")
 	private static Actions actions;
@@ -66,8 +69,9 @@ public class ChromiumCdpTest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		System.setProperty("webdriver.chrome.driver",
-				(new File("c:/java/selenium/chromedriver.exe")).getAbsolutePath());
+		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
+				.resolve((osName.equals("windows") ? "chromedriver.exe" : "chromedriver")).toAbsolutePath().toString());
+
 		// NOTE: protected constructor method is not visible
 		// driver = new ChromiumDriver((CommandExecutor) null, new
 		// ImmutableCapabilities(),
@@ -99,17 +103,17 @@ public class ChromiumCdpTest {
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
 		// Act
 		try {
-			driver.executeCdpCommand("Network.setUserAgentOverride",
-					new HashMap<String, Object>() {
-						{
-							put("userAgent", "python 2.7");
-							put("platform", "Windows");
-						}
-					});
+			driver.executeCdpCommand("Network.setUserAgentOverride", new HashMap<String, Object>() {
+				{
+					put("userAgent", "python 2.7");
+					put("platform", "Windows");
+				}
+			});
 		} catch (WebDriverException e) {
 			System.err.println("Exception (ignored): " + e.toString());
 			// org.openqa.selenium.WebDriverException: unknown error: unhandled
-			// inspector error : {"code":-32601,"message":"'setUserAgentOverride'
+			// inspector error :
+			// {"code":-32601,"message":"'setUserAgentOverride'
 			// wasn't found"}
 		}
 		driver.navigate().refresh();
@@ -126,54 +130,40 @@ public class ChromiumCdpTest {
 
 	// see also: https://habr.com/ru/post/459112/
 	/*
-	 import sys
-	from selenium import webdriver
-	from selenium.webdriver.chrome.options import Options
-	import json, base64
-
-	def get_pdf_from_html(path, chromedriver='./chromedriver', print_options = {}):
-	# запускаем Chrome
-	webdriver_options = Options()
-	webdriver_options.add_argument('--headless')
-	webdriver_options.add_argument('--disable-gpu')
-	driver = webdriver.Chrome(chromedriver, options=webdriver_options)
-
-	# открываем заданный url
-	driver.get(path)
-
-	# задаем параметры печати
-	calculated_print_options = {
-	  'landscape': False,
-	  'displayHeaderFooter': False,
-	  'printBackground': True,
-	  'preferCSSPageSize': True,
-	}
-	calculated_print_options.update(print_options)
-
-	# запускаем печать в pdf файл
-	result = send_devtools(driver, "Page.printToPDF", calculated_print_options)
-	driver.quit()
-	# ответ приходит в base64 - декодируем
-	return base64.b64decode(result['data'])
-
-	def send_devtools(driver, cmd, params={}):
-	resource = "/session/%s/chromium/send_command_and_get_result" % driver.session_id
-	url = driver.command_executor._url + resource
-	body = json.dumps({'cmd': cmd, 'params': params})
-	response = driver.command_executor._request('POST', url, body)
-	if response['status']:
-	  raise Exception(response.get('value'))
-	return response.get('value')
-
-	if __name__ == "__main__":
-	if len(sys.argv) != 3:
-	  print ("usage: converter.py <html_page_sourse> <filename_to_save>")
-	  exit()
-
-	result = get_pdf_from_html(sys.argv[1])
-	with open(sys.argv[2], 'wb') as file:
-	  file.write(result)
-
+	 * import sys from selenium import webdriver from
+	 * selenium.webdriver.chrome.options import Options import json, base64
+	 * 
+	 * def get_pdf_from_html(path, chromedriver='./chromedriver', print_options
+	 * = {}): # запускаем Chrome webdriver_options = Options()
+	 * webdriver_options.add_argument('--headless')
+	 * webdriver_options.add_argument('--disable-gpu') driver =
+	 * webdriver.Chrome(chromedriver, options=webdriver_options)
+	 * 
+	 * # открываем заданный url driver.get(path)
+	 * 
+	 * # задаем параметры печати calculated_print_options = { 'landscape':
+	 * False, 'displayHeaderFooter': False, 'printBackground': True,
+	 * 'preferCSSPageSize': True, }
+	 * calculated_print_options.update(print_options)
+	 * 
+	 * # запускаем печать в pdf файл result = send_devtools(driver,
+	 * "Page.printToPDF", calculated_print_options) driver.quit() # ответ
+	 * приходит в base64 - декодируем return base64.b64decode(result['data'])
+	 * 
+	 * def send_devtools(driver, cmd, params={}): resource =
+	 * "/session/%s/chromium/send_command_and_get_result" % driver.session_id
+	 * url = driver.command_executor._url + resource body = json.dumps({'cmd':
+	 * cmd, 'params': params}) response =
+	 * driver.command_executor._request('POST', url, body) if
+	 * response['status']: raise Exception(response.get('value')) return
+	 * response.get('value')
+	 * 
+	 * if __name__ == "__main__": if len(sys.argv) != 3: print (
+	 * "usage: converter.py <html_page_sourse> <filename_to_save>") exit()
+	 * 
+	 * result = get_pdf_from_html(sys.argv[1]) with open(sys.argv[2], 'wb') as
+	 * file: file.write(result)
+	 * 
 	 */
 	// NOTE: python uses different route than java
 	// /session/$sessionId/chromium/send_command_and_get_result
@@ -196,7 +186,8 @@ public class ChromiumCdpTest {
 		} catch (org.openqa.selenium.WebDriverException e) {
 			err.println("Exception (ignored): " + e.toString());
 			assertThat(e.toString(), containsString("PrintToPDF is not implemented"));
-			// printToPDFTest(com.github.sergueik.selenium.ChromiumCdpTest): unknown
+			// printToPDFTest(com.github.sergueik.selenium.ChromiumCdpTest):
+			// unknown
 			// error: unhandled inspector error:
 			// {
 			// "code": -32000,
@@ -266,15 +257,12 @@ public class ChromiumCdpTest {
 		String command = "Page.getCookies";
 		// Act
 		try {
-			Map<String, Object> result = driver.executeCdpCommand(command,
-					new HashMap<String, Object>());
-			err.println("Cookies: "
-					+ result.get("cookies").toString().substring(0, 100) + "...");
+			Map<String, Object> result = driver.executeCdpCommand(command, new HashMap<String, Object>());
+			err.println("Cookies: " + result.get("cookies").toString().substring(0, 100) + "...");
 			// Assert
 			try {
 				@SuppressWarnings("unchecked")
-				List<Map<String, Object>> cookies = gson
-						.fromJson(result.get("cookies").toString(), ArrayList.class);
+				List<Map<String, Object>> cookies = gson.fromJson(result.get("cookies").toString(), ArrayList.class);
 
 			} catch (JsonSyntaxException e) {
 				err.println("Exception (ignored): " + e.toString());
@@ -282,26 +270,20 @@ public class ChromiumCdpTest {
 			// Assert
 			try {
 				@SuppressWarnings("unchecked")
-				ArrayList<Map<String, Object>> cookies = (ArrayList<Map<String, Object>>) result
-						.get("cookies");
-				cookies.stream().limit(3).map(o -> o.keySet())
-						.forEach(System.err::println);
+				ArrayList<Map<String, Object>> cookies = (ArrayList<Map<String, Object>>) result.get("cookies");
+				cookies.stream().limit(3).map(o -> o.keySet()).forEach(System.err::println);
 				Set<String> cookieKeys = new HashSet<>();
-				for (String key : new String[] { "domain", "expires", "httpOnly",
-						"name", "path", "secure", "session", "size", "value" }) {
+				for (String key : new String[] { "domain", "expires", "httpOnly", "name", "path", "secure", "session",
+						"size", "value" }) {
 					cookieKeys.add(key);
 				}
 				/*
-				cookieKeys.add("domain");
-				cookieKeys.add("expires");
-				cookieKeys.add("httpOnly");
-				cookieKeys.add("name");
-				cookieKeys.add("path");
-				cookieKeys.add("secure");
-				cookieKeys.add("session");
-				cookieKeys.add("size");
-				cookieKeys.add("value");
-				*/
+				 * cookieKeys.add("domain"); cookieKeys.add("expires");
+				 * cookieKeys.add("httpOnly"); cookieKeys.add("name");
+				 * cookieKeys.add("path"); cookieKeys.add("secure");
+				 * cookieKeys.add("session"); cookieKeys.add("size");
+				 * cookieKeys.add("value");
+				 */
 				assertTrue(cookies.get(0).keySet().containsAll(cookieKeys));
 
 			} catch (Exception e) {
@@ -313,6 +295,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	// Utilities
 	public void sleep(Integer milliSeconds) {
 		try {
 			Thread.sleep((long) milliSeconds);
@@ -321,4 +304,13 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	public static String getOSName() {
+		if (osName == null) {
+			osName = System.getProperty("os.name").toLowerCase();
+			if (osName.startsWith("windows")) {
+				osName = "windows";
+			}
+		}
+		return osName;
+	}
 }
