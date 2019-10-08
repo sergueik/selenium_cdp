@@ -212,6 +212,34 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	@Test
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-getResponseBody
+	public void getResponseBodyTest() {
+		baseURL = "http://www.example.com/";
+		driver.get(baseURL);
+		String command = "Network.getResponseBody";
+		String data = null;
+
+		try {
+			// Act
+			params = new HashMap<String, Object>();
+			params.put("requestId", "");
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, notNullValue());
+			System.err.println(result);
+		} catch (org.openqa.selenium.InvalidArgumentException e) {
+			err.println("Exception (ignored): " + e.toString());
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println("Exception (ignored): " + e.toString());
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
+		} catch (Exception e) {
+			err.println("Exception: " + e.toString());
+			throw (new RuntimeException(e));
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-getAllCookies
@@ -219,7 +247,6 @@ public class ChromiumCdpTest {
 		baseURL = "https://www.google.com";
 		driver.get(baseURL);
 		String command = "Network.getAllCookies";
-		String data = null;
 		List<String> cookies = new ArrayList<>();
 
 		try {
@@ -233,7 +260,15 @@ public class ChromiumCdpTest {
 			// Assert
 			assertThat(cookies, notNullValue());
 			assertThat(cookies.size(), greaterThan(0));
-			cookies.stream().limit(3).forEach(e -> System.err.println(e));
+			/*
+			 * cookies.stream().limit(3).forEach(o -> { try {
+			 * System.err.println(o); } catch (java.lang.ClassCastException e) {
+			 * err.println("Exception (ignored): " + e.toString()); } }) ;
+			 */
+			/*
+			 * for (String cookie : cookies) { System.err.println("Cookie:" +
+			 * cookie); }
+			 */
 		} catch (com.google.gson.JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
 		} catch (org.openqa.selenium.WebDriverException e) {
