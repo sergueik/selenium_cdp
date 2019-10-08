@@ -34,6 +34,7 @@ import java.util.Set;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.openqa.selenium.By;
@@ -70,7 +71,7 @@ public class ChromiumCdpTest {
 	@BeforeClass
 	public static void setUp() throws Exception {
 		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve((osName.equals("windows") ? "chromedriver.exe" : "chromedriver")).toAbsolutePath().toString());
+				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
 
 		// NOTE: protected constructor method is not visible
 		// driver = new ChromiumDriver((CommandExecutor) null, new
@@ -197,6 +198,51 @@ public class ChromiumCdpTest {
 	}
 
 	@Test
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-clearBrowserCache
+	public void clearBrowserCacheTest() {
+		baseURL = "https://www.google.com";
+		driver.get(baseURL);
+		String command = "Network.clearBrowserCache";
+		try {
+			// Act
+			driver.executeCdpCommand(command, new HashMap<>());
+			// Assert ?
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-getAllCookies
+	public void getAllCookiesTest() {
+		baseURL = "https://www.google.com";
+		driver.get(baseURL);
+		String command = "Network.getAllCookies";
+		String data = null;
+		List<String> cookies = new ArrayList<>();
+
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			// Assert
+			assertThat(result, notNullValue());
+			assertThat(result, hasKey("cookies"));
+			cookies = (List<String>) result.get("cookies");
+			System.err.println(cookies);
+			// Assert
+			assertThat(cookies, notNullValue());
+			assertThat(cookies.size(), greaterThan(0));
+			cookies.stream().limit(3).forEach(e -> System.err.println(e));
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println("Exception (ignored): " + e.toString());
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+	}
+
+	@Ignore
+	@Test
 	public void clearBrowserCookiesTest() {
 		baseURL = "https://www.google.com";
 		driver.get(baseURL);
@@ -212,6 +258,7 @@ public class ChromiumCdpTest {
 
 	@SuppressWarnings("serial")
 	@Test
+	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
 	public void captureScreenshotTest() {
 		baseURL = "https://www.google.com";
 		driver.get(baseURL);
@@ -249,6 +296,28 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getCookiesWithUrlsTest() {
+		// Arrange
+		baseURL = "https://www.google.com";
+		driver.get(baseURL);
+		String command = "Page.getCookies";
+		params = new HashMap<String, Object>();
+		params.put("urls", new String[] { ".google.com" });
+		// Act
+		try {
+			Map<String, Object> result = driver.executeCdpCommand(command, params);
+			err.println("Cookies for www.google.com: " + ((List<Object>) result.get("cookies")).size() + "...");
+			// Assert
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println("Exception (ignored): " + e.toString());
+
+		} catch (Exception e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+	}
+
 	@Test
 	public void getCookiesTest() {
 		// Arrange
@@ -263,7 +332,6 @@ public class ChromiumCdpTest {
 			try {
 				@SuppressWarnings("unchecked")
 				List<Map<String, Object>> cookies = gson.fromJson(result.get("cookies").toString(), ArrayList.class);
-
 			} catch (JsonSyntaxException e) {
 				err.println("Exception (ignored): " + e.toString());
 			}
@@ -285,6 +353,8 @@ public class ChromiumCdpTest {
 				 * cookieKeys.add("value");
 				 */
 				assertTrue(cookies.get(0).keySet().containsAll(cookieKeys));
+			} catch (com.google.gson.JsonSyntaxException e) {
+				err.println("Exception (ignored): " + e.toString());
 
 			} catch (Exception e) {
 				err.println("Exception (ignored): " + e.toString());
