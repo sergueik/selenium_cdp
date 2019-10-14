@@ -144,7 +144,7 @@
     <repository>
       <id>osgeo</id>
       <name>osgeo repo</name>
-      <url>http://download.osgeo.org/webdav/geotools/</url>
+      <url>https://download.osgeo.org/webdav/geotools/</url>
     </repository>
     <repository>
       <id>seasar</id>
@@ -157,7 +157,7 @@
     </repository>
     <repository>
       <id>central</id>
-      <url>http://central.maven.org/maven2/</url>
+      <url>https://repo1.maven.org/maven2/</url>
     </repository>
     <!-- 'repo' folder is for non-standard jars that are not available on the public maven repositories -->
     <repository>
