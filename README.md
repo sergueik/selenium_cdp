@@ -50,6 +50,8 @@ Note: some CDP API notably `Page.printToPDF` are not curently implemented:
 ```sh
 unhandled inspector error: {"code":-32000,"message":"PrintToPDF is not implemented"}(..)
 ```
+### Relative Locators
+
 
 ### Selenum release dependency
 
@@ -71,6 +73,9 @@ The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/sr
   * headless chrome devtools based testing [lecture](https://habr.com/ru/company/yandex/blog/353018/) and [video](https://youtu.be/jUycQRFoOww)(in Russan)
   * [HTML to PDF conversion with Chromium devtools and Selenium Python client](https://habr.com/ru/post/459112/) (in Russan)
   * [PDF configuration](https://github.com/GoogleChrome/puppeteer/blob/v1.11.0/docs/api.md#pagepdfoptions) with [Puppeteer](https://github.com/GoogleChrome/puppeteer)
+  * Selenium 4 [Relative Locator](https://angiejones.tech/selenium-4-relative-locators/) DOM traversal DSL.
+  * Selenium 4 [Relatve locator]( https://www.swtestacademy.com/selenium-relative-locators/) examples
+
 
 ### License
 

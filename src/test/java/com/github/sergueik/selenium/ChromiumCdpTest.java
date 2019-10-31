@@ -1,29 +1,20 @@
 package com.github.sergueik.selenium;
 
 import static java.lang.System.err;
-
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.AWTException;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.nio.file.Paths;
-import javax.imageio.ImageIO;
-
 import java.io.FileOutputStream;
-import java.io.IOException;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,12 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.codec.binary.Base64;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -46,22 +39,15 @@ import org.openqa.selenium.interactions.Actions;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.MalformedJsonException;
 
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import org.apache.commons.codec.binary.Base64;
-
-import org.openqa.selenium.chromium.ChromiumDriver;
-// started with
+// inspired by
 // https://toster.ru/q/653249?e=7897302#comment_1962398
 // https://stackoverflow.com/questions/29916054/change-user-agent-for-selenium-driver
 
 public class ChromiumCdpTest {
 
 	private static ChromiumDriver driver;
-	private static String osName = getOSName();
+	private static String osName = Utils.getOSName();
 	// currently unused
 	@SuppressWarnings("unused")
 	private static Actions actions;
@@ -70,8 +56,12 @@ public class ChromiumCdpTest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+		System
+				.setProperty("webdriver.chrome.driver",
+						Paths.get(System.getProperty("user.home"))
+								.resolve("Downloads").resolve(osName.equals("windows")
+										? "chromedriver.exe" : "chromedriver")
+								.toAbsolutePath().toString());
 
 		// NOTE: protected constructor method is not visible
 		// driver = new ChromiumDriver((CommandExecutor) null, new
@@ -104,12 +94,13 @@ public class ChromiumCdpTest {
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
 		// Act
 		try {
-			driver.executeCdpCommand("Network.setUserAgentOverride", new HashMap<String, Object>() {
-				{
-					put("userAgent", "python 2.7");
-					put("platform", "Windows");
-				}
-			});
+			driver.executeCdpCommand("Network.setUserAgentOverride",
+					new HashMap<String, Object>() {
+						{
+							put("userAgent", "python 2.7");
+							put("platform", "Windows");
+						}
+					});
 		} catch (WebDriverException e) {
 			System.err.println("Exception (ignored): " + e.toString());
 			// org.openqa.selenium.WebDriverException: unknown error: unhandled
@@ -118,7 +109,7 @@ public class ChromiumCdpTest {
 			// wasn't found"}
 		}
 		driver.navigate().refresh();
-		sleep(1000);
+		Utils.sleep(1000);
 
 		element = driver.findElement(locator);
 		assertThat(element.isDisplayed(), is(true));
@@ -343,7 +334,8 @@ public class ChromiumCdpTest {
 		// Act
 		try {
 			Map<String, Object> result = driver.executeCdpCommand(command, params);
-			err.println("Cookies for www.google.com: " + ((List<Object>) result.get("cookies")).size() + "...");
+			err.println("Cookies for www.google.com: "
+					+ ((List<Object>) result.get("cookies")).size() + "...");
 			// Assert
 		} catch (com.google.gson.JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
@@ -361,23 +353,28 @@ public class ChromiumCdpTest {
 		String command = "Page.getCookies";
 		// Act
 		try {
-			Map<String, Object> result = driver.executeCdpCommand(command, new HashMap<String, Object>());
-			err.println("Cookies: " + result.get("cookies").toString().substring(0, 100) + "...");
+			Map<String, Object> result = driver.executeCdpCommand(command,
+					new HashMap<String, Object>());
+			err.println("Cookies: "
+					+ result.get("cookies").toString().substring(0, 100) + "...");
 			// Assert
 			try {
 				@SuppressWarnings("unchecked")
-				List<Map<String, Object>> cookies = gson.fromJson(result.get("cookies").toString(), ArrayList.class);
+				List<Map<String, Object>> cookies = gson
+						.fromJson(result.get("cookies").toString(), ArrayList.class);
 			} catch (JsonSyntaxException e) {
 				err.println("Exception (ignored): " + e.toString());
 			}
 			// Assert
 			try {
 				@SuppressWarnings("unchecked")
-				ArrayList<Map<String, Object>> cookies = (ArrayList<Map<String, Object>>) result.get("cookies");
-				cookies.stream().limit(3).map(o -> o.keySet()).forEach(System.err::println);
+				ArrayList<Map<String, Object>> cookies = (ArrayList<Map<String, Object>>) result
+						.get("cookies");
+				cookies.stream().limit(3).map(o -> o.keySet())
+						.forEach(System.err::println);
 				Set<String> cookieKeys = new HashSet<>();
-				for (String key : new String[] { "domain", "expires", "httpOnly", "name", "path", "secure", "session",
-						"size", "value" }) {
+				for (String key : new String[] { "domain", "expires", "httpOnly",
+						"name", "path", "secure", "session", "size", "value" }) {
 					cookieKeys.add(key);
 				}
 				/*
@@ -400,22 +397,4 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	// Utilities
-	public void sleep(Integer milliSeconds) {
-		try {
-			Thread.sleep((long) milliSeconds);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static String getOSName() {
-		if (osName == null) {
-			osName = System.getProperty("os.name").toLowerCase();
-			if (osName.startsWith("windows")) {
-				osName = "windows";
-			}
-		}
-		return osName;
-	}
 }

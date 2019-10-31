@@ -30,7 +30,14 @@
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
       <version>${hamcrest-all.version}</version>
-      <scope>test</scope>
+      <!-- NOTE:  
+        specifying scope is unsafe when refactoring 
+	from src/test/java/$package/$Class to 
+	src/main/java/$package/$class  - will not find references
+	--> 
+	<!-- 
+	   <scope>test</scope> 
+	 -->
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
