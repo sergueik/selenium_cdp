@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertTrue;
+import static org.openqa.selenium.support.locators.RelativeLocator.withTagName;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -54,14 +56,15 @@ public class ChromiumCdpTest {
 	private static String baseURL = "about:blank";
 	private static Gson gson = new Gson();
 
+	private static String command = null;
+	private static String data = null;
+	private static Map<String, Object> result = null;
+	private static Map<String, Object> params = null;
+
 	@BeforeClass
 	public static void setUp() throws Exception {
-		System
-				.setProperty("webdriver.chrome.driver",
-						Paths.get(System.getProperty("user.home"))
-								.resolve("Downloads").resolve(osName.equals("windows")
-										? "chromedriver.exe" : "chromedriver")
-								.toAbsolutePath().toString());
+		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
+				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
 
 		// NOTE: protected constructor method is not visible
 		// driver = new ChromiumDriver((CommandExecutor) null, new
@@ -94,13 +97,12 @@ public class ChromiumCdpTest {
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
 		// Act
 		try {
-			driver.executeCdpCommand("Network.setUserAgentOverride",
-					new HashMap<String, Object>() {
-						{
-							put("userAgent", "python 2.7");
-							put("platform", "Windows");
-						}
-					});
+			driver.executeCdpCommand("Network.setUserAgentOverride", new HashMap<String, Object>() {
+				{
+					put("userAgent", "python 2.7");
+					put("platform", "Windows");
+				}
+			});
 		} catch (WebDriverException e) {
 			System.err.println("Exception (ignored): " + e.toString());
 			// org.openqa.selenium.WebDriverException: unknown error: unhandled
@@ -116,45 +118,39 @@ public class ChromiumCdpTest {
 		assertThat(element.getAttribute("innerText"), is("python 2.7"));
 	}
 
-	private static Map<String, Object> result = null;
-
-	private static Map<String, Object> params = null;
-
 	// see also: https://habr.com/ru/post/459112/
 	/*
 	 * import sys from selenium import webdriver from
 	 * selenium.webdriver.chrome.options import Options import json, base64
 	 * 
-	 * def get_pdf_from_html(path, chromedriver='./chromedriver', print_options
-	 * = {}): # запускаем Chrome webdriver_options = Options()
+	 * def get_pdf_from_html(path, chromedriver='./chromedriver', print_options =
+	 * {}): # запускаем Chrome webdriver_options = Options()
 	 * webdriver_options.add_argument('--headless')
 	 * webdriver_options.add_argument('--disable-gpu') driver =
 	 * webdriver.Chrome(chromedriver, options=webdriver_options)
 	 * 
 	 * # открываем заданный url driver.get(path)
 	 * 
-	 * # задаем параметры печати calculated_print_options = { 'landscape':
-	 * False, 'displayHeaderFooter': False, 'printBackground': True,
-	 * 'preferCSSPageSize': True, }
-	 * calculated_print_options.update(print_options)
+	 * # задаем параметры печати calculated_print_options = { 'landscape': False,
+	 * 'displayHeaderFooter': False, 'printBackground': True, 'preferCSSPageSize':
+	 * True, } calculated_print_options.update(print_options)
 	 * 
 	 * # запускаем печать в pdf файл result = send_devtools(driver,
-	 * "Page.printToPDF", calculated_print_options) driver.quit() # ответ
-	 * приходит в base64 - декодируем return base64.b64decode(result['data'])
+	 * "Page.printToPDF", calculated_print_options) driver.quit() # ответ приходит в
+	 * base64 - декодируем return base64.b64decode(result['data'])
 	 * 
 	 * def send_devtools(driver, cmd, params={}): resource =
-	 * "/session/%s/chromium/send_command_and_get_result" % driver.session_id
-	 * url = driver.command_executor._url + resource body = json.dumps({'cmd':
-	 * cmd, 'params': params}) response =
-	 * driver.command_executor._request('POST', url, body) if
-	 * response['status']: raise Exception(response.get('value')) return
+	 * "/session/%s/chromium/send_command_and_get_result" % driver.session_id url =
+	 * driver.command_executor._url + resource body = json.dumps({'cmd': cmd,
+	 * 'params': params}) response = driver.command_executor._request('POST', url,
+	 * body) if response['status']: raise Exception(response.get('value')) return
 	 * response.get('value')
 	 * 
 	 * if __name__ == "__main__": if len(sys.argv) != 3: print (
 	 * "usage: converter.py <html_page_sourse> <filename_to_save>") exit()
 	 * 
-	 * result = get_pdf_from_html(sys.argv[1]) with open(sys.argv[2], 'wb') as
-	 * file: file.write(result)
+	 * result = get_pdf_from_html(sys.argv[1]) with open(sys.argv[2], 'wb') as file:
+	 * file.write(result)
 	 * 
 	 */
 	// NOTE: python uses different route than java
@@ -208,9 +204,8 @@ public class ChromiumCdpTest {
 	public void getResponseBodyTest() {
 		baseURL = "http://www.example.com/";
 		driver.get(baseURL);
-		String command = "Network.getResponseBody";
-		String data = null;
-
+		command = "Network.getResponseBody";
+		data = null;
 		try {
 			// Act
 			params = new HashMap<String, Object>();
@@ -237,7 +232,7 @@ public class ChromiumCdpTest {
 	public void getAllCookiesTest() {
 		baseURL = "https://www.google.com";
 		driver.get(baseURL);
-		String command = "Network.getAllCookies";
+		command = "Network.getAllCookies";
 		List<String> cookies = new ArrayList<>();
 
 		try {
@@ -252,13 +247,12 @@ public class ChromiumCdpTest {
 			assertThat(cookies, notNullValue());
 			assertThat(cookies.size(), greaterThan(0));
 			/*
-			 * cookies.stream().limit(3).forEach(o -> { try {
-			 * System.err.println(o); } catch (java.lang.ClassCastException e) {
-			 * err.println("Exception (ignored): " + e.toString()); } }) ;
+			 * cookies.stream().limit(3).forEach(o -> { try { System.err.println(o); } catch
+			 * (java.lang.ClassCastException e) { err.println("Exception (ignored): " +
+			 * e.toString()); } }) ;
 			 */
 			/*
-			 * for (String cookie : cookies) { System.err.println("Cookie:" +
-			 * cookie); }
+			 * for (String cookie : cookies) { System.err.println("Cookie:" + cookie); }
 			 */
 		} catch (com.google.gson.JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
@@ -272,7 +266,7 @@ public class ChromiumCdpTest {
 	public void clearBrowserCookiesTest() {
 		baseURL = "https://www.google.com";
 		driver.get(baseURL);
-		String command = "Network.clearBrowserCookies";
+		command = "Network.clearBrowserCookies";
 		try {
 			// Act
 			driver.executeCdpCommand(command, new HashMap<>());
@@ -289,8 +283,8 @@ public class ChromiumCdpTest {
 		baseURL = "https://www.google.com";
 		driver.get(baseURL);
 		result = null;
-		String data = null;
-		String command = "Page.captureScreenshot";
+		data = null;
+		command = "Page.captureScreenshot";
 		try {
 			// Act
 			result = driver.executeCdpCommand(command, new HashMap<>());
@@ -328,14 +322,13 @@ public class ChromiumCdpTest {
 		// Arrange
 		baseURL = "https://www.google.com";
 		driver.get(baseURL);
-		String command = "Page.getCookies";
+		command = "Page.getCookies";
 		params = new HashMap<String, Object>();
 		params.put("urls", new String[] { ".google.com" });
 		// Act
 		try {
-			Map<String, Object> result = driver.executeCdpCommand(command, params);
-			err.println("Cookies for www.google.com: "
-					+ ((List<Object>) result.get("cookies")).size() + "...");
+			result = driver.executeCdpCommand(command, params);
+			err.println("Cookies for www.google.com: " + ((List<Object>) result.get("cookies")).size() + "...");
 			// Assert
 		} catch (com.google.gson.JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
@@ -350,38 +343,32 @@ public class ChromiumCdpTest {
 		// Arrange
 		baseURL = "https://www.google.com";
 		driver.get(baseURL);
-		String command = "Page.getCookies";
+		command = "Page.getCookies";
 		// Act
 		try {
-			Map<String, Object> result = driver.executeCdpCommand(command,
-					new HashMap<String, Object>());
-			err.println("Cookies: "
-					+ result.get("cookies").toString().substring(0, 100) + "...");
+			result = driver.executeCdpCommand(command, new HashMap<String, Object>());
+			err.println("Cookies: " + result.get("cookies").toString().substring(0, 100) + "...");
 			// Assert
 			try {
 				@SuppressWarnings("unchecked")
-				List<Map<String, Object>> cookies = gson
-						.fromJson(result.get("cookies").toString(), ArrayList.class);
+				List<Map<String, Object>> cookies = gson.fromJson(result.get("cookies").toString(), ArrayList.class);
 			} catch (JsonSyntaxException e) {
 				err.println("Exception (ignored): " + e.toString());
 			}
 			// Assert
 			try {
 				@SuppressWarnings("unchecked")
-				ArrayList<Map<String, Object>> cookies = (ArrayList<Map<String, Object>>) result
-						.get("cookies");
-				cookies.stream().limit(3).map(o -> o.keySet())
-						.forEach(System.err::println);
+				ArrayList<Map<String, Object>> cookies = (ArrayList<Map<String, Object>>) result.get("cookies");
+				cookies.stream().limit(3).map(o -> o.keySet()).forEach(System.err::println);
 				Set<String> cookieKeys = new HashSet<>();
-				for (String key : new String[] { "domain", "expires", "httpOnly",
-						"name", "path", "secure", "session", "size", "value" }) {
+				for (String key : new String[] { "domain", "expires", "httpOnly", "name", "path", "secure", "session",
+						"size", "value" }) {
 					cookieKeys.add(key);
 				}
 				/*
 				 * cookieKeys.add("domain"); cookieKeys.add("expires");
-				 * cookieKeys.add("httpOnly"); cookieKeys.add("name");
-				 * cookieKeys.add("path"); cookieKeys.add("secure");
-				 * cookieKeys.add("session"); cookieKeys.add("size");
+				 * cookieKeys.add("httpOnly"); cookieKeys.add("name"); cookieKeys.add("path");
+				 * cookieKeys.add("secure"); cookieKeys.add("session"); cookieKeys.add("size");
 				 * cookieKeys.add("value");
 				 */
 				assertTrue(cookies.get(0).keySet().containsAll(cookieKeys));
@@ -397,4 +384,53 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	@Test
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getNodeForLocation
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-NodeId
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getOuterHTML
+	public void getNodeForLocationTest() {
+
+		baseURL = "https://datatables.net/examples/api/highlight.html";
+		driver.get(baseURL);
+		data = null;
+		Long nodeData = (long) -1;
+		command = "DOM.getNodeForLocation";
+		params = new HashMap<String, Object>();
+
+		WebElement element = driver.findElement(By.xpath("//table[@id='example']/tbody/tr[1]/td[1]"));
+		int x = element.getLocation().getX();
+		int y = element.getLocation().getX();
+		err.println(String.format("x = %d, y = %d", x, y));
+		err.println("outerHTML: " + element.getAttribute("outerHTML"));
+		params.put("x", x);
+		params.put("y", y);
+		// Act
+		try {
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, notNullValue());
+			assertThat(result, hasKey("backendNodeId"));
+			nodeData = (Long) result.get("backendNodeId");
+			err.println("backendNodeId: " + nodeData);
+			assertThat(nodeData, notNullValue());
+			// might not have frameId
+			assertThat(result, hasKey("nodeId"));
+			nodeData = (Long) result.get("nodeId");
+			err.println("nodeId: " + nodeData);
+			assertThat(nodeData, notNullValue());
+			command = "DOM.getOuterHTML";
+			params = new HashMap<String, Object>();
+			params.put("nodeId", nodeData);
+			result = driver.executeCdpCommand(command, params);
+			assertThat(result, notNullValue());
+			assertThat(result, hasKey("outerHTML"));
+			data = (String) result.get("outerHTML");
+			assertThat(data, notNullValue());
+			err.println("outerHTML: " + data);
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println("Exception (ignored): " + e.toString());
+		} catch (Exception e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+	}
 }
