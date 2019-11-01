@@ -1,8 +1,11 @@
 package com.github.sergueik.selenium;
 
+import org.openqa.selenium.chromium.ChromiumDriver;
+
 public class Utils {
 	private static String osName;
-
+	private static ChromiumDriver driver;
+	
 	public static String getOSName() {
 		if (osName == null) {
 			osName = System.getProperty("os.name").toLowerCase();
