@@ -108,15 +108,18 @@ public class RelativeLocatorTest {
 		WebElement belowElement = tableElement.findElement(withTagName("td").below(columnElement));
 		System.err.println("Cell Below: " + belowElement.getText());
 		/*
-		 * for (WebElement element : columnElements) {
-		 * System.err.println("Column element: " + element.getText());
-		 * highlight(element, highlightInterval); // NOTE: the next call leads to the
-		 * following be logged to STDOUT // (repeated multiple times): //
-		 * [org.openqa.selenium.remote.RemoteWebElement@3e62ec7 -> unknown // locator]
-		 * belowElement = tableElement.findElement(withTagName("td").below(element));
-		 * System.err.println("Below element: " + belowElement.getText()); //
-		 * highlight(belowElement, highlightInterval); }
-		 */
+		for (WebElement element : columnElements) {
+			System.err.println("Column element: " + element.getText());
+			highlight(element, highlightInterval);
+			// NOTE: the next call leads to the following be logged to STDOUT
+			// (repeated multiple times):
+			// [org.openqa.selenium.remote.RemoteWebElement@3e62ec7 -> unknown
+			// locator]
+			belowElement = tableElement.findElement(withTagName("td").below(element));
+			System.err.println("Below element: " + belowElement.getText());
+			// highlight(belowElement, highlightInterval);
+		}
+		*/
 		Utils.sleep(1000);
 	}
 
