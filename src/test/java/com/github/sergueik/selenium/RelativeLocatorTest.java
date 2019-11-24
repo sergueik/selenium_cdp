@@ -26,6 +26,8 @@ import static org.openqa.selenium.support.locators.RelativeLocator.withTagName;
  *  https://automatorsworld.com/2019/10/05/selenium-webdriver-what-are-relative-locators-in-selenium/
  *  https://www.swtestacademy.com/selenium-relative-locators/
  *  https://angiejones.tech/selenium-4-relative-locators/
+ *  https://www.swtestacademy.com/selenium-4-sample-codes-for-new-features/
+ *  https://stackoverflow.com/questions/58249070/what-is-relative-locator-in-selenium-4-and-what-are-the-types-of-it
  * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */

@@ -60,11 +60,16 @@ public class ChromiumCdpTest {
 	private static String data = null;
 	private static Map<String, Object> result = null;
 	private static Map<String, Object> params = null;
+	public static Long nodeId = (long) -1;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+		System
+				.setProperty("webdriver.chrome.driver",
+						Paths.get(System.getProperty("user.home"))
+								.resolve("Downloads").resolve(osName.equals("windows")
+										? "chromedriver.exe" : "chromedriver")
+								.toAbsolutePath().toString());
 
 		// NOTE: protected constructor method is not visible
 		// driver = new ChromiumDriver((CommandExecutor) null, new
@@ -97,12 +102,13 @@ public class ChromiumCdpTest {
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
 		// Act
 		try {
-			driver.executeCdpCommand("Network.setUserAgentOverride", new HashMap<String, Object>() {
-				{
-					put("userAgent", "python 2.7");
-					put("platform", "Windows");
-				}
-			});
+			driver.executeCdpCommand("Network.setUserAgentOverride",
+					new HashMap<String, Object>() {
+						{
+							put("userAgent", "python 2.7");
+							put("platform", "Windows");
+						}
+					});
 		} catch (WebDriverException e) {
 			System.err.println("Exception (ignored): " + e.toString());
 			// org.openqa.selenium.WebDriverException: unknown error: unhandled
@@ -328,7 +334,8 @@ public class ChromiumCdpTest {
 		// Act
 		try {
 			result = driver.executeCdpCommand(command, params);
-			err.println("Cookies for www.google.com: " + ((List<Object>) result.get("cookies")).size() + "...");
+			err.println("Cookies for www.google.com: "
+					+ ((List<Object>) result.get("cookies")).size() + "...");
 			// Assert
 		} catch (com.google.gson.JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
@@ -347,22 +354,26 @@ public class ChromiumCdpTest {
 		// Act
 		try {
 			result = driver.executeCdpCommand(command, new HashMap<String, Object>());
-			err.println("Cookies: " + result.get("cookies").toString().substring(0, 100) + "...");
+			err.println("Cookies: "
+					+ result.get("cookies").toString().substring(0, 100) + "...");
 			// Assert
 			try {
 				@SuppressWarnings("unchecked")
-				List<Map<String, Object>> cookies = gson.fromJson(result.get("cookies").toString(), ArrayList.class);
+				List<Map<String, Object>> cookies = gson
+						.fromJson(result.get("cookies").toString(), ArrayList.class);
 			} catch (JsonSyntaxException e) {
 				err.println("Exception (ignored): " + e.toString());
 			}
 			// Assert
 			try {
 				@SuppressWarnings("unchecked")
-				ArrayList<Map<String, Object>> cookies = (ArrayList<Map<String, Object>>) result.get("cookies");
-				cookies.stream().limit(3).map(o -> o.keySet()).forEach(System.err::println);
+				ArrayList<Map<String, Object>> cookies = (ArrayList<Map<String, Object>>) result
+						.get("cookies");
+				cookies.stream().limit(3).map(o -> o.keySet())
+						.forEach(System.err::println);
 				Set<String> cookieKeys = new HashSet<>();
-				for (String key : new String[] { "domain", "expires", "httpOnly", "name", "path", "secure", "session",
-						"size", "value" }) {
+				for (String key : new String[] { "domain", "expires", "httpOnly",
+						"name", "path", "secure", "session", "size", "value" }) {
 					cookieKeys.add(key);
 				}
 				/*
@@ -384,6 +395,85 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-performSearch
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getSearchResults
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-NodeId
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getOuterHTML
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-highlightNode
+	public void performSearchTest() {
+
+		baseURL = "https://datatables.net/examples/api/highlight.html";
+		driver.get(baseURL);
+		data = null;
+		command = "DOM.performSearch";
+		params = new HashMap<String, Object>();
+
+		WebElement element = driver
+				.findElement(By.xpath("//table[@id='example']/tbody/tr[1]/td[1]"));
+		err.println("outerHTML: " + element.getAttribute("outerHTML"));
+
+		params.put("query", "//table[@id='example']/tbody/tr[1]/td[1]");
+		// Act
+		try {
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, notNullValue());
+			assertThat(result, hasKey("searchId"));
+			data = (String) result.get("searchId");
+			err.println("searchId: " + data);
+			assertThat(data, notNullValue());
+			command = "DOM.getSearchResults";
+			params = new HashMap<String, Object>();
+			params.put("searchId", data);
+			params.put("fromIndex", 0);
+			params.put("toIndex", 1);
+			nodeId = (long) -1;
+			result = driver.executeCdpCommand(command, params);
+			assertThat(result, notNullValue());
+			assertThat(result, hasKey("nodeIds"));
+			List<Long> nodes = (List<Long>) result.get("nodeIds");
+			assertThat(nodes, notNullValue());
+			assertThat(nodes.get(0), notNullValue());
+			nodeId = nodes.get(0);
+			err.println("nodeId: " + nodeId);
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println(
+					"JSON Exception in " + command + " (ignored): " + e.toString());
+		} catch (Exception e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+		try {
+
+			command = "DOM.getOuterHTML";
+			params = new HashMap<String, Object>();
+			params.put("nodeId", nodeId);
+			data = null;
+			result = driver.executeCdpCommand(command, params);
+			assertThat(result, notNullValue());
+			assertThat(result, hasKey("outerHTML"));
+			data = (String) result.get("outerHTML");
+			assertThat(data, notNullValue());
+			err.println("outerHTML: " + data);
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println(
+					"JSON Exception in " + command + " (ignored): " + e.toString());
+		} catch (Exception e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+
+		try {
+			command = "DOM.highlightNode";
+			driver.executeCdpCommand(command, new HashMap<String, Object>());
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println(
+					"JSON Exception in " + command + " (ignored): " + e.toString());
+		} catch (Exception e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+	}
+
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getNodeForLocation
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-NodeId
@@ -393,34 +483,44 @@ public class ChromiumCdpTest {
 		baseURL = "https://datatables.net/examples/api/highlight.html";
 		driver.get(baseURL);
 		data = null;
-		Long nodeData = (long) -1;
 		command = "DOM.getNodeForLocation";
 		params = new HashMap<String, Object>();
 
-		WebElement element = driver.findElement(By.xpath("//table[@id='example']/tbody/tr[1]/td[1]"));
+		WebElement element = driver
+				.findElement(By.xpath("//table[@id='example']/tbody/tr[1]/td[1]"));
 		int x = element.getLocation().getX();
 		int y = element.getLocation().getX();
 		err.println(String.format("x = %d, y = %d", x, y));
 		err.println("outerHTML: " + element.getAttribute("outerHTML"));
 		params.put("x", x);
 		params.put("y", y);
+		nodeId = (long) -1;
 		// Act
 		try {
 			result = driver.executeCdpCommand(command, params);
 			// Assert
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("backendNodeId"));
-			nodeData = (Long) result.get("backendNodeId");
-			err.println("backendNodeId: " + nodeData);
-			assertThat(nodeData, notNullValue());
+			nodeId = (Long) result.get("backendNodeId");
+			err.println("backendNodeId: " + nodeId);
+			assertThat(nodeId, notNullValue());
 			// might not have frameId
 			assertThat(result, hasKey("nodeId"));
-			nodeData = (Long) result.get("nodeId");
-			err.println("nodeId: " + nodeData);
-			assertThat(nodeData, notNullValue());
+			nodeId = (Long) result.get("nodeId");
+			err.println("nodeId: " + nodeId);
+			assertThat(nodeId, notNullValue());
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println(
+					"JSON Exception in " + command + " (ignored): " + e.toString());
+		} catch (Exception e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+
+		try {
 			command = "DOM.getOuterHTML";
 			params = new HashMap<String, Object>();
-			params.put("nodeId", nodeData);
+			params.put("nodeId", nodeId);
+			data = null;
 			result = driver.executeCdpCommand(command, params);
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("outerHTML"));
@@ -428,9 +528,10 @@ public class ChromiumCdpTest {
 			assertThat(data, notNullValue());
 			err.println("outerHTML: " + data);
 		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println("Exception (ignored): " + e.toString());
+			err.println(
+					"JSON Exception in " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
-			err.println("Exception (ignored): " + e.toString());
+			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
 	}
 }
