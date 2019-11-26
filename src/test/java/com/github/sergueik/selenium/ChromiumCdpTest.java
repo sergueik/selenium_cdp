@@ -7,16 +7,20 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
+
 import static org.junit.Assert.assertTrue;
 import static org.openqa.selenium.support.locators.RelativeLocator.withTagName;
 
 import java.awt.image.BufferedImage;
+
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
-
 import java.io.IOException;
+import javax.imageio.ImageIO;
+
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,14 +28,14 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import javax.imageio.ImageIO;
-
 import org.apache.commons.codec.binary.Base64;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -91,13 +95,15 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	@Ignore
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setUserAgentOverride
 	@SuppressWarnings("serial")
 	@Test
 	public void setUserAgentOverrideTest() {
 		// Arrange
 		baseURL = "https://www.whoishostingthis.com/tools/user-agent/";
 		driver.get(baseURL);
-		By locator = By.cssSelector("div.info-box.user-agent");
+		By locator = By.cssSelector("a[href='/']");
 		WebElement element = driver.findElement(locator);
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
 		// Act
@@ -124,6 +130,7 @@ public class ChromiumCdpTest {
 		assertThat(element.getAttribute("innerText"), is("python 2.7"));
 	}
 
+	@Ignore
 	// see also: https://habr.com/ru/post/459112/
 	/*
 	 * import sys from selenium import webdriver from
@@ -163,6 +170,7 @@ public class ChromiumCdpTest {
 	// /session/$sessionId/chromium/send_command_and_get_result
 	// vs.
 	// /session/$sessionId/goog/cdp/execute
+	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-printToPDF
 	@Test
 	public void printToPDFTest() {
 		baseURL = "https://www.google.com";
@@ -175,7 +183,7 @@ public class ChromiumCdpTest {
 		params.put("preferCSSPageSize", true);
 		try {
 			result = driver.executeCdpCommand(command, params);
-			err.println("Result: " + result.keySet());
+			System.err.println("Command " + command + " result: " + result);
 			// TODO: assert the response is a valid Base64-encoded pdf data.
 		} catch (org.openqa.selenium.WebDriverException e) {
 			err.println("Exception (ignored): " + e.toString());
@@ -190,6 +198,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-clearBrowserCache
 	public void clearBrowserCacheTest() {
@@ -206,6 +215,77 @@ public class ChromiumCdpTest {
 	}
 
 	@Test
+	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getVersion
+	public void getBrowserVersionTest() {
+		command = "Browser.getVersion";
+		data = null;
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<String, Object>());
+			// Assert
+			assertThat(result, notNullValue());
+			System.err.println("Command " + command + " result: " + result);
+			/* typical response
+			{
+			    jsVersion = 7.8.279.23,
+			    product = Chrome/78.0.3904.108,
+			    protocolVersion = 1.3,
+			    revision = @4b26898a39ee037623a72fcfb77279fce0e7d648,
+			    userAgent = Mozilla/5.0 (Windows NT6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36
+			}
+			 */
+			for (String field : Arrays.asList(new String[] { "protocolVersion",
+					"product", "revision", "userAgent", "jsVersion" })) {
+				assertThat(result, hasKey(field));
+			}
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println("Exception (ignored): " + e.toString());
+		} catch (Exception e) {
+			err.println("Exception: " + e.toString());
+			throw (new RuntimeException(e));
+		}
+	}
+
+	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
+	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowBounds
+	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#type-Bounds
+	@Test
+	public void getBrowserWindowDetailsTest() {
+		command = "Browser.getWindowForTarget";
+		Long windowId = (long) -1;
+		data = null;
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<String, Object>());
+			// Assert
+			assertThat(result, notNullValue());
+			System.err.println("Command " + command + " result: " + result);
+			assertThat(result, hasKey("windowId"));
+			windowId = (long) result.get("windowId");
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (Exception e) {
+			err.println("Exception: in " + command + "  " + e.toString());
+			throw (new RuntimeException(e));
+		}
+		try {
+			command = "Browser.getWindowBounds";
+			params = new HashMap<String, Object>();
+			params.put("windowId", windowId);
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, notNullValue());
+			System.err.println("Command " + command + " result: " + result);
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (Exception e) {
+			err.println("Exception: in " + command + "  " + e.toString());
+			throw (new RuntimeException(e));
+		}
+	}
+
+	@Ignore
+	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-getResponseBody
 	public void getResponseBodyTest() {
 		baseURL = "http://www.example.com/";
@@ -219,7 +299,7 @@ public class ChromiumCdpTest {
 			result = driver.executeCdpCommand(command, params);
 			// Assert
 			assertThat(result, notNullValue());
-			System.err.println(result);
+			System.err.println("Command " + command + " result: " + result);
 		} catch (org.openqa.selenium.InvalidArgumentException e) {
 			err.println("Exception (ignored): " + e.toString());
 		} catch (com.google.gson.JsonSyntaxException e) {
@@ -232,6 +312,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-getAllCookies
@@ -254,7 +335,7 @@ public class ChromiumCdpTest {
 			assertThat(cookies.size(), greaterThan(0));
 			/*
 			 * cookies.stream().limit(3).forEach(o -> { try { System.err.println(o); } catch
-			 * (java.lang.ClassCastException e) { err.println("Exception (ignored): " +
+			 * (java.lang.ClassCastExceptin e) { err.println("Exception (ignored): " +
 			 * e.toString()); } }) ;
 			 */
 			/*
@@ -283,6 +364,7 @@ public class ChromiumCdpTest {
 	}
 
 	@SuppressWarnings("serial")
+	@Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
 	public void captureScreenshotTest() {
@@ -323,6 +405,7 @@ public class ChromiumCdpTest {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Ignore
 	@Test
 	public void getCookiesWithUrlsTest() {
 		// Arrange
@@ -345,6 +428,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void getCookiesTest() {
 		// Arrange
@@ -535,3 +619,4 @@ public class ChromiumCdpTest {
 		}
 	}
 }
+

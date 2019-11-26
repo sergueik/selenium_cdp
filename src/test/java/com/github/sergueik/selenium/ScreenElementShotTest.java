@@ -66,10 +66,10 @@ public class ScreenElementShotTest {
 
 	@SuppressWarnings("serial")
 	@Test
-	public void setUserAgentOverrideTest() {
-		By locator = By.cssSelector("#sbox > div.hp_sw_logo.hpcLogoWhite");
+	public void screenElementScreenShotTest() {
+		By locator = By.cssSelector("div.sbox > svg.logo");
 		WebElement element = driver.findElement(locator);
-		assertThat(element.getAttribute("innerText"), containsString("Bing"));
+		assertThat(element.getAttribute("fill"), containsString("white"));
 
 		// Act
 		try {
@@ -83,3 +83,4 @@ public class ScreenElementShotTest {
 	}
 
 }
+
