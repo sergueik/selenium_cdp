@@ -77,8 +77,7 @@ The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/sr
 
 ### See Also
 
-  * [chrome devtools](https://github.com/ChromeDevTools/awesome-chrome-devtools)
- project
+  * [chrome devtools](https://github.com/ChromeDevTools/awesome-chrome-devtools) project
   * [puppeteer online](https://try-puppeteer.appspot.com/)
   * [GoogleChrome/puppeteer](https://github.com/GoogleChrome/puppeteer)
   * [ChromeDevTools/debugger-protocol-viewer](https://github.com/ChromeDevTools/debugger-protocol-viewer)
@@ -89,7 +88,10 @@ The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/sr
   * [PDF configuration](https://github.com/GoogleChrome/puppeteer/blob/v1.11.0/docs/api.md#pagepdfoptions) with [Puppeteer](https://github.com/GoogleChrome/puppeteer)
   * Selenium 4 [Relative Locator](https://angiejones.tech/selenium-4-relative-locators/) DOM traversal DSL.
   * Selenium 4 [Relatve locator]( https://www.swtestacademy.com/selenium-relative-locators/) examples
-
+  * alternative java websocket client [HubSpot/ChromeDevToolsClient](https://github.com/HubSpot/ChromeDevToolsClient) for the Chrome DevTools Protocol
+  * another alternative Chrome DevTools Java Clien [kklisura/chrome-devtools-java-client](https://github.com/kklisura/chrome-devtools-java-client)
+  * [examples](https://github.com/adiohana/selenium-chrome-devtools-examples) with callback hook example
+  * yet another project [chrome-devtools-webdriver-integration](https://github.com/sahajamit/chrome-devtools-webdriver-integration)
 
 ### License
 
@@ -97,3 +99,4 @@ This project is licensed under the terms of the MIT license.
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+

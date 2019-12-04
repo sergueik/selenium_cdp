@@ -16,6 +16,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import java.time.Duration;
+
 import javax.imageio.ImageIO;
 
 import java.nio.file.Paths;
@@ -39,6 +42,11 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -52,10 +60,14 @@ import com.google.gson.JsonSyntaxException;
 
 public class ChromiumCdpTest {
 
+	private static int flexibleWait = 60;
+	private static int implicitWait = 1;
+	private static int pollingInterval = 500;
 	private static ChromiumDriver driver;
 	private static String osName = Utils.getOSName();
 	// currently unused
 	@SuppressWarnings("unused")
+	private static WebDriverWait wait;
 	private static Actions actions;
 	private static String baseURL = "about:blank";
 	private static Gson gson = new Gson();
@@ -81,6 +93,10 @@ public class ChromiumCdpTest {
 		// null);
 		driver = new ChromeDriver();
 		actions = new Actions(driver);
+		wait = new WebDriverWait(driver, flexibleWait);
+
+		// Selenium Driver version sensitive code: 3.13.0 vs. 3.8.0 and older
+		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 	}
 
 	@Before
@@ -246,7 +262,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	// @Ignore
+	@Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-setWindowBounds
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#type-Bounds
@@ -630,6 +646,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getNodeForLocation
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-NodeId
@@ -690,5 +707,123 @@ public class ChromiumCdpTest {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
 	}
+
+	// based on a more advanced code found in
+	// https://github.com/adiohana/selenium-chrome-devtools-examples/blob/master/src/test/java/ChromeDevToolsTest.java
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setCacheDisabled
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setBlockedURLs
+	// @Ignore
+	@SuppressWarnings("serial")
+	@Test
+	public void setBlockedURLsTest() {
+		// Arrange
+		command = "Network.setCacheDisabled";
+		try {
+			driver.executeCdpCommand(command, new HashMap<String, Object>() {
+				{
+					put("cacheDisabled", true);
+					// NOTE: value has to be a boolean, otherwise
+					// org.openqa.selenium.InvalidArgumentException: invalid argument
+				}
+			});
+		} catch (WebDriverException e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+
+		}
+		baseURL = "https://www.wikipedia.org/";
+		command = "Network.setBlockedURLs";
+		// Act
+		try
+
+		{
+			driver.executeCdpCommand(command, new HashMap<String, Object>() {
+				{
+					put("urls", Arrays.asList(new String[] { "*.css", "*.png" }));
+				}
+			});
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println(
+					"JSON Exception in " + command + " (ignored): " + e.toString());
+		} catch (Exception e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+		driver.get(baseURL);
+		// driver.navigate().refresh();
+		Utils.sleep(1000);
+	}
+
+	@Test
+	// based on:
+	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setGeolocationOverride
+	// see also:
+	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
+	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/main/java/com/sahajamit/messaging/MessageBuilder.java
+	public void setGeoLocationTest() {
+
+		// Arrange
+		command = "Emulation.setGeolocationOverride";
+		params = new HashMap<String, Object>();
+		Double latitude = 37.422290;
+		Double longitude = -122.084057;
+		params.put("latitude", latitude);
+		params.put("longitude", longitude);
+		params.put("accuracy", 100);
+		// Act
+		try {
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, notNullValue());
+			err.println("Response from " + command + ": " + result);
+		} catch (Exception e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+		// Act
+
+		baseURL = "https://www.google.com/maps";
+		driver.get(baseURL);
+
+		// click "my location" button when drawn
+
+		WebElement element = wait
+				.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(
+						"div[class *='widget-mylocation-button-icon-common']")));
+		element.click();
+		// unclear what event to wait for here
+		Utils.sleep(5000);
+		result = null;
+		data = null;
+		command = "Page.captureScreenshot";
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			// Assert
+			assertThat(result, notNullValue());
+			assertThat(result, hasKey("data"));
+			data = (String) result.get("data");
+			assertThat(data, notNullValue());
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+
+		Base64 base64 = new Base64();
+		byte[] image = base64.decode(data);
+		try {
+			BufferedImage o = ImageIO.read(new ByteArrayInputStream(image));
+			assertThat(o.getWidth(), greaterThan(0));
+			assertThat(o.getHeight(), greaterThan(0));
+		} catch (IOException e) {
+			err.println("Exception collecting screenshot (ignored): " + e.toString());
+		}
+		String tmpFilename = "map.png";
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream(tmpFilename);
+			fileOutputStream.write(image);
+			fileOutputStream.close();
+		} catch (IOException e) {
+			err.println("Exception saving image file (ignored): " + e.toString());
+		}
+		// Assert
+	}
+
 }
 
