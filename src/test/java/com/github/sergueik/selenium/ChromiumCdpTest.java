@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
 
 import static org.junit.Assert.assertTrue;
-import static org.openqa.selenium.support.locators.RelativeLocator.withTagName;
 
 import java.awt.image.BufferedImage;
 
@@ -61,7 +60,6 @@ import com.google.gson.JsonSyntaxException;
 public class ChromiumCdpTest {
 
 	private static int flexibleWait = 60;
-	private static int implicitWait = 1;
 	private static int pollingInterval = 500;
 	private static ChromiumDriver driver;
 	private static String osName = Utils.getOSName();
@@ -76,8 +74,10 @@ public class ChromiumCdpTest {
 	private static String data = null;
 	private static Map<String, Object> result = null;
 	private static Map<String, Object> params = null;
+	private static List<Map<String, Object>> cookies = new ArrayList<>();
 	public static Long nodeId = (long) -1;
 
+	@SuppressWarnings("deprecation")
 	@BeforeClass
 	public static void setUp() throws Exception {
 		System
@@ -88,9 +88,9 @@ public class ChromiumCdpTest {
 								.toAbsolutePath().toString());
 
 		// NOTE: protected constructor method is not visible
-		// driver = new ChromiumDriver((CommandExecutor) null, new
-		// ImmutableCapabilities(),
-		// null);
+		/* 
+		 * driver = new ChromiumDriver((CommandExecutor) null, new ImmutableCapabilities(),null);
+		 */
 		driver = new ChromeDriver();
 		actions = new Actions(driver);
 		wait = new WebDriverWait(driver, flexibleWait);
@@ -117,8 +117,7 @@ public class ChromiumCdpTest {
 	@Test
 	public void setUserAgentOverrideTest() {
 		// Arrange
-		baseURL = "https://www.whoishostingthis.com/tools/user-agent/";
-		driver.get(baseURL);
+		driver.get("https://www.whoishostingthis.com/tools/user-agent/");
 		By locator = By.cssSelector("a[href='/']");
 		WebElement element = driver.findElement(locator);
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
@@ -189,8 +188,7 @@ public class ChromiumCdpTest {
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-printToPDF
 	@Test
 	public void printToPDFTest() {
-		baseURL = "https://www.google.com";
-		driver.get(baseURL);
+		driver.get("https://www.google.com");
 		String command = "Page.printToPDF";
 		params = new HashMap<>();
 		params.put("landscape", false);
@@ -199,7 +197,7 @@ public class ChromiumCdpTest {
 		params.put("preferCSSPageSize", true);
 		try {
 			result = driver.executeCdpCommand(command, params);
-			System.err.println("Command " + command + " result: " + result);
+			System.err.println("Response to " + command + ": " + result);
 			// TODO: assert the response is a valid Base64-encoded pdf data.
 		} catch (org.openqa.selenium.WebDriverException e) {
 			err.println("Exception (ignored): " + e.toString());
@@ -395,7 +393,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-getAllCookies
@@ -446,7 +444,6 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@SuppressWarnings("serial")
 	@Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
@@ -475,7 +472,7 @@ public class ChromiumCdpTest {
 			assertThat(o.getWidth(), greaterThan(0));
 			assertThat(o.getHeight(), greaterThan(0));
 		} catch (IOException e) {
-			err.println("Exception (ignored): " + e.toString());
+			err.println("Exception loading image (ignored): " + e.toString());
 		}
 		String tmpFilename = "temp.png";
 		try {
@@ -483,12 +480,12 @@ public class ChromiumCdpTest {
 			fileOutputStream.write(image);
 			fileOutputStream.close();
 		} catch (IOException e) {
-			err.println("Exception (ignored): " + e.toString());
+			err.println("Exception saving image (ignored): " + e.toString());
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	@Ignore
+	// @Ignore
 	@Test
 	public void getCookiesWithUrlsTest() {
 		// Arrange
@@ -500,23 +497,20 @@ public class ChromiumCdpTest {
 		// Act
 		try {
 			result = driver.executeCdpCommand(command, params);
-			err.println("Cookies for www.google.com: "
-					+ ((List<Object>) result.get("cookies")).size() + "...");
 			// Assert
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println("Exception (ignored): " + e.toString());
-
+			err.println("Cookies count for www.google.com: "
+					+ ((List<Object>) result.get("cookies")).size() + "...");
 		} catch (Exception e) {
 			err.println("Exception (ignored): " + e.toString());
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
-	public void getCookiesTest() {
+	@SuppressWarnings("unchecked")
+	public void getCookiesTest1() {
 		// Arrange
-		baseURL = "https://www.google.com";
-		driver.get(baseURL);
+		driver.get("https://www.google.com");
 		command = "Page.getCookies";
 		// Act
 		try {
@@ -524,40 +518,52 @@ public class ChromiumCdpTest {
 			err.println("Cookies: "
 					+ result.get("cookies").toString().substring(0, 100) + "...");
 			// Assert
-			try {
-				@SuppressWarnings("unchecked")
-				List<Map<String, Object>> cookies = gson
-						.fromJson(result.get("cookies").toString(), ArrayList.class);
-			} catch (JsonSyntaxException e) {
-				err.println("Exception (ignored): " + e.toString());
+			// deserialiaze
+			cookies = gson.fromJson(result.get("cookies").toString(),
+					ArrayList.class);
+			cookies.stream().limit(10).map(o -> o.keySet())
+					.forEach(System.err::println);
+			Set<String> cookieKeys = new HashSet<>();
+			for (String key : new String[] { "domain", "expires", "httpOnly", "name",
+					"path", "secure", "session", "size", "value" }) {
+				cookieKeys.add(key);
 			}
+			assertTrue(cookies.get(0).keySet().containsAll(cookieKeys));
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println("Exception deserializing cookies (ignored): " + e.toString());
+
+		} catch (Exception e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+	}
+
+	// @Ignore
+	@Test
+	@SuppressWarnings("unchecked")
+	public void getCookiesTest2() {
+		// Arrange
+		driver.get("https://www.google.com");
+		command = "Page.getCookies";
+		// Act
+		try {
+			result = driver.executeCdpCommand(command, new HashMap<String, Object>());
+			err.println("Cookies: "
+					+ result.get("cookies").toString().substring(0, 100) + "...");
 			// Assert
-			try {
-				@SuppressWarnings("unchecked")
-				ArrayList<Map<String, Object>> cookies = (ArrayList<Map<String, Object>>) result
-						.get("cookies");
-				cookies.stream().limit(3).map(o -> o.keySet())
-						.forEach(System.err::println);
-				Set<String> cookieKeys = new HashSet<>();
-				for (String key : new String[] { "domain", "expires", "httpOnly",
-						"name", "path", "secure", "session", "size", "value" }) {
-					cookieKeys.add(key);
-				}
-				/*
-				 * cookieKeys.add("domain"); cookieKeys.add("expires");
-				 * cookieKeys.add("httpOnly"); cookieKeys.add("name"); cookieKeys.add("path");
-				 * cookieKeys.add("secure"); cookieKeys.add("session"); cookieKeys.add("size");
-				 * cookieKeys.add("value");
-				 */
-				assertTrue(cookies.get(0).keySet().containsAll(cookieKeys));
-			} catch (com.google.gson.JsonSyntaxException e) {
-				err.println("Exception (ignored): " + e.toString());
-
-			} catch (Exception e) {
-				err.println("Exception (ignored): " + e.toString());
+			// direct cast
+			cookies = (ArrayList<Map<String, Object>>) result.get("cookies");
+			cookies.stream().limit(10).map(o -> o.keySet())
+					.forEach(System.err::println);
+			Set<String> cookieKeys = new HashSet<>();
+			for (String key : new String[] { "domain", "expires", "httpOnly", "name",
+					"path", "secure", "session", "size", "value" }) {
+				cookieKeys.add(key);
 			}
+			assertTrue(cookies.get(0).keySet().containsAll(cookieKeys));
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println("Exception loading cookies (ignored): " + e.toString());
 
-		} catch (WebDriverException e) {
+		} catch (Exception e) {
 			err.println("Exception (ignored): " + e.toString());
 		}
 	}
@@ -606,9 +612,6 @@ public class ChromiumCdpTest {
 			assertThat(nodes.get(0), notNullValue());
 			nodeId = nodes.get(0);
 			err.println("nodeId: " + nodeId);
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println(
-					"JSON Exception in " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
@@ -624,9 +627,6 @@ public class ChromiumCdpTest {
 			data = (String) result.get("outerHTML");
 			assertThat(data, notNullValue());
 			err.println("outerHTML: " + data);
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println(
-					"JSON Exception in " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
@@ -638,9 +638,6 @@ public class ChromiumCdpTest {
 			// Invalid parameters
 			command = "DOM.highlightNode";
 			driver.executeCdpCommand(command, new HashMap<String, Object>());
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println(
-					"JSON Exception in " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
@@ -682,9 +679,6 @@ public class ChromiumCdpTest {
 			nodeId = (Long) result.get("nodeId");
 			err.println("nodeId: " + nodeId);
 			assertThat(nodeId, notNullValue());
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println(
-					"JSON Exception in " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
@@ -700,9 +694,6 @@ public class ChromiumCdpTest {
 			data = (String) result.get("outerHTML");
 			assertThat(data, notNullValue());
 			err.println("outerHTML: " + data);
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println(
-					"JSON Exception in " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
@@ -733,17 +724,13 @@ public class ChromiumCdpTest {
 		baseURL = "https://www.wikipedia.org/";
 		command = "Network.setBlockedURLs";
 		// Act
-		try
-
-		{
+		try {
+			// NOTE: inline hashmap initialization code looks rather ugly
 			driver.executeCdpCommand(command, new HashMap<String, Object>() {
 				{
 					put("urls", Arrays.asList(new String[] { "*.css", "*.png" }));
 				}
 			});
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println(
-					"JSON Exception in " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
