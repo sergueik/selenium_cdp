@@ -9,13 +9,15 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
 
 import static org.junit.Assert.assertTrue;
-import static org.openqa.selenium.support.locators.RelativeLocator.withTagName;
 
 import java.awt.image.BufferedImage;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import java.time.Duration;
+
 import javax.imageio.ImageIO;
 
 import java.nio.file.Paths;
@@ -39,6 +41,11 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -52,10 +59,13 @@ import com.google.gson.JsonSyntaxException;
 
 public class ChromiumCdpTest {
 
+	private static int flexibleWait = 60;
+	private static int pollingInterval = 500;
 	private static ChromiumDriver driver;
 	private static String osName = Utils.getOSName();
 	// currently unused
 	@SuppressWarnings("unused")
+	private static WebDriverWait wait;
 	private static Actions actions;
 	private static String baseURL = "about:blank";
 	private static Gson gson = new Gson();
@@ -64,8 +74,10 @@ public class ChromiumCdpTest {
 	private static String data = null;
 	private static Map<String, Object> result = null;
 	private static Map<String, Object> params = null;
+	private static List<Map<String, Object>> cookies = new ArrayList<>();
 	public static Long nodeId = (long) -1;
 
+	@SuppressWarnings("deprecation")
 	@BeforeClass
 	public static void setUp() throws Exception {
 		System
@@ -76,11 +88,15 @@ public class ChromiumCdpTest {
 								.toAbsolutePath().toString());
 
 		// NOTE: protected constructor method is not visible
-		// driver = new ChromiumDriver((CommandExecutor) null, new
-		// ImmutableCapabilities(),
-		// null);
+		/* 
+		 * driver = new ChromiumDriver((CommandExecutor) null, new ImmutableCapabilities(),null);
+		 */
 		driver = new ChromeDriver();
 		actions = new Actions(driver);
+		wait = new WebDriverWait(driver, flexibleWait);
+
+		// Selenium Driver version sensitive code: 3.13.0 vs. 3.8.0 and older
+		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 	}
 
 	@Before
@@ -101,8 +117,7 @@ public class ChromiumCdpTest {
 	@Test
 	public void setUserAgentOverrideTest() {
 		// Arrange
-		baseURL = "https://www.whoishostingthis.com/tools/user-agent/";
-		driver.get(baseURL);
+		driver.get("https://www.whoishostingthis.com/tools/user-agent/");
 		By locator = By.cssSelector("a[href='/']");
 		WebElement element = driver.findElement(locator);
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
@@ -173,8 +188,7 @@ public class ChromiumCdpTest {
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-printToPDF
 	@Test
 	public void printToPDFTest() {
-		baseURL = "https://www.google.com";
-		driver.get(baseURL);
+		driver.get("https://www.google.com");
 		String command = "Page.printToPDF";
 		params = new HashMap<>();
 		params.put("landscape", false);
@@ -183,7 +197,7 @@ public class ChromiumCdpTest {
 		params.put("preferCSSPageSize", true);
 		try {
 			result = driver.executeCdpCommand(command, params);
-			System.err.println("Command " + command + " result: " + result);
+			System.err.println("Response to " + command + ": " + result);
 			// TODO: assert the response is a valid Base64-encoded pdf data.
 		} catch (org.openqa.selenium.WebDriverException e) {
 			err.println("Exception (ignored): " + e.toString());
@@ -246,7 +260,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	// @Ignore
+	@Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-setWindowBounds
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#type-Bounds
@@ -379,7 +393,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-getAllCookies
@@ -430,7 +444,6 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@SuppressWarnings("serial")
 	@Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
@@ -459,7 +472,7 @@ public class ChromiumCdpTest {
 			assertThat(o.getWidth(), greaterThan(0));
 			assertThat(o.getHeight(), greaterThan(0));
 		} catch (IOException e) {
-			err.println("Exception (ignored): " + e.toString());
+			err.println("Exception loading image (ignored): " + e.toString());
 		}
 		String tmpFilename = "temp.png";
 		try {
@@ -467,12 +480,12 @@ public class ChromiumCdpTest {
 			fileOutputStream.write(image);
 			fileOutputStream.close();
 		} catch (IOException e) {
-			err.println("Exception (ignored): " + e.toString());
+			err.println("Exception saving image (ignored): " + e.toString());
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	@Ignore
+	// @Ignore
 	@Test
 	public void getCookiesWithUrlsTest() {
 		// Arrange
@@ -484,23 +497,20 @@ public class ChromiumCdpTest {
 		// Act
 		try {
 			result = driver.executeCdpCommand(command, params);
-			err.println("Cookies for www.google.com: "
-					+ ((List<Object>) result.get("cookies")).size() + "...");
 			// Assert
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println("Exception (ignored): " + e.toString());
-
+			err.println("Cookies count for www.google.com: "
+					+ ((List<Object>) result.get("cookies")).size() + "...");
 		} catch (Exception e) {
 			err.println("Exception (ignored): " + e.toString());
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
-	public void getCookiesTest() {
+	@SuppressWarnings("unchecked")
+	public void getCookiesTest1() {
 		// Arrange
-		baseURL = "https://www.google.com";
-		driver.get(baseURL);
+		driver.get("https://www.google.com");
 		command = "Page.getCookies";
 		// Act
 		try {
@@ -508,40 +518,52 @@ public class ChromiumCdpTest {
 			err.println("Cookies: "
 					+ result.get("cookies").toString().substring(0, 100) + "...");
 			// Assert
-			try {
-				@SuppressWarnings("unchecked")
-				List<Map<String, Object>> cookies = gson
-						.fromJson(result.get("cookies").toString(), ArrayList.class);
-			} catch (JsonSyntaxException e) {
-				err.println("Exception (ignored): " + e.toString());
+			// deserialiaze
+			cookies = gson.fromJson(result.get("cookies").toString(),
+					ArrayList.class);
+			cookies.stream().limit(10).map(o -> o.keySet())
+					.forEach(System.err::println);
+			Set<String> cookieKeys = new HashSet<>();
+			for (String key : new String[] { "domain", "expires", "httpOnly", "name",
+					"path", "secure", "session", "size", "value" }) {
+				cookieKeys.add(key);
 			}
+			assertTrue(cookies.get(0).keySet().containsAll(cookieKeys));
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println("Exception deserializing cookies (ignored): " + e.toString());
+
+		} catch (Exception e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+	}
+
+	// @Ignore
+	@Test
+	@SuppressWarnings("unchecked")
+	public void getCookiesTest2() {
+		// Arrange
+		driver.get("https://www.google.com");
+		command = "Page.getCookies";
+		// Act
+		try {
+			result = driver.executeCdpCommand(command, new HashMap<String, Object>());
+			err.println("Cookies: "
+					+ result.get("cookies").toString().substring(0, 100) + "...");
 			// Assert
-			try {
-				@SuppressWarnings("unchecked")
-				ArrayList<Map<String, Object>> cookies = (ArrayList<Map<String, Object>>) result
-						.get("cookies");
-				cookies.stream().limit(3).map(o -> o.keySet())
-						.forEach(System.err::println);
-				Set<String> cookieKeys = new HashSet<>();
-				for (String key : new String[] { "domain", "expires", "httpOnly",
-						"name", "path", "secure", "session", "size", "value" }) {
-					cookieKeys.add(key);
-				}
-				/*
-				 * cookieKeys.add("domain"); cookieKeys.add("expires");
-				 * cookieKeys.add("httpOnly"); cookieKeys.add("name"); cookieKeys.add("path");
-				 * cookieKeys.add("secure"); cookieKeys.add("session"); cookieKeys.add("size");
-				 * cookieKeys.add("value");
-				 */
-				assertTrue(cookies.get(0).keySet().containsAll(cookieKeys));
-			} catch (com.google.gson.JsonSyntaxException e) {
-				err.println("Exception (ignored): " + e.toString());
-
-			} catch (Exception e) {
-				err.println("Exception (ignored): " + e.toString());
+			// direct cast
+			cookies = (ArrayList<Map<String, Object>>) result.get("cookies");
+			cookies.stream().limit(10).map(o -> o.keySet())
+					.forEach(System.err::println);
+			Set<String> cookieKeys = new HashSet<>();
+			for (String key : new String[] { "domain", "expires", "httpOnly", "name",
+					"path", "secure", "session", "size", "value" }) {
+				cookieKeys.add(key);
 			}
+			assertTrue(cookies.get(0).keySet().containsAll(cookieKeys));
+		} catch (com.google.gson.JsonSyntaxException e) {
+			err.println("Exception loading cookies (ignored): " + e.toString());
 
-		} catch (WebDriverException e) {
+		} catch (Exception e) {
 			err.println("Exception (ignored): " + e.toString());
 		}
 	}
@@ -590,9 +612,6 @@ public class ChromiumCdpTest {
 			assertThat(nodes.get(0), notNullValue());
 			nodeId = nodes.get(0);
 			err.println("nodeId: " + nodeId);
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println(
-					"JSON Exception in " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
@@ -608,9 +627,6 @@ public class ChromiumCdpTest {
 			data = (String) result.get("outerHTML");
 			assertThat(data, notNullValue());
 			err.println("outerHTML: " + data);
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println(
-					"JSON Exception in " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
@@ -622,14 +638,12 @@ public class ChromiumCdpTest {
 			// Invalid parameters
 			command = "DOM.highlightNode";
 			driver.executeCdpCommand(command, new HashMap<String, Object>());
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println(
-					"JSON Exception in " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
 	}
 
+	@Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getNodeForLocation
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-NodeId
@@ -665,9 +679,6 @@ public class ChromiumCdpTest {
 			nodeId = (Long) result.get("nodeId");
 			err.println("nodeId: " + nodeId);
 			assertThat(nodeId, notNullValue());
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println(
-					"JSON Exception in " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
@@ -683,12 +694,167 @@ public class ChromiumCdpTest {
 			data = (String) result.get("outerHTML");
 			assertThat(data, notNullValue());
 			err.println("outerHTML: " + data);
-		} catch (com.google.gson.JsonSyntaxException e) {
-			err.println(
-					"JSON Exception in " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
 	}
-}
 
+	// based on a more advanced code found in
+	// https://github.com/adiohana/selenium-chrome-devtools-examples/blob/master/src/test/java/ChromeDevToolsTest.java
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setCacheDisabled
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setBlockedURLs
+	// @Ignore
+	@SuppressWarnings("serial")
+	@Test
+	public void setBlockedURLsTest() {
+		// Arrange
+		command = "Network.setCacheDisabled";
+		try {
+			driver.executeCdpCommand(command, new HashMap<String, Object>() {
+				{
+					put("cacheDisabled", true);
+					// NOTE: value has to be a boolean, otherwise
+					// org.openqa.selenium.InvalidArgumentException: invalid argument
+				}
+			});
+		} catch (WebDriverException e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+
+		}
+		baseURL = "https://www.wikipedia.org/";
+		command = "Network.setBlockedURLs";
+		// Act
+		try {
+			// NOTE: inline hashmap initialization code looks rather ugly
+			driver.executeCdpCommand(command, new HashMap<String, Object>() {
+				{
+					put("urls", Arrays.asList(new String[] { "*.css", "*.png" }));
+				}
+			});
+		} catch (Exception e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+		driver.get(baseURL);
+		// driver.navigate().refresh();
+		Utils.sleep(1000);
+	}
+
+	@Test
+	// based on:
+	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setGeolocationOverride
+	// see also:
+	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
+	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/main/java/com/sahajamit/messaging/MessageBuilder.java
+	public void setGeoLocationTest() {
+
+		// Arrange
+		command = "Emulation.setGeolocationOverride";
+		params = new HashMap<String, Object>();
+		Double latitude = 37.422290;
+		Double longitude = -122.084057;
+		params.put("latitude", latitude);
+		params.put("longitude", longitude);
+		params.put("accuracy", 100);
+		// Act
+		try {
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, notNullValue());
+			err.println("Response from " + command + ": " + result);
+		} catch (Exception e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+		// Act
+
+		baseURL = "https://www.google.com/maps";
+		driver.get(baseURL);
+
+		// click "my location" button when drawn
+
+		WebElement element = wait
+				.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(
+						"div[class *='widget-mylocation-button-icon-common']")));
+		element.click();
+		// unclear what event to wait for here
+		Utils.sleep(5000);
+		result = null;
+		data = null;
+		command = "Page.captureScreenshot";
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			// Assert
+			assertThat(result, notNullValue());
+			assertThat(result, hasKey("data"));
+			data = (String) result.get("data");
+			assertThat(data, notNullValue());
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+
+		Base64 base64 = new Base64();
+		byte[] image = base64.decode(data);
+		try {
+			BufferedImage o = ImageIO.read(new ByteArrayInputStream(image));
+			assertThat(o.getWidth(), greaterThan(0));
+			assertThat(o.getHeight(), greaterThan(0));
+		} catch (IOException e) {
+			err.println("Exception collecting screenshot (ignored): " + e.toString());
+		}
+		String tmpFilename = "map.png";
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream(tmpFilename);
+			fileOutputStream.write(image);
+			fileOutputStream.close();
+		} catch (IOException e) {
+			err.println("Exception saving image file (ignored): " + e.toString());
+		}
+		// Assert
+	}
+
+	@Test
+	// based on:
+	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setGeolocationOverride
+	// see also:
+	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
+	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/main/java/com/sahajamit/messaging/MessageBuilder.java
+	public void setPageScaleFactorTest() {
+
+		// Arrange
+		baseURL = "https://www.google.com/maps";
+		driver.get(baseURL);
+		
+		
+		command = "Emulation.setPageScaleFactor";
+		
+
+		// Act
+		params = new HashMap<String, Object>();
+		// does not appear to work
+		params.put("pageScaleFactor", 2.0);
+		try {
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, notNullValue());
+			err.println("Response from " + command + ": " + result);
+		} catch (Exception e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+		// Act
+		Utils.sleep(1000);
+		params = new HashMap<String, Object>();
+		params.put("pageScaleFactor", 1);
+		// Act
+		try {
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, notNullValue());
+			err.println("Response from " + command + ": " + result);
+		} catch (Exception e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+		// Act
+		Utils.sleep(1000);
+	}
+
+}
