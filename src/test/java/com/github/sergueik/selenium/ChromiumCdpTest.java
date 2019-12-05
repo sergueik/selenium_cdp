@@ -823,10 +823,8 @@ public class ChromiumCdpTest {
 		// Arrange
 		baseURL = "https://www.google.com/maps";
 		driver.get(baseURL);
-		
-		
+
 		command = "Emulation.setPageScaleFactor";
-		
 
 		// Act
 		params = new HashMap<String, Object>();
