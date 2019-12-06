@@ -444,6 +444,69 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	// @Ignore
+	// based on:
+	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
+	@Test
+	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
+	// https://chromedevtools.github.io/devtools-protocol/tot/Page#type-Viewport
+	// NOTE: does not really clip
+	public void capturElementScreenshotTest() {
+
+		baseURL = "https://www.meetup.com/";
+		driver.get(baseURL);
+		result = null;
+		data = null;
+		WebElement element = wait.until(ExpectedConditions
+				.visibilityOfElementLocated(By.xpath("//img[@alt='Meetup logo']")));
+		int x = element.getLocation().getX();
+		int y = element.getLocation().getY();
+		int width = element.getSize().getWidth();
+		int height = element.getSize().getHeight();
+		int scale = 1;
+
+		command = "Page.captureScreenshot";
+		params = new HashMap<String, Object>();
+		Map<String, Object> viewport = new HashMap<>();
+		System.err.println("Specify viewport: " + String
+				.format("x=%d, y=%d, width=%d, height=%d", x, y, width, height));
+		viewport.put("x", (double) x);
+		viewport.put("y", (double) y);
+		viewport.put("width", (double) width);
+		viewport.put("height", (double) height);
+		viewport.put("scale", scale);
+		params.put("clip", viewport);
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			// Assert
+			assertThat(result, notNullValue());
+			assertThat(result, hasKey("data"));
+			data = (String) result.get("data");
+			assertThat(data, notNullValue());
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+
+		Base64 base64 = new Base64();
+		byte[] image = base64.decode(data);
+		try {
+			BufferedImage o = ImageIO.read(new ByteArrayInputStream(image));
+			assertThat(o.getWidth(), greaterThan(0));
+			assertThat(o.getHeight(), greaterThan(0));
+		} catch (IOException e) {
+			err.println("Exception loading image (ignored): " + e.toString());
+		}
+		String tmpFilename = "logo.png";
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream(tmpFilename);
+			fileOutputStream.write(image);
+			fileOutputStream.close();
+		} catch (IOException e) {
+			err.println("Exception saving image (ignored): " + e.toString());
+		}
+	}
+
 	@Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
