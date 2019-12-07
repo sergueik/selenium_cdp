@@ -47,8 +47,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.CapabilityType;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -59,6 +62,7 @@ import com.google.gson.JsonSyntaxException;
 
 public class ChromiumCdpTest {
 
+	private static boolean runHeadless = false;
 	private static int flexibleWait = 60;
 	private static int pollingInterval = 500;
 	private static ChromiumDriver driver;
@@ -91,7 +95,22 @@ public class ChromiumCdpTest {
 		/* 
 		 * driver = new ChromiumDriver((CommandExecutor) null, new ImmutableCapabilities(),null);
 		 */
-		driver = new ChromeDriver();
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments(Arrays.asList("--start-maximized"));
+		options.addArguments(Arrays.asList("--ssl-protocol=any"));
+		options.addArguments(Arrays.asList("--ignore-ssl-errors=true"));
+		options.addArguments(Arrays.asList("--disable-extensions"));
+		options.addArguments(Arrays.asList("--ignore-certificate-errors"));
+		options.setExperimentalOption("useAutomationExtension", false);
+		Map<String, Object> prefs = new HashMap<>();
+		if (runHeadless) {
+			options.addArguments(Arrays.asList("--headless", "--disable-gpu"));
+		}
+		// DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+		// capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+
+		driver = new ChromeDriver(options);
+
 		actions = new Actions(driver);
 		wait = new WebDriverWait(driver, flexibleWait);
 
