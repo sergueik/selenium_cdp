@@ -1,0 +1,17 @@
+**/bin/**
+**/.settings
+**/.classpath
+**/.project
+**/.gitignore
+**/work/**
+**/target/**
+**/*.log
+**/*.png
+**/src/**/*.jar
+**/build/**
+**/test-output/**
+/pom.xml.releaseBackup
+/release.properties
+/settings.xml
+*.unc-backup~
+*.uncrustify
