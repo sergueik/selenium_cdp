@@ -49,6 +49,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
+
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.CapabilityType;
@@ -96,7 +97,6 @@ public class ChromiumCdpTest {
 		 * driver = new ChromiumDriver((CommandExecutor) null, new ImmutableCapabilities(),null);
 		 */
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments(Arrays.asList("--start-maximized"));
 		options.addArguments(Arrays.asList("--ssl-protocol=any"));
 		options.addArguments(Arrays.asList("--ignore-ssl-errors=true"));
 		options.addArguments(Arrays.asList("--disable-extensions"));
@@ -113,7 +113,7 @@ public class ChromiumCdpTest {
 
 		actions = new Actions(driver);
 		wait = new WebDriverWait(driver, flexibleWait);
-
+		Utils.setDriver(driver);
 		// Selenium Driver version sensitive code: 3.13.0 vs. 3.8.0 and older
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 	}
@@ -464,20 +464,22 @@ public class ChromiumCdpTest {
 	}
 
 	// @Ignore
+	@Test
 	// based on:
 	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
-	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#type-Viewport
-	// NOTE: does not really clip
 	public void capturElementScreenshotTest() {
 
-		baseURL = "https://www.meetup.com/";
+		baseURL = "https://www.google.com/";
 		driver.get(baseURL);
 		result = null;
 		data = null;
-		WebElement element = wait.until(ExpectedConditions
-				.visibilityOfElementLocated(By.xpath("//img[@alt='Meetup logo']")));
+
+		WebElement element = wait
+				.until(ExpectedConditions.visibilityOfElementLocated(
+						By.xpath("//img[@id = 'hplogo'][@alt='Google']")));
+		Utils.highlight(element);
 		int x = element.getLocation().getX();
 		int y = element.getLocation().getY();
 		int width = element.getSize().getWidth();
@@ -487,7 +489,7 @@ public class ChromiumCdpTest {
 		command = "Page.captureScreenshot";
 		params = new HashMap<String, Object>();
 		Map<String, Object> viewport = new HashMap<>();
-		System.err.println("Specify viewport: " + String
+		System.err.println("Specified viewport: " + String
 				.format("x=%d, y=%d, width=%d, height=%d", x, y, width, height));
 		viewport.put("x", (double) x);
 		viewport.put("y", (double) y);
@@ -497,7 +499,7 @@ public class ChromiumCdpTest {
 		params.put("clip", viewport);
 		try {
 			// Act
-			result = driver.executeCdpCommand(command, new HashMap<>());
+			result = driver.executeCdpCommand(command, params);
 			// Assert
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("data"));
@@ -973,5 +975,4 @@ public class ChromiumCdpTest {
 		// Console.enable
 	}
 
-	// Page.captureSnapshot
 }
