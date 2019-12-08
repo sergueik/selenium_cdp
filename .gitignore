@@ -16,3 +16,4 @@
 *.unc-backup~
 *.uncrustify
 **/.*.sw?
+/target/

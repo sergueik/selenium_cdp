@@ -21,14 +21,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.openqa.selenium.support.locators.RelativeLocator.withTagName;
 
 /*
- *  Exploring Selenium 4 new Relative Locators API (do not appear to working smoothly yet) 
- *  see also: 
- *  https://automatorsworld.com/2019/10/05/selenium-webdriver-what-are-relative-locators-in-selenium/
- *  https://www.swtestacademy.com/selenium-relative-locators/
- *  https://angiejones.tech/selenium-4-relative-locators/
- *  https://www.swtestacademy.com/selenium-4-sample-codes-for-new-features/
- *  https://stackoverflow.com/questions/58249070/what-is-relative-locator-in-selenium-4-and-what-are-the-types-of-it
- * 
+ * Selected test scenarios for Selenium 4 new Relative Locators API
+ * NOTE: the tests do not appear to working smoothly yet  
+ * see also: 
+ * https://automatorsworld.com/2019/10/05/selenium-webdriver-what-are-relative-locators-in-selenium/
+ * https://www.swtestacademy.com/selenium-relative-locators/
+ * https://angiejones.tech/selenium-4-relative-locators/
+ * https://www.swtestacademy.com/selenium-4-sample-codes-for-new-features/
+ * shttps://stackoverflow.com/questions/58249070/what-is-relative-locator-in-selenium-4-and-what-are-the-types-of-it
+ *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 public class RelativeLocatorTest {
@@ -49,8 +50,12 @@ public class RelativeLocatorTest {
 	@SuppressWarnings("deprecation")
 	@BeforeClass
 	public static void setUp() throws Exception {
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+		System
+				.setProperty("webdriver.chrome.driver",
+						Paths.get(System.getProperty("user.home"))
+								.resolve("Downloads").resolve(osName.equals("windows")
+										? "chromedriver.exe" : "chromedriver")
+								.toAbsolutePath().toString());
 
 		// NOTE: protected constructor method is not visible
 		// driver = new ChromiumDriver((CommandExecutor) null, new
@@ -64,7 +69,8 @@ public class RelativeLocatorTest {
 	@Before
 	public void beforeTest() throws Exception {
 		driver.get(baseURL);
-		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("example"))));
+		wait.until(
+				ExpectedConditions.visibilityOf(driver.findElement(By.id("example"))));
 	}
 
 	@AfterClass
@@ -78,14 +84,16 @@ public class RelativeLocatorTest {
 	public void rightElementTest() {
 
 		WebElement tableElement = driver.findElement(By.id("example"));
-		WebElement rowElement = tableElement.findElements(By.xpath("tbody/tr")).get(0);
+		WebElement rowElement = tableElement.findElements(By.xpath("tbody/tr"))
+				.get(0);
 		// System.err.println(rowElement.getAttribute("outerHTML"));
 		List<WebElement> elements = rowElement.findElements(By.xpath("td"));
 		int num = new Random().nextInt(elements.size() - 1);
 		WebElement element = elements.get(num);
 		System.err.println("Cell element: " + element.getText());
 		highlight(element, highlightInterval);
-		WebElement rightElement = tableElement.findElement(withTagName("td").toRightOf(element));
+		WebElement rightElement = tableElement
+				.findElement(withTagName("td").toRightOf(element));
 		System.err.println("Cell to the right: " + rightElement.getText());
 		highlight(rightElement, highlightInterval);
 		Utils.sleep(1000);
@@ -99,7 +107,8 @@ public class RelativeLocatorTest {
 	public void belowElementTest() {
 
 		WebElement tableElement = driver.findElement(By.id("example"));
-		WebElement rowElement = tableElement.findElements(By.xpath("tbody/tr")).get(0);
+		WebElement rowElement = tableElement.findElements(By.xpath("tbody/tr"))
+				.get(0);
 		// System.err.println(rowElement.getAttribute("outerHTML"));
 		List<WebElement> columnElements = rowElement.findElements(By.xpath("td"));
 
@@ -107,7 +116,8 @@ public class RelativeLocatorTest {
 		WebElement columnElement = columnElements.get(num);
 		System.err.println("Random cell: " + columnElement.getText());
 		highlight(columnElement, highlightInterval);
-		WebElement belowElement = tableElement.findElement(withTagName("td").below(columnElement));
+		WebElement belowElement = tableElement
+				.findElement(withTagName("td").below(columnElement));
 		System.err.println("Cell Below: " + belowElement.getText());
 		/*
 		for (WebElement element : columnElements) {
@@ -129,7 +139,8 @@ public class RelativeLocatorTest {
 		// WebElement element = driver.findElement(locator);
 		String color = "solid yellow";
 		try {
-			executeScript(String.format("arguments[0].style.border='3px %s'", color), element);
+			executeScript(String.format("arguments[0].style.border='3px %s'", color),
+					element);
 			Thread.sleep(highlightInterval);
 			executeScript("arguments[0].style.border=''", element);
 		} catch (java.lang.InterruptedException e) {
@@ -139,7 +150,8 @@ public class RelativeLocatorTest {
 
 	public Object executeScript(String script, Object... arguments) {
 		if (driver instanceof JavascriptExecutor) {
-			JavascriptExecutor javascriptExecutor = JavascriptExecutor.class.cast(driver);
+			JavascriptExecutor javascriptExecutor = JavascriptExecutor.class
+					.cast(driver);
 			return javascriptExecutor.executeScript(script, arguments);
 		} else {
 			throw new RuntimeException("Script execution failed.");

@@ -57,9 +57,13 @@ import org.openqa.selenium.remote.CapabilityType;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-// inspired by
-// https://toster.ru/q/653249?e=7897302#comment_1962398
-// https://stackoverflow.com/questions/29916054/change-user-agent-for-selenium-driver
+/**
+ * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
+ * inspired by
+ * https://toster.ru/q/653249?e=7897302#comment_1962398
+ *
+ * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ */
 
 public class ChromiumCdpTest {
 
@@ -132,6 +136,7 @@ public class ChromiumCdpTest {
 
 	@Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setUserAgentOverride
+	// https://stackoverflow.com/questions/29916054/change-user-agent-for-selenium-driver
 	@SuppressWarnings("serial")
 	@Test
 	public void setUserAgentOverrideTest() {
