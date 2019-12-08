@@ -63,4 +63,9 @@ public class Utils {
 			// err.println("Exception (ignored): " + e.toString());
 		}
 	}
+
+	// http://www.javawithus.com/tutorial/using-ellipsis-to-accept-variable-number-of-arguments
+	public static Object executeScript(String script, Object... arguments) {
+		return js.executeScript(script, arguments);
+	}
 }
