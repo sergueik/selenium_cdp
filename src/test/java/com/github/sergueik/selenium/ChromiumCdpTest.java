@@ -41,6 +41,8 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriverException;
 
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -85,6 +87,7 @@ public class ChromiumCdpTest {
 	private static Map<String, Object> params = null;
 	private static List<Map<String, Object>> cookies = new ArrayList<>();
 	public static Long nodeId = (long) -1;
+	public static String isolationId = null;
 
 	@SuppressWarnings("deprecation")
 	@BeforeClass
@@ -132,6 +135,205 @@ public class ChromiumCdpTest {
 		if (driver != null) {
 			driver.quit();
 		}
+	}
+
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getDocuments
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Node
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-querySelector
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-describeNode
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-focus 
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-highlightNode
+	// https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObjectId
+	//
+	@Test
+	public void getDocumentTest() {
+		// Arrange
+		baseURL = "https://www.google.com";
+		driver.get(baseURL);
+		String command = "DOM.getDocument";
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			// Assert
+			assertThat(result, hasKey("root"));
+			@SuppressWarnings("unchecked")
+			Map<String, Object> node = (Map<String, Object>) result.get("root");
+			assertThat(node, hasKey("nodeId"));
+			nodeId = Long.parseLong(node.get("nodeId").toString());
+			assertTrue(nodeId != 0);
+			err.println("Command " + command + " returned nodeId: " + nodeId);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+		}
+		command = "DOM.describeNode";
+		params = new HashMap<>();
+		params.put("nodeId", nodeId);
+		params.put("depth", 1);
+		try {
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, hasKey("node"));
+			@SuppressWarnings("unchecked")
+			Map<String, Object> data = (Map<String, Object>) result.get("node");
+			for (String field : Arrays.asList(
+					new String[] { "nodeType", "nodeName", "localName", "nodeValue" })) {
+				assertThat(data, hasKey(field));
+			}
+			System.err.println("Command " + command + " returned node: " + data);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+		}
+
+		command = "DOM.querySelector";
+		params = new HashMap<>();
+		params.put("nodeId", nodeId);
+		// params.put("selector", "img#hplogo");
+		params.put("selector", "input[name='q']");
+
+		try {
+			result = driver.executeCdpCommand(command, params);
+			// depth, 1
+			// Assert
+			assertThat(result, hasKey("nodeId"));
+			// @SuppressWarnings("unchecked")
+			nodeId = Long.parseLong(result.get("nodeId").toString());
+			assertTrue(nodeId != 0);
+			err.println("Command " + command + " returned  nodeId: " + nodeId);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+		}
+
+		command = "DOM.resolveNode";
+		params = new HashMap<>();
+		params.put("nodeId", nodeId);
+
+		try {
+			result = driver.executeCdpCommand(command, params);
+			// depth, 1
+			// Assert
+			assertThat(result, hasKey("object"));
+			// object
+			@SuppressWarnings("unchecked")
+			Map<String, Object> data = (Map<String, Object>) result.get("object");
+			for (String field : Arrays.asList(
+					new String[] { "type", "subtype", "className", "objectId" })) {
+				assertThat(data, hasKey(field));
+			}
+			String objectId = (String) data.get("objectId");
+			assertThat(objectId, notNullValue());
+			System.err
+					.println("Command " + command + " returned objectId: " + objectId);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+		}
+
+		command = "DOM.something not defined";
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+			// wasn't found
+		}
+		// DOM.removeNode
+		command = "DOM.focus";
+		params = new HashMap<>();
+		params.put("nodeId", nodeId);
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, params);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+			// : unknown error: unhandled inspector error:
+			// {"code":-32000,"message":"Element is not focusable"}
+		}
+		command = "DOM.highlightNode";
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			Utils.sleep(10000);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+		}
+		// TODO: command = "Runtime.callFunctionOn";
+	}
+
+	@Test
+	public void getIsolatedIdTest() {
+		// Arrange
+		baseURL = "https://www.google.com";
+		driver.get(baseURL);
+		String command = "Runtime.getIsolateId";
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			assertThat(result, hasKey("id"));
+			isolationId = (String) result.get("id");
+			assertThat(isolationId, notNullValue());
+			// isolationId = Long.parseLong((String) result.get("id"));
+			// assertTrue(isolationId != 0);
+			// Assert ?
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+	}
+
+	@Ignore
+	@SuppressWarnings("serial")
+	@Test
+	public void compileScriptTest() {
+		// Arrange
+		baseURL = "https://www.google.com";
+		driver.get(baseURL);
+		command = "Runtime.compileScript";
+		// "Runtime.runScript"
+		params = new HashMap<>();
+		params.put("expression", "function() { alert('test'); }");
+		params.put("persistScript", false);
+		// params.put("sourceURL", null);
+
+		// params.put("executionContextId", 0);
+		try {
+			result = driver.executeCdpCommand(command, params);
+			System.err.println("Response to " + command + ": " + result);
+		} catch (UnhandledAlertException e) {
+			assertThat(e.toString(), containsString("unexpected alert open"));
+			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
+			// assertThat(e.toString(), containsString("invalid argument: Invalid
+			// parameters"));
+		}
+
+	}
+
+	@SuppressWarnings("serial")
+	@Test
+	public void evaluateTest() {
+		// Arrange
+		baseURL = "https://www.google.com";
+		driver.get(baseURL);
+		command = "Runtime.evaluate";
+		params = new HashMap<>();
+		params.put("expression", "var f = function() { alert('test'); }");
+		// {result={type=undefined}}
+		// params.put("expression", "alert('test');");
+		// NPE in org.openqa.selenium.chromium.ChromiumDriver.executeCdpCommand
+		try {
+			result = driver.executeCdpCommand(command, params);
+			System.err.println("Response to " + command + ": " + result);
+		} catch (WebDriverException e) {
+			err.println("Exception (rethrown): " + e.toString());
+			throw new RuntimeException(e.toString());
+		}
+
 	}
 
 	@Ignore
@@ -252,6 +454,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getVersion
 	public void getBrowserVersionTest() {
@@ -417,7 +620,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	// @Ignore
+	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-getAllCookies
@@ -468,7 +671,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	// based on:
 	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
@@ -574,7 +777,7 @@ public class ChromiumCdpTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	// @Ignore
+	@Ignore
 	@Test
 	public void getCookiesWithUrlsTest() {
 		// Arrange
@@ -594,7 +797,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	@SuppressWarnings("unchecked")
 	public void getCookiesTest1() {
@@ -626,7 +829,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	@SuppressWarnings("unchecked")
 	public void getCookiesTest2() {
@@ -821,7 +1024,9 @@ public class ChromiumCdpTest {
 					put("urls", Arrays.asList(new String[] { "*.css", "*.png" }));
 				}
 			});
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		}
 		driver.get(baseURL);
@@ -981,3 +1186,4 @@ public class ChromiumCdpTest {
 	}
 
 }
+

@@ -63,6 +63,142 @@ Note: some CDP API notably `Page.printToPDF` are not curently implemented:
 ```sh
 unhandled inspector error: {"code":-32000,"message":"PrintToPDF is not implemented"}(..)
 ```
+
+#### DOM Node Navigation
+The following somewhat long test exercises steps one has to perform with CDP to get a specific DOM Node focused and act upon:
+
+```java
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getDocuments
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Node
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-querySelector
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-describeNode
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-focus 
+	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-highlightNode
+	// https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObjectId
+	//
+	@Test
+	public void getDocumentTest() {
+		// Arrange
+		baseURL = "https://www.google.com";
+		driver.get(baseURL);
+		String command = "DOM.getDocument";
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			// Assert
+			assertThat(result, hasKey("root"));
+			@SuppressWarnings("unchecked")
+			Map<String, Object> node = (Map<String, Object>) result.get("root");
+			assertThat(node, hasKey("nodeId"));
+			nodeId = Long.parseLong(node.get("nodeId").toString());
+			assertTrue(nodeId != 0);
+			err.println("Command " + command + " returned nodeId: " + nodeId);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+		}
+		command = "DOM.describeNode";
+		params = new HashMap<>();
+		params.put("nodeId", nodeId);
+		params.put("depth", 1);
+		try {
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, hasKey("node"));
+			@SuppressWarnings("unchecked")
+			Map<String, Object> data = (Map<String, Object>) result.get("node");
+			for (String field : Arrays.asList(
+					new String[] { "nodeType", "nodeName", "localName", "nodeValue" })) {
+				assertThat(data, hasKey(field));
+			}
+			System.err.println("Command " + command + " returned node: " + data);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+		}
+
+		command = "DOM.querySelector";
+		params = new HashMap<>();
+		params.put("nodeId", nodeId);
+		// params.put("selector", "img#hplogo");
+		params.put("selector", "input[name='q']");
+
+		try {
+			result = driver.executeCdpCommand(command, params);
+			// depth, 1
+			// Assert
+			assertThat(result, hasKey("nodeId"));
+			// @SuppressWarnings("unchecked")
+			nodeId = Long.parseLong(result.get("nodeId").toString());
+			assertTrue(nodeId != 0);
+			err.println("Command " + command + " returned  nodeId: " + nodeId);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+		}
+
+		command = "DOM.resolveNode";
+		params = new HashMap<>();
+		params.put("nodeId", nodeId);
+
+		try {
+			result = driver.executeCdpCommand(command, params);
+			// depth, 1
+			// Assert
+			assertThat(result, hasKey("object"));
+			// object
+			@SuppressWarnings("unchecked")
+			Map<String, Object> data = (Map<String, Object>) result.get("object");
+			for (String field : Arrays.asList(
+					new String[] { "type", "subtype", "className", "objectId" })) {
+				assertThat(data, hasKey(field));
+			}
+			String objectId = (String) data.get("objectId");
+			assertThat(objectId, notNullValue());
+			System.err
+					.println("Command " + command + " returned objectId: " + objectId);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+		}
+
+		command = "DOM.something not defined";
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+			// wasn't found
+		}
+		// DOM.removeNode
+		command = "DOM.focus";
+		params = new HashMap<>();
+		params.put("nodeId", nodeId);
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, params);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+			// : unknown error: unhandled inspector error:
+			// {"code":-32000,"message":"Element is not focusable"}
+		}
+		command = "DOM.highlightNode";
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			Utils.sleep(10000);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+		}
+		// TODO: command = "Runtime.callFunctionOn";
+	}
+
+
+```
+
 ### Relative Locators
 
 
@@ -99,4 +235,5 @@ This project is licensed under the terms of the MIT license.
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
