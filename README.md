@@ -65,19 +65,166 @@ unhandled inspector error: {"code":-32000,"message":"PrintToPDF is not implement
 ```
 
 #### DOM Node Navigation
+
+
 The following somewhat long test exercises steps one has to perform with CDP to get a specific DOM Node focused and act upon:
 
+It appears every node search starts with getting the [document](https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getDocument):
+
 ```java
-	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getDocuments
-	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Node
-	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-querySelector
-	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-describeNode
-	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-focus 
-	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-highlightNode
-	// https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObjectId
-	//
+	@SuppressWarnings("unchecked")
 	@Test
 	public void getDocumentTest() {
+		// Arrange
+		driver.get("https://www.google.com");
+		String command = "DOM.getDocument";
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			// Assert
+			assertThat(result, hasKey("root"));
+			Map<String, Object> data =  (Map<String, Object>) result.get("root");
+			assertThat(data, hasKey("nodeId"));
+			assertTrue(Long.parseLong(data.get("nodeId").toString()) != 0);
+			err.println("Command " + command + " return node: "
+					+ new Gson().toJson(data, Map.class));
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+		}
+	}
+
+```
+
+This test logs:
+```js
+Command DOM.getDocument return node:
+{
+  "backendNodeId": 1,
+  "baseURL": "https://www.google.com/",
+  "childNodeCount": 2,
+  "children": [
+    {
+      "backendNodeId": 2,
+      "localName": "",
+      "nodeId": 10,
+      "nodeName": "html",
+      "nodeType": 10,
+      "nodeValue": "",
+      "parentId": 9,
+      "publicId": "",
+      "systemId": ""
+    },
+    {
+      "attributes": [
+        "itemscope",
+        "",
+        "itemtype",
+        "http://schema.org/WebPage",
+        "lang",
+        "en"
+      ],
+      "backendNodeId": 3,
+      "childNodeCount": 2,
+      "children": [
+        {
+          "attributes": [],
+          "backendNodeId": 21,
+          "childNodeCount": 12,
+          "localName": "head",
+          "nodeId": 12,
+          "nodeName": "HEAD",
+          "nodeType": 1,
+          "nodeValue": "",
+          "parentId": 11
+        },
+        {
+          "attributes": [
+            "jsmodel",
+            " ",
+            "class",
+            "hp vasq",
+            "id",
+            "gsr"
+          ],
+          "backendNodeId": 22,
+          "childNodeCount": 8,
+          "localName": "body",
+          "nodeId": 13,
+          "nodeName": "BODY",
+          "nodeType": 1,
+          "nodeValue": "",
+          "parentId": 11
+        }
+      ],
+      "frameId": "C3CE739B971DD10AFECA84F6C1554308",
+      "localName": "html",
+      "nodeId": 11,
+      "nodeName": "HTML",
+      "nodeType": 1,
+      "nodeValue": "",
+      "parentId": 9
+    }
+  ],
+  "documentURL": "https://www.google.com/",
+  "localName": "",
+  "nodeId": 9,
+  "nodeName": "#document",
+  "nodeType": 9,
+  "nodeValue": "",
+  "xmlVersion": ""
+}
+```
+
+now one can
+
+```java
+		command = "DOM.querySelector";
+		params.clear();
+		params.put("nodeId", nodeId);
+		params.put("selector", "img#hplogo");
+
+		try {
+			result = driver.executeCdpCommand(command, params);
+			assertThat(result, hasKey("nodeId"));
+			nodeId = (Long) result.get("nodeId");
+			assertTrue(nodeId != 0);
+			err.println("Command " + command + " returned  nodeId: " + nodeId);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + e.toString());
+		}
+		command = "DOM.getOuterHTML";
+		params.clear();
+		params.put("nodeId", nodeId);
+		
+		try {
+			result = driver.executeCdpCommand(command, params);
+			assertThat(result, notNullValue());
+			assertThat(result, hasKey("outerHTML"));
+			String dataString = (String) result.get("outerHTML");
+			assertThat(dataString, notNullValue());
+			err.println("Command " + command + " return outerHTML: " + dataString);
+		} catch (Exception e) {
+			err.println("Exception in " + command + " (ignored): " + e.toString());
+		}
+	}
+
+```
+
+This will log:
+```shell
+Command DOM.querySelector returned  nodeId: 162
+```
+```html
+Command DOM.getOuterHTML return outerHTML: 
+<img alt="Google" height="92" id="hplogo"  src="/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"  style="padding-top:109px" width="272" onload="typeof google==='object'&amp;&amp;google.aft&amp;&amp;google.aft(this)" data-iml="1576602836994" data-atf="1">
+```
+
+collapsing multiple command calls together will lead to somewhat bloated test method 
+```java
+	@Test
+	public void multiCommandTest() {
 		// Arrange
 		baseURL = "https://www.google.com";
 		driver.get(baseURL);
@@ -235,5 +382,4 @@ This project is licensed under the terms of the MIT license.
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
 
