@@ -2,16 +2,37 @@ package com.github.sergueik.selenium;
 
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import com.google.common.collect.ImmutableMap;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
-
+// need to use branch cdp_codegen of SeleniumHQ/selenium
+// https://github.com/SeleniumHQ/selenium/tree/cdp_codegen/java/client/src/org/openqa/selenium/devtools
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.Console;
 import org.openqa.selenium.devtools.DevTools;
+import org.openqa.selenium.devtools.network.Network;
+
+import org.openqa.selenium.devtools.network.model.BlockedReason;
+import org.openqa.selenium.devtools.network.model.InterceptionStage;
+import org.openqa.selenium.devtools.network.model.RequestPattern;
+import org.openqa.selenium.devtools.network.model.ResourceType;
+import org.openqa.selenium.devtools.security.Security;
+
+// as with selenium-devtools-4.0.0-alpha-3.jar the page.Page is not public yet
+// nor is the handleJavaScriptDialog API proxy
+// import org.openqa.selenium.devtools.page.Page;
+
+import org.openqa.selenium.json.JsonInput;
+
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -57,6 +78,9 @@ public class ChromeDevToolsTest {
 	@BeforeClass
 	// https://chromedevtools.github.io/devtools-protocol/tot/Console#method-enable
 	public static void beforeClass() throws Exception {
+		// NOTE:
+		// the github location of package org.openqa.selenium.devtools.console
+		// is uncertain
 		// enable Console
 		chromeDevTools.send(Console.enable());
 		// add event listener to show in host console the browser console message
@@ -82,6 +106,37 @@ public class ChromeDevToolsTest {
 		// Act
 		// write console message by executing Javascript
 		Utils.executeScript("console.log('" + consoleMessage + "');");
+	}
+
+	private static Map<String, String> headers = new HashMap<>();
+
+	@Test
+	public void addCustomHeaders() {
+
+		// enable Network
+		chromeDevTools.send(
+				Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+		headers = new HashMap<>();
+		headers.put("customHeaderName", "customHeaderValue");
+		// set custom header
+		chromeDevTools.send(Network.setExtraHTTPHeaders(headers));
+
+		// add event listener to verify that requests are sending with the custom
+		// header
+		chromeDevTools.addListener(Network.requestWillBeSent(),
+				requestWillBeSent -> Assert.assertEquals(
+						requestWillBeSent.getRequest().getHeaders().get("customHeaderName"),
+						"customHeaderValue"));
+
+		driver.get("https://apache.org");
+
+	}
+
+	@Ignore
+	@Test
+	public void handleJavaScriptDialogTest() throws Exception {
+		// Page.handleJavaScriptDialog
+		// Console.enable
 	}
 
 }

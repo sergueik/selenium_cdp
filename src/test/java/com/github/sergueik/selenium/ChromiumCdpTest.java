@@ -1488,11 +1488,4 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
-	@Test
-	public void handleJavaScriptDialogTest() throws Exception {
-		// Page.handleJavaScriptDialog
-		// Console.enable
-	}
-
 }
