@@ -375,6 +375,7 @@ The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/sr
   * another alternative Chrome DevTools Java Clien [kklisura/chrome-devtools-java-client](https://github.com/kklisura/chrome-devtools-java-client)
   * [examples](https://github.com/adiohana/selenium-chrome-devtools-examples) with callback hook example
   * yet another project [chrome-devtools-webdriver-integration](https://github.com/sahajamit/chrome-devtools-webdriver-integration)
+  * yet another project [SrinivasanTarget/selenium4CDPsamples](https://github.com/SrinivasanTarget/selenium4CDPsamples)
 
 ### License
 

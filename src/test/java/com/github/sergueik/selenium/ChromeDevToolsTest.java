@@ -2,11 +2,14 @@ package com.github.sergueik.selenium;
 
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.google.common.collect.ImmutableMap;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -17,8 +20,9 @@ import org.junit.Test;
 // https://github.com/SeleniumHQ/selenium/tree/cdp_codegen/java/client/src/org/openqa/selenium/devtools
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.devtools.Console;
+// import org.openqa.selenium.devtools.Console;
 import org.openqa.selenium.devtools.DevTools;
+import org.openqa.selenium.devtools.Log;
 import org.openqa.selenium.devtools.network.Network;
 
 import org.openqa.selenium.devtools.network.model.BlockedReason;
@@ -77,14 +81,15 @@ public class ChromeDevToolsTest {
 
 	@BeforeClass
 	// https://chromedevtools.github.io/devtools-protocol/tot/Console#method-enable
+	// https://chromedevtools.github.io/devtools-protocol/tot/Log#method-enable
 	public static void beforeClass() throws Exception {
 		// NOTE:
 		// the github location of package org.openqa.selenium.devtools.console
 		// is uncertain
 		// enable Console
-		chromeDevTools.send(Console.enable());
+		chromeDevTools.send(Log.enable());
 		// add event listener to show in host console the browser console message
-		chromeDevTools.addListener(Console.messageAdded(), System.err::println);
+		chromeDevTools.addListener(Log.entryAdded(), System.err::println);
 		driver.get(baseURL);
 	}
 
@@ -97,10 +102,12 @@ public class ChromeDevToolsTest {
 
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Console#event-messageAdded
+	// https://chromedevtools.github.io/devtools-protocol/tot/Log#event-entryAdded
+	// https://chromedevtools.github.io/devtools-protocol/tot/Log#type-LogEntry
 	public void consoleMessageAddTest() {
 		// Assert
 		// add event listener to verify the console message text
-		chromeDevTools.addListener(Console.messageAdded(),
+		chromeDevTools.addListener(Log.entryAdded(),
 				o -> Assert.assertEquals(true, o.getText().equals(consoleMessage)));
 
 		// Act
@@ -139,4 +146,21 @@ public class ChromeDevToolsTest {
 		// Console.enable
 	}
 
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-enable
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-loadingFailed
+	@Test
+	public void setblockURLTest() {
+		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
+				Optional.empty()));
+		chromeDevTools.send(Network.setBlockedURLs(Arrays.asList(
+				"https://blog.testproject.io/wp-content/uploads/2019/10/pop-up-illustration.png")));
+
+		chromeDevTools.addListener(Network.loadingFailed(), e -> {
+			assertThat(e.getBlockedReason(), is(BlockedReason.inspector));
+		});
+
+		driver.get(
+				"https://blog.testproject.io/2019/11/26/next-generation-front-end-testing-using-webdriver-and-devtools-part-1/");
+		chromeDevTools.send(Network.disable());
+	}
 }

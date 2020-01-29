@@ -22,6 +22,8 @@ import java.time.Duration;
 import javax.imageio.ImageIO;
 
 import java.nio.file.Paths;
+
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,6 +45,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -74,6 +77,8 @@ public class ChromiumCdpTest {
 	private static int flexibleWait = 60;
 	private static int pollingInterval = 500;
 	private static ChromiumDriver driver;
+	private static WebDriver webDriver;
+
 	private static String osName = Utils.getOSName();
 
 	private static WebDriverWait wait;
@@ -120,7 +125,7 @@ public class ChromiumCdpTest {
 		driver = new ChromeDriver(options);
 
 		actions = new Actions(driver);
-		wait = new WebDriverWait(driver, flexibleWait);
+		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
 		Utils.setDriver(driver);
 		// Selenium Driver version sensitive code: 3.13.0 vs. 3.8.0 and older
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
@@ -900,6 +905,44 @@ public class ChromiumCdpTest {
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
+		}
+	}
+
+	@Ignore
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-enable
+	@Test
+	public void manageNetworkTrackingTest() {
+		baseURL = "http://www.example.com/";
+		command = "Network.enable";
+		try {
+			// Act
+			params = new HashMap<String, Object>();
+			params.put("maxTotalBufferSize", 100000000);
+			params.put("maxResourceBufferSize", null);
+			params.put("maxPostDataSize", null);
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, notNullValue());
+			System.err.println("Command " + command + " result: " + result);
+		} catch (org.openqa.selenium.InvalidArgumentException e) {
+			err.println("Exception (ignored): " + e.toString());
+		} catch (JsonSyntaxException e) {
+			err.println("Exception (ignored): " + e.toString());
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
+		} catch (Exception e) {
+			err.println("Exception: " + e.toString());
+			throw (new RuntimeException(e));
+		}
+		driver.get(baseURL);
+		command = "Network.disable";
+		try {
+			// Act
+			driver.executeCdpCommand(command, new HashMap<>());
+		} catch (JsonSyntaxException e) {
+			err.println("Exception (ignored): " + e.toString());
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
 		}
 	}
 
