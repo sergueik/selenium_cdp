@@ -691,45 +691,13 @@ public class ChromiumCdpTest {
 	}
 
 	@Ignore
-	// see also: https://habr.com/ru/post/459112/
-	/*
-	 * import sys from selenium import webdriver from
-	 * selenium.webdriver.chrome.options import Options import json, base64
-	 * 
-	 * def get_pdf_from_html(path, chromedriver='./chromedriver', print_options =
-	 * {}): # запускаем Chrome webdriver_options = Options()
-	 * webdriver_options.add_argument('--headless')
-	 * webdriver_options.add_argument('--disable-gpu') driver =
-	 * webdriver.Chrome(chromedriver, options=webdriver_options)
-	 * 
-	 * # открываем заданный url driver.get(path)
-	 * 
-	 * # задаем параметры печати calculated_print_options = { 'landscape': False,
-	 * 'displayHeaderFooter': False, 'printBackground': True, 'preferCSSPageSize':
-	 * True, } calculated_print_options.update(print_options)
-	 * 
-	 * # запускаем печать в pdf файл result = send_devtools(driver,
-	 * "Page.printToPDF", calculated_print_options) driver.quit() # ответ приходит в
-	 * base64 - декодируем return base64.b64decode(result['data'])
-	 * 
-	 * def send_devtools(driver, cmd, params={}): resource =
-	 * "/session/%s/chromium/send_command_and_get_result" % driver.session_id url =
-	 * driver.command_executor._url + resource body = json.dumps({'cmd': cmd,
-	 * 'params': params}) response = driver.command_executor._request('POST', url,
-	 * body) if response['status']: raise Exception(response.get('value')) return
-	 * response.get('value')
-	 * 
-	 * if __name__ == "__main__": if len(sys.argv) != 3: print (
-	 * "usage: converter.py <html_page_sourse> <filename_to_save>") exit()
-	 * 
-	 * result = get_pdf_from_html(sys.argv[1]) with open(sys.argv[2], 'wb') as file:
-	 * file.write(result)
-	 * 
-	 */
-	// NOTE: python uses different route than java
-	// /session/$sessionId/chromium/send_command_and_get_result
-	// vs.
-	// /session/$sessionId/goog/cdp/execute
+	// see:
+	// https://github.com/sergueik/powershell_selenium/blob/master/python/print_pdf.py
+	// origin: https://habr.com/ru/post/459112/
+	// NOTE: Python uses different REST-like route
+	// "/session/$sessionId/chromium/send_command_and_get_result"
+	// than Java
+	// "/session/$sessionId/goog/cdp/execute"
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-printToPDF
 	@Test
 	public void printToPDFTest() {
@@ -1530,5 +1498,59 @@ public class ChromiumCdpTest {
 			err.println("Exception (ignored): " + e.toString());
 		}
 	}
+
+	@Test
+	// based on:
+	// https://github.com/SrinivasanTarget/selenium4CDPsamples/blob/master/src/test/java/DevToolsTest.java
+	// https://chromedevtools.github.io/devtools-protocol/tot/Performance#method-setTimeDomain
+	// https://chromedevtools.github.io/devtools-protocol/tot/Performance#method-enable
+	// https://chromedevtools.github.io/devtools-protocol/tot/Performance#method-getMetrics
+	public void getPerformanceMetricsTest() {
+		driver.get("about:blank");
+		String command = "Performance.setTimeDomain";
+		params = new HashMap<>();
+		params.put("timeDomain", "timeTicks");
+		try {
+			driver.executeCdpCommand(command, params);
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+		try {
+			// Act
+			command = "Performance.enable";
+			driver.executeCdpCommand(command, new HashMap<>());
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+
+		driver.get("https://www.wikipedia.org");
+		try {
+			// Act
+			command = "Performance.getMetrics";
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			// Assert
+			assertThat(result, notNullValue());
+			assertThat(result, hasKey("metrics"));
+			ArrayList<Object> metrics = (ArrayList<Object>) result.get("metrics");
+			assertThat(metrics, notNullValue());
+			assertThat(metrics.size(), greaterThan(0));
+			Object metricEntry = metrics.get(0);
+			assertThat(metricEntry, notNullValue());
+			err.println("Metric Data: " + metricEntry);
+			Map<String, Integer> metricData = (Map<String, Integer>) metricEntry;
+			assertThat(metricData, hasKey("name"));
+			assertThat(metricData, hasKey("value"));
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+		try {
+			// Act
+			command = "Performance.disable";
+			driver.executeCdpCommand(command, new HashMap<>());
+		} catch (org.openqa.selenium.WebDriverException e) {
+			err.println("Exception (ignored): " + e.toString());
+		}
+	}
+
 
 }
