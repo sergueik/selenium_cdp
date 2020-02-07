@@ -139,13 +139,6 @@ public class ChromeDevToolsTest {
 
 	}
 
-	@Ignore
-	@Test
-	public void handleJavaScriptDialogTest() throws Exception {
-		// Page.handleJavaScriptDialog
-		// Console.enable
-	}
-
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-enable
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-loadingFailed
 	@Test

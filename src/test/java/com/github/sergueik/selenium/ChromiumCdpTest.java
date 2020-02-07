@@ -143,7 +143,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getDocuments
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Node
 	@SuppressWarnings("unchecked")
@@ -170,7 +170,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getDocuments
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Node
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-describeNode
@@ -214,7 +214,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getDocuments
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Node
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-querySelector
@@ -269,7 +269,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getDocuments
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Node
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-querySelector
@@ -453,7 +453,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getDocument
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Node
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-querySelector
@@ -584,7 +584,7 @@ public class ChromiumCdpTest {
 		// TODO: command = "Runtime.callFunctionOn";
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void getIsolatedIdTest() {
 		// Arrange
@@ -605,7 +605,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void compileScriptTest() {
 		// Arrange
@@ -633,7 +633,7 @@ public class ChromiumCdpTest {
 
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void evaluateTest() {
 		// Arrange
@@ -666,6 +666,7 @@ public class ChromiumCdpTest {
 		By locator = By.cssSelector("a[href='/']");
 		WebElement element = driver.findElement(locator);
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
+		// Expected: a string containing "Mozilla" but: was "WhoIsHostingThis
 		// Act
 		try {
 			driver.executeCdpCommand("Network.setUserAgentOverride",
@@ -690,7 +691,7 @@ public class ChromiumCdpTest {
 		assertThat(element.getAttribute("innerText"), is("python 2.7"));
 	}
 
-	@Ignore
+	// @Ignore
 	// see:
 	// https://github.com/sergueik/powershell_selenium/blob/master/python/print_pdf.py
 	// origin: https://habr.com/ru/post/459112/
@@ -725,7 +726,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-clearBrowserCache
 	public void clearBrowserCacheTest() {
@@ -741,7 +742,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getVersion
 	public void getBrowserVersionTest() {
@@ -773,7 +774,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-setWindowBounds
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#type-Bounds
@@ -838,7 +839,7 @@ public class ChromiumCdpTest {
 
 	}
 
-	@Ignore
+	// @Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowBounds
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#type-Bounds
@@ -876,7 +877,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-enable
 	@Test
 	public void manageNetworkTrackingTest() {
@@ -914,7 +915,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-getResponseBody
 	@Test
 	public void getResponseBodyTest() {
@@ -941,7 +942,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-getAllCookies
@@ -977,7 +978,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void clearBrowserCookiesTest() {
 		baseURL = "https://www.google.com";
@@ -992,7 +993,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	// based on:
 	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
@@ -1057,7 +1058,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
 	public void captureScreenshotTest() {
@@ -1097,8 +1098,8 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	// @Ignore
 	@SuppressWarnings("unchecked")
-	@Ignore
 	@Test
 	public void getCookiesWithUrlsTest() {
 		// Arrange
@@ -1118,7 +1119,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	@SuppressWarnings("unchecked")
 	public void getCookiesTest1() {
@@ -1150,7 +1151,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	@SuppressWarnings("unchecked")
 	public void getCookiesTest2() {
@@ -1181,7 +1182,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-performSearch
@@ -1256,7 +1257,7 @@ public class ChromiumCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getNodeForLocation
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-NodeId
@@ -1311,13 +1312,12 @@ public class ChromiumCdpTest {
 		}
 	}
 
+	// @Ignore
 	// based on a more advanced code found in
 	// https://github.com/adiohana/selenium-chrome-devtools-examples/blob/master/src/test/java/ChromeDevToolsTest.java
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setCacheDisabled
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setBlockedURLs
-	// @Ignore
 	@SuppressWarnings("serial")
-	@Ignore
 	@Test
 	public void setBlockedURLsTest() {
 		// Arrange
@@ -1354,7 +1354,7 @@ public class ChromiumCdpTest {
 		Utils.sleep(1000);
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	// based on:
 	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setGeolocationOverride
@@ -1428,7 +1428,8 @@ public class ChromiumCdpTest {
 		// Assert
 	}
 
-	@Ignore
+	
+	// @Ignore
 	@Test
 	// based on:
 	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setGeolocationOverride
