@@ -116,6 +116,7 @@ public class ChromeDevToolsTest {
 	}
 
 	private static Map<String, String> headers = new HashMap<>();
+	// java.util.Map<java.lang.String,java.lang.String> cannot be converted to org.openqa.selenium.devtools.network.model.Headers
 
 	@Test
 	public void addCustomHeaders() {
