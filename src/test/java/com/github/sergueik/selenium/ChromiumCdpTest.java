@@ -158,14 +158,15 @@ public class ChromiumCdpTest {
 	@Test
 	public void dispatchMouseEventTest() {
 		// Arrange
-		driver.get("https://www.google.com");
-		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("img")));
+		driver.get("https://www.wikipedia.org");
+		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#js-link-box-ru")));
 		org.openqa.selenium.Rectangle rect = element.getRect();
 
-		System.err.println(String.format("dispatchMouseEventTes target point x:%d y:%d width:%d height:%d", rect.getX(),
+		System.err.println(String.format("dispatchMouseEventTes target x:%d y:%d width:%d height:%d", rect.getX(),
 				rect.getY(), rect.getWidth(), rect.getHeight()));
 		int x = rect.getX() + rect.getWidth() / 2;
 		int y = rect.getY() + rect.getHeight() / 2;
+		System.err.println(String.format("dispatchMouseEventTes point x:%d y:%d", x, y));
 		// returns the root DOM node and subtree, default to depth 1
 		command = "Input.dispatchMouseEvent";
 		try {
@@ -180,8 +181,20 @@ public class ChromiumCdpTest {
 			params.put("modifiers", 0);
 			// Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
 			result = driver.executeCdpCommand(command, params);
+			sleep(100);
+			params.clear();
+			params.put("type", "mouseReleased");
+			// mousePressed, mouseReleased, mouseMoved, mouseWhneel
+			params.put("x", x);
+			params.put("y", y);
+			params.put("button", "left");
+			params.put("clickCount", 1);
+			params.put("modifiers", 0);
+			// Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
+			result = driver.executeCdpCommand(command, params);
 			sleep(3000);
 			// Assert
+			assertThat(driver.getCurrentUrl(), containsString("ru"));
 		} catch (WebDriverException e) {
 			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
