@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -47,6 +49,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.UnhandledAlertException;
@@ -98,16 +101,14 @@ public class ChromiumCdpTest {
 	private static List<Map<String, Object>> cookies = new ArrayList<>();
 	public static Long nodeId = (long) -1;
 	public static String isolationId = null;
+	private static By locator = null;
+	private static WebElement element = null;
 
 	@SuppressWarnings("deprecation")
 	@BeforeClass
 	public static void setUp() throws Exception {
-		System
-				.setProperty("webdriver.chrome.driver",
-						Paths.get(System.getProperty("user.home"))
-								.resolve("Downloads").resolve(osName.equals("windows")
-										? "chromedriver.exe" : "chromedriver")
-								.toAbsolutePath().toString());
+		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
+				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
 
 		// NOTE: protected constructor method is not visible
 		/*
@@ -154,31 +155,60 @@ public class ChromiumCdpTest {
 	}
 
 	// https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py#L32
-	// https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchMouseEvent
-	@SuppressWarnings("unchecked")
 	@Test
 	public void dispatchMouseEventTest() {
 		// Arrange
 		driver.get("https://www.google.com");
+		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("img")));
+		org.openqa.selenium.Rectangle rect = element.getRect();
+
+		System.err.println(String.format("dispatchMouseEventTes target point x:%d y:%d width:%d height:%d", rect.getX(),
+				rect.getY(), rect.getWidth(), rect.getHeight()));
+		int x = rect.getX() + rect.getWidth() / 2;
+		int y = rect.getY() + rect.getHeight() / 2;
 		// returns the root DOM node and subtree, default to depth 1
 		command = "Input.dispatchMouseEvent";
 		try {
 			// Act
 			params.clear();
 			params.put("type", "mousePressed");
-			// mousePressed, mouseReleased, mouseMoved, mouseWheel
-			params.put("x", 10);
-			params.put("y", 10);
+			// mousePressed, mouseReleased, mouseMoved, mouseWhneel
+			params.put("x", x);
+			params.put("y", y);
 			params.put("button", "left");
 			params.put("clickCount", 1);
 			params.put("modifiers", 0);
 			// Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
 			result = driver.executeCdpCommand(command, params);
+			sleep(3000);
 			// Assert
 		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
+	}
+
+	public void sleep(Integer milliSeconds) {
+		try {
+			Thread.sleep((long) milliSeconds);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private String processExceptionMessage(String message) {
+		return processExceptionMessage(message, false);
+	}
+
+	private String processExceptionMessage(String message, boolean flag) {
+		Pattern p = Pattern.compile("(\\{.*\\})", Pattern.MULTILINE);
+		Matcher m = p.matcher(message);
+		List<String> messages = new ArrayList<>();
+		while (m.find()) {
+			messages.add(m.group(1));
+		}
+		// err.println("Exception message: " + messages.get(0));
+		// err.println("Exception messages: " + String.join("\n", messages));
+		return flag ? messages.get(0) : String.join("\n", messages);
 	}
 
 	@Ignore
@@ -200,11 +230,9 @@ public class ChromiumCdpTest {
 			data = (Map<String, Object>) result.get("root");
 			assertThat(data, hasKey("nodeId"));
 			assertTrue(Long.parseLong(data.get("nodeId").toString()) != 0);
-			err.println("Command " + command + " return node: "
-					+ new Gson().toJson(data, Map.class));
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			err.println("Command " + command + " return node: " + new Gson().toJson(data, Map.class));
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -225,9 +253,8 @@ public class ChromiumCdpTest {
 			// Act
 			result = driver.executeCdpCommand(command, params);
 			nodeId = (Long) ((Map<String, Object>) result.get("root")).get("nodeId");
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		// Describes node given its id
 		command = "DOM.describeNode";
@@ -239,16 +266,14 @@ public class ChromiumCdpTest {
 			// Assert
 			assertThat(result, hasKey("node"));
 			data = (Map<String, Object>) result.get("node");
-			for (String field : Arrays.asList(new String[] { "baseURL", "localName",
-					"nodeName", "nodeType", "nodeValue" })) {
+			for (String field : Arrays
+					.asList(new String[] { "baseURL", "localName", "nodeName", "nodeType", "nodeValue" })) {
 				assertThat(data, hasKey(field));
 			}
 			assertThat(data.get("nodeName"), is("#document"));
-			System.err.println("Command " + command + " returned node: "
-					+ new Gson().toJson(data, Map.class));
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			System.err.println("Command " + command + " returned node: " + new Gson().toJson(data, Map.class));
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -268,11 +293,9 @@ public class ChromiumCdpTest {
 		try {
 			// Act
 			result = driver.executeCdpCommand(command, params);
-			nodeId = Long.parseLong(
-					((Map<String, Object>) result.get("root")).get("nodeId").toString());
+			nodeId = Long.parseLong(((Map<String, Object>) result.get("root")).get("nodeId").toString());
 		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		// Executes querySelector on a given node.
 		command = "DOM.querySelector";
@@ -287,8 +310,7 @@ public class ChromiumCdpTest {
 			assertTrue(nodeId != 0);
 			err.println("Command " + command + " returned nodeId: " + nodeId);
 		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		// Returns node's HTML markup
 		command = "DOM.getOuterHTML";
@@ -303,7 +325,7 @@ public class ChromiumCdpTest {
 			assertThat(dataString, notNullValue());
 			err.println("Command " + command + " return outerHTML: " + dataString);
 		} catch (Exception e) {
-			err.println("Exception in " + command + " (ignored): " + e.toString());
+			err.println("Exception in " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -323,11 +345,9 @@ public class ChromiumCdpTest {
 		try {
 			// Act
 			result = driver.executeCdpCommand(command, params);
-			nodeId = Long.parseLong(
-					((Map<String, Object>) result.get("root")).get("nodeId").toString());
+			nodeId = Long.parseLong(((Map<String, Object>) result.get("root")).get("nodeId").toString());
 		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		// Executes querySelectorAll on a given node.
 		command = "DOM.querySelectorAll";
@@ -343,8 +363,7 @@ public class ChromiumCdpTest {
 			assertTrue(nodeIds.size() != 0);
 			err.println("Command " + command + " returned nodeIds: " + nodeIds);
 		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -362,8 +381,7 @@ public class ChromiumCdpTest {
 			result = driver.executeCdpCommand(command, new HashMap<>());
 			nodeId = (Long) ((Map<String, Object>) result.get("root")).get("nodeId");
 		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		// select DOM node in #document
 		command = "DOM.querySelector";
@@ -375,8 +393,7 @@ public class ChromiumCdpTest {
 			result = driver.executeCdpCommand(command, params);
 			nodeId = (Long) result.get("nodeId");
 		} catch (Exception e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 
 		// Resolves the JavaScript node object for a given NodeId or BackendNodeId
@@ -391,8 +408,8 @@ public class ChromiumCdpTest {
 			data.clear();
 			// JavaScript object wrapper for given node
 			data = (Map<String, Object>) result.get("object");
-			for (String field : Arrays.asList(new String[] { "type", "subtype",
-					"className", "description", "objectId" })) {
+			for (String field : Arrays
+					.asList(new String[] { "type", "subtype", "className", "description", "objectId" })) {
 				assertThat(data, hasKey(field));
 			}
 			dataString = (String) data.get("objectId");
@@ -400,12 +417,10 @@ public class ChromiumCdpTest {
 			// reuse data to peek into dataString
 			data = (Map<String, Object>) new Gson().fromJson(dataString, Map.class);
 			// Unique object identifier
-			System.err
-					.println("Command " + command + " returned objectId data: " + data);
+			System.err.println("Command " + command + " returned objectId data: " + data);
 
 		} catch (WebDriverException | JsonSyntaxException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -415,7 +430,6 @@ public class ChromiumCdpTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	// TODO: command = "Runtime.callFunctionOn";
-
 	public void callFunctionOnTest() {
 		// Arrange
 		driver.get("https://www.google.com");
@@ -424,30 +438,20 @@ public class ChromiumCdpTest {
 			// Act
 			result = driver.executeCdpCommand(command, new HashMap<>());
 			nodeId = (Long) ((Map<String, Object>) result.get("root")).get("nodeId");
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
-		}
-		// select DOM node in #document
-		command = "DOM.querySelector";
-		params.clear();
-		params.put("nodeId", nodeId);
-		params.put("selector", "img#hplogo");
 
-		try {
+			// select DOM node in #document
+			command = "DOM.querySelector";
+			params.clear();
+			params.put("nodeId", nodeId);
+			params.put("selector", "img#hplogo");
+
 			result = driver.executeCdpCommand(command, params);
 			nodeId = (Long) result.get("nodeId");
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
-		}
 
-		// Resolves the JavaScript node object for a given NodeId or BackendNodeId
-		command = "DOM.resolveNode";
-		params.clear();
-		params.put("nodeId", nodeId);
-
-		try {
+			// Resolves the JavaScript node object for a given NodeId or BackendNodeId
+			command = "DOM.resolveNode";
+			params.clear();
+			params.put("nodeId", nodeId);
 			result = driver.executeCdpCommand(command, params);
 			// Assert
 			assertThat(result, hasKey("object"));
@@ -456,38 +460,37 @@ public class ChromiumCdpTest {
 			data = (Map<String, Object>) result.get("object");
 			// reuse data to peek into dataString
 			dataString = (String) data.get("object");
-			data = (Map<String, Object>) new Gson()
-					.fromJson((String) data.get("objectId"), Map.class);
+			data = (Map<String, Object>) new Gson().fromJson((String) data.get("objectId"), Map.class);
 			// Unique object identifier
-			System.err
-					.println("Command " + command + " returned objectId data: " + data);
-		} catch (WebDriverException | JsonSyntaxException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
-		}
+			System.err.println("Command " + command + " returned objectId data: " + data);
 
-		command = "Runtime.callFunctionOn";
-		params = new HashMap<>();
-		params.put("functionDeclaration", "function() { this.value=''; }");
-		params.put("objectId", dataString);
-
-		try {
+			command = "Runtime.callFunctionOn";
+			params = new HashMap<>();
+			params.put("functionDeclaration", "function() { this.value=''; }");
+			params.put("objectId", dataString);
 			result = driver.executeCdpCommand(command, params);
 			// Assert
 			assertThat(result, hasKey("result"));
 			data.clear();
 			data = (Map<String, Object>) result.get("result");
-			for (String field : Arrays.asList(
-					new String[] { "type", "subtype", "className", "objectId" })) {
+			for (String field : Arrays.asList(new String[] { "type", "subtype", "className", "objectId" })) {
 				assertThat(data, hasKey(field));
 			}
 			String objectId = (String) data.get("objectId");
 			assertThat(objectId, notNullValue());
-			System.err
-					.println("Command " + command + " returned objectId: " + objectId);
+			System.err.println("Command " + command + " returned objectId: " + objectId);
 		} catch (WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			Throwable cause = e.getCause();
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage())
+					+ ((cause == null) ? "" : "cause: " + cause.getMessage()));
+			/*
+			 * StackTraceElement[] stackTraceElements = e.getStackTrace(); for (int cnt = 0;
+			 * cnt != stackTraceElements.length; cnt++) {
+			 * err.println(String.format("StackTrace %d: %s", cnt,
+			 * stackTraceElements[cnt].toString())); }
+			 */
+		} catch (JsonSyntaxException e) {
+			err.println("Exception in command " + command + " (ignored): " + e.toString());
 		}
 	}
 
@@ -510,15 +513,13 @@ public class ChromiumCdpTest {
 			result = driver.executeCdpCommand(command, new HashMap<>());
 			// Assert
 			assertThat(result, hasKey("root"));
-			@SuppressWarnings("unchecked")
 			Map<String, Object> node = (Map<String, Object>) result.get("root");
 			assertThat(node, hasKey("nodeId"));
 			nodeId = Long.parseLong(node.get("nodeId").toString());
 			assertTrue(nodeId != 0);
 			err.println("Command " + command + " returned nodeId: " + nodeId);
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		command = "DOM.describeNode";
 		params = new HashMap<>();
@@ -531,16 +532,13 @@ public class ChromiumCdpTest {
 			// reuse "params" variable
 			params.clear();
 			params = (Map<String, Object>) result.get("node");
-			for (String field : Arrays.asList(
-					new String[] { "nodeType", "nodeName", "localName", "nodeValue" })) {
+			for (String field : Arrays.asList(new String[] { "nodeType", "nodeName", "localName", "nodeValue" })) {
 				assertThat(params, hasKey(field));
 			}
 
-			System.err.println("Command " + command + " returned: "
-					+ new Gson().toJson(params, Map.class));
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			System.err.println("Command " + command + " returned: " + new Gson().toJson(params, Map.class));
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 
 		command = "DOM.querySelector";
@@ -560,9 +558,8 @@ public class ChromiumCdpTest {
 			nodeId = Long.parseLong(result.get("nodeId").toString());
 			assertTrue(nodeId != 0);
 			err.println("Command " + command + " returned  nodeId: " + nodeId);
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 
 		command = "DOM.resolveNode";
@@ -575,26 +572,22 @@ public class ChromiumCdpTest {
 			assertThat(result, hasKey("object"));
 			data.clear();
 			data = (Map<String, Object>) result.get("object");
-			for (String field : Arrays.asList(
-					new String[] { "type", "subtype", "className", "objectId" })) {
+			for (String field : Arrays.asList(new String[] { "type", "subtype", "className", "objectId" })) {
 				assertThat(data, hasKey(field));
 			}
 			String objectId = (String) data.get("objectId");
 			assertThat(objectId, notNullValue());
-			System.err
-					.println("Command " + command + " returned objectId: " + objectId);
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+			System.err.println("Command " + command + " returned objectId: " + objectId);
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 
 		command = "DOM.something not defined";
 		try {
 			// Act
 			result = driver.executeCdpCommand(command, new HashMap<>());
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 			// wasn't found
 		}
 		// DOM.removeNode
@@ -604,9 +597,8 @@ public class ChromiumCdpTest {
 		try {
 			// Act
 			result = driver.executeCdpCommand(command, params);
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 			// : unknown error: unhandled inspector error:
 			// {"code":-32000,"message":"Element is not focusable"}
 		}
@@ -615,9 +607,8 @@ public class ChromiumCdpTest {
 			// Act
 			result = driver.executeCdpCommand(command, new HashMap<>());
 			Utils.sleep(10000);
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		// TODO: command = "Runtime.callFunctionOn";
 	}
@@ -638,8 +629,8 @@ public class ChromiumCdpTest {
 			// isolationId = Long.parseLong((String) result.get("id"));
 			// assertTrue(isolationId != 0);
 			// Assert ?
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -664,7 +655,7 @@ public class ChromiumCdpTest {
 			assertThat(e.toString(), containsString("unexpected alert open"));
 			err.println("Exception (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 			// assertThat(e.toString(), containsString("invalid argument: Invalid
 			// parameters"));
 		}
@@ -701,25 +692,20 @@ public class ChromiumCdpTest {
 	public void setUserAgentOverrideTest() {
 		// Arrange
 		driver.get("https://www.whoishostingthis.com/tools/user-agent/");
-		By locator = By.cssSelector("a[href='/']");
-		WebElement element = driver.findElement(locator);
+		locator = By.cssSelector("a[href='/']");
+		element = driver.findElement(locator);
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
 		// Expected: a string containing "Mozilla" but: was "WhoIsHostingThis
 		// Act
 		try {
-			driver.executeCdpCommand("Network.setUserAgentOverride",
-					new HashMap<String, Object>() {
-						{
-							put("userAgent", "python 2.7");
-							put("platform", "Windows");
-						}
-					});
+			driver.executeCdpCommand("Network.setUserAgentOverride", new HashMap<String, Object>() {
+				{
+					put("userAgent", "python 2.7");
+					put("platform", "Windows");
+				}
+			});
 		} catch (WebDriverException e) {
-			System.err.println("Exception (ignored): " + e.toString());
-			// org.openqa.selenium.WebDriverException: unknown error: unhandled
-			// inspector error :
-			// {"code":-32601,"message":"'setUserAgentOverride'
-			// wasn't found"}
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		driver.navigate().refresh();
 		Utils.sleep(1000);
@@ -751,16 +737,9 @@ public class ChromiumCdpTest {
 			result = driver.executeCdpCommand(command, params);
 			System.err.println("Response to " + command + ": " + result);
 			// TODO: assert the response is a valid Base64-encoded pdf data.
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 			assertThat(e.toString(), containsString("PrintToPDF is not implemented"));
-			// printToPDFTest(com.github.sergueik.selenium.ChromiumCdpTest):
-			// unknown
-			// error: unhandled inspector error:
-			// {
-			// "code": -32000,
-			// "message": "PrintToPDF is not implemented"
-			// }
 		}
 	}
 
@@ -775,8 +754,8 @@ public class ChromiumCdpTest {
 			// Act
 			driver.executeCdpCommand(command, new HashMap<>());
 			// Assert ?
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -797,12 +776,14 @@ public class ChromiumCdpTest {
 			 * userAgent = Mozilla/5.0 (Windows NT6.3; Win64; x64) AppleWebKit/537.36
 			 * (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36 }
 			 */
-			for (String field : Arrays.asList(new String[] { "protocolVersion",
-					"product", "revision", "userAgent", "jsVersion" })) {
+			for (String field : Arrays
+					.asList(new String[] { "protocolVersion", "product", "revision", "userAgent", "jsVersion" })) {
 				assertThat(result, hasKey(field));
 			}
 		} catch (JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -827,6 +808,8 @@ public class ChromiumCdpTest {
 			windowId = (long) result.get("windowId");
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -845,6 +828,8 @@ public class ChromiumCdpTest {
 			System.err.println("Command " + command + " result: " + result);
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -867,6 +852,8 @@ public class ChromiumCdpTest {
 			System.err.println("Command " + command + " result: " + result);
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -892,6 +879,8 @@ public class ChromiumCdpTest {
 			windowId = (long) result.get("windowId");
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -906,6 +895,8 @@ public class ChromiumCdpTest {
 			System.err.println("Command " + command + " result: " + result);
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -928,12 +919,12 @@ public class ChromiumCdpTest {
 			// Assert
 			assertThat(result, notNullValue());
 			System.err.println("Command " + command + " result: " + result);
-		} catch (org.openqa.selenium.InvalidArgumentException e) {
+		} catch (InvalidArgumentException e) {
 			err.println("Exception (ignored): " + e.toString());
 		} catch (JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -945,8 +936,8 @@ public class ChromiumCdpTest {
 			driver.executeCdpCommand(command, new HashMap<>());
 		} catch (JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -965,12 +956,12 @@ public class ChromiumCdpTest {
 			// Assert
 			assertThat(result, notNullValue());
 			System.err.println("Command " + command + " result: " + result);
-		} catch (org.openqa.selenium.InvalidArgumentException e) {
+		} catch (InvalidArgumentException e) {
 			err.println("Exception (ignored): " + e.toString());
 		} catch (JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -1008,8 +999,8 @@ public class ChromiumCdpTest {
 			 */
 		} catch (JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -1023,8 +1014,8 @@ public class ChromiumCdpTest {
 			// Act
 			driver.executeCdpCommand(command, new HashMap<>());
 			// Assert ?
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -1046,23 +1037,19 @@ public class ChromiumCdpTest {
 		Year year = Year.from(localDate);
 		Month month = Month.from(localDate);
 		MonthDay monthDay = MonthDay.now();
-		baseURL = String.format(
-				"http://almetpt.ru/%s/site/schedulegroups/0/1/%s-%02d-%02d",
-				year.toString(), year.toString(), month.getValue(),
-				monthDay.getDayOfMonth());
+		baseURL = String.format("http://almetpt.ru/%s/site/schedulegroups/0/1/%s-%02d-%02d", year.toString(),
+				year.toString(), month.getValue(), monthDay.getDayOfMonth());
 		String xpath = "//div[@class=\"card-columns\"]//div[contains(@class, \"card\")][div[contains(@class, \"card-header\")]]";
 		driver.get(baseURL);
 		result = null;
 		dataString = null;
 		// not assigning the value returned
-		wait.until(ExpectedConditions.visibilityOfElementLocated(
-				By.xpath("//div[@class=\"card-columns\"]")));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class=\"card-columns\"]")));
 		List<WebElement> elements = driver.findElements(By.xpath(xpath));
 		int cnt = 0;
 		int maxCnt = 10;
 		cards: for (WebElement element : elements) {
-			if (null == element
-					.findElement(By.xpath("div[contains(@class, \"card-body\")]"))) {
+			if (null == element.findElement(By.xpath("div[contains(@class, \"card-body\")]"))) {
 				continue;
 			}
 			cnt++;
@@ -1079,8 +1066,8 @@ public class ChromiumCdpTest {
 			command = "Page.captureScreenshot";
 			params = new HashMap<String, Object>();
 			Map<String, Object> viewport = new HashMap<>();
-			System.err.println("Specified viewport: " + String
-					.format("x=%d, y=%d, width=%d, height=%d", x, y, width, height));
+			System.err.println(
+					"Specified viewport: " + String.format("x=%d, y=%d, width=%d, height=%d", x, y, width, height));
 			viewport.put("x", (double) x);
 			viewport.put("y", (double) y);
 			viewport.put("width", (double) width);
@@ -1095,8 +1082,9 @@ public class ChromiumCdpTest {
 				assertThat(result, hasKey("data"));
 				dataString = (String) result.get("data");
 				assertThat(dataString, notNullValue());
-			} catch (org.openqa.selenium.WebDriverException e) {
-				err.println("Exception (ignored): " + e.toString());
+			} catch (WebDriverException e) {
+				err.println(
+						"Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 			}
 
 			Base64 base64 = new Base64();
@@ -1110,8 +1098,7 @@ public class ChromiumCdpTest {
 			}
 			String screenshotFileName = String.format("card%02d.png", cnt);
 			try {
-				FileOutputStream fileOutputStream = new FileOutputStream(
-						screenshotFileName);
+				FileOutputStream fileOutputStream = new FileOutputStream(screenshotFileName);
 				fileOutputStream.write(image);
 				fileOutputStream.close();
 			} catch (IOException e) {
@@ -1137,8 +1124,8 @@ public class ChromiumCdpTest {
 			assertThat(result, hasKey("data"));
 			dataString = (String) result.get("data");
 			assertThat(dataString, notNullValue());
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 
 		Base64 base64 = new Base64();
@@ -1152,8 +1139,7 @@ public class ChromiumCdpTest {
 		}
 		String screenshotFileName = "temp.png";
 		try {
-			FileOutputStream fileOutputStream = new FileOutputStream(
-					screenshotFileName);
+			FileOutputStream fileOutputStream = new FileOutputStream(screenshotFileName);
 			fileOutputStream.write(image);
 			fileOutputStream.close();
 		} catch (IOException e) {
@@ -1175,10 +1161,9 @@ public class ChromiumCdpTest {
 		try {
 			result = driver.executeCdpCommand(command, params);
 			// Assert
-			err.println("Cookies count for www.google.com: "
-					+ ((List<Object>) result.get("cookies")).size() + "...");
-		} catch (Exception e) {
-			err.println("Exception (ignored): " + e.toString());
+			err.println("Cookies count for www.google.com: " + ((List<Object>) result.get("cookies")).size() + "...");
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -1192,23 +1177,21 @@ public class ChromiumCdpTest {
 		// Act
 		try {
 			result = driver.executeCdpCommand(command, new HashMap<String, Object>());
-			err.println("Cookies: "
-					+ result.get("cookies").toString().substring(0, 100) + "...");
+			err.println("Cookies: " + result.get("cookies").toString().substring(0, 100) + "...");
 			// Assert
 			// deserialiaze
-			cookies = gson.fromJson(result.get("cookies").toString(),
-					ArrayList.class);
-			cookies.stream().limit(10).map(o -> o.keySet())
-					.forEach(System.err::println);
+			cookies = gson.fromJson(result.get("cookies").toString(), ArrayList.class);
+			cookies.stream().limit(10).map(o -> o.keySet()).forEach(System.err::println);
 			Set<String> cookieKeys = new HashSet<>();
-			for (String key : new String[] { "domain", "expires", "httpOnly", "name",
-					"path", "secure", "session", "size", "value" }) {
+			for (String key : new String[] { "domain", "expires", "httpOnly", "name", "path", "secure", "session",
+					"size", "value" }) {
 				cookieKeys.add(key);
 			}
 			assertTrue(cookies.get(0).keySet().containsAll(cookieKeys));
 		} catch (JsonSyntaxException e) {
 			err.println("Exception deserializing cookies (ignored): " + e.toString());
-
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception (ignored): " + e.toString());
 		}
@@ -1224,21 +1207,21 @@ public class ChromiumCdpTest {
 		// Act
 		try {
 			result = driver.executeCdpCommand(command, new HashMap<String, Object>());
-			err.println("Cookies: "
-					+ result.get("cookies").toString().substring(0, 100) + "...");
+			err.println("Cookies: " + result.get("cookies").toString().substring(0, 100) + "...");
 			// Assert
 			// direct cast
 			cookies = (ArrayList<Map<String, Object>>) result.get("cookies");
-			cookies.stream().limit(10).map(o -> o.keySet())
-					.forEach(System.err::println);
+			cookies.stream().limit(10).map(o -> o.keySet()).forEach(System.err::println);
 			Set<String> cookieKeys = new HashSet<>();
-			for (String key : new String[] { "domain", "expires", "httpOnly", "name",
-					"path", "secure", "session", "size", "value" }) {
+			for (String key : new String[] { "domain", "expires", "httpOnly", "name", "path", "secure", "session",
+					"size", "value" }) {
 				cookieKeys.add(key);
 			}
 			assertTrue(cookies.get(0).keySet().containsAll(cookieKeys));
 		} catch (JsonSyntaxException e) {
 			err.println("Exception loading cookies (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 
 		} catch (Exception e) {
 			err.println("Exception (ignored): " + e.toString());
@@ -1261,8 +1244,7 @@ public class ChromiumCdpTest {
 		command = "DOM.performSearch";
 		params = new HashMap<String, Object>();
 
-		WebElement element = driver
-				.findElement(By.xpath("//table[@id='example']/tbody/tr[1]/td[1]"));
+		WebElement element = driver.findElement(By.xpath("//table[@id='example']/tbody/tr[1]/td[1]"));
 		err.println("outerHTML: " + element.getAttribute("outerHTML"));
 
 		params.put("query", "//table[@id='example']/tbody/tr[1]/td[1]");
@@ -1289,8 +1271,8 @@ public class ChromiumCdpTest {
 			assertThat(nodes.get(0), notNullValue());
 			nodeId = nodes.get(0);
 			err.println("nodeId: " + nodeId);
-		} catch (Exception e) {
-			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		try {
 
@@ -1304,8 +1286,8 @@ public class ChromiumCdpTest {
 			dataString = (String) result.get("outerHTML");
 			assertThat(dataString, notNullValue());
 			err.println("outerHTML: " + dataString);
-		} catch (Exception e) {
-			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 
 		try {
@@ -1315,8 +1297,8 @@ public class ChromiumCdpTest {
 			// Invalid parameters
 			command = "DOM.highlightNode";
 			driver.executeCdpCommand(command, new HashMap<String, Object>());
-		} catch (Exception e) {
-			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -1332,8 +1314,7 @@ public class ChromiumCdpTest {
 		command = "DOM.getNodeForLocation";
 		params = new HashMap<String, Object>();
 
-		WebElement element = driver
-				.findElement(By.xpath("//table[@id='example']/tbody/tr[1]/td[1]"));
+		WebElement element = driver.findElement(By.xpath("//table[@id='example']/tbody/tr[1]/td[1]"));
 		int x = element.getLocation().getX();
 		int y = element.getLocation().getX();
 		err.println(String.format("x = %d, y = %d", x, y));
@@ -1355,8 +1336,8 @@ public class ChromiumCdpTest {
 			nodeId = (Long) result.get("nodeId");
 			err.println("nodeId: " + nodeId);
 			assertThat(nodeId, notNullValue());
-		} catch (Exception e) {
-			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 
 		try {
@@ -1370,8 +1351,8 @@ public class ChromiumCdpTest {
 			dataString = (String) result.get("outerHTML");
 			assertThat(dataString, notNullValue());
 			err.println("outerHTML: " + dataString);
-		} catch (Exception e) {
-			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -1394,7 +1375,7 @@ public class ChromiumCdpTest {
 				}
 			});
 		} catch (WebDriverException e) {
-			err.println("Exception in " + command + " (ignored): " + e.toString());
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 
 		}
 		baseURL = "https://www.wikipedia.org/";
@@ -1407,10 +1388,8 @@ public class ChromiumCdpTest {
 					put("urls", Arrays.asList(new String[] { "*.css", "*.png" }));
 				}
 			});
-		} catch (
-
-		Exception e) {
-			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		driver.get(baseURL);
 		// driver.navigate().refresh();
@@ -1440,8 +1419,8 @@ public class ChromiumCdpTest {
 			// Assert
 			assertThat(result, notNullValue());
 			err.println("Response from " + command + ": " + result);
-		} catch (Exception e) {
-			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		// Act
 
@@ -1450,9 +1429,8 @@ public class ChromiumCdpTest {
 
 		// click "my location" button when drawn
 
-		WebElement element = wait
-				.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(
-						"div[class *='widget-mylocation-button-icon-common']")));
+		element = wait.until(ExpectedConditions
+				.visibilityOfElementLocated(By.cssSelector("div[class *='widget-mylocation-button-icon-common']")));
 		element.click();
 		// unclear what event to wait for here
 		Utils.sleep(5000);
@@ -1467,8 +1445,8 @@ public class ChromiumCdpTest {
 			assertThat(result, hasKey("data"));
 			dataString = (String) result.get("data");
 			assertThat(dataString, notNullValue());
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 
 		Base64 base64 = new Base64();
@@ -1482,8 +1460,7 @@ public class ChromiumCdpTest {
 		}
 		String screenshotFileName = "map.png";
 		try {
-			FileOutputStream fileOutputStream = new FileOutputStream(
-					screenshotFileName);
+			FileOutputStream fileOutputStream = new FileOutputStream(screenshotFileName);
 			fileOutputStream.write(image);
 			fileOutputStream.close();
 		} catch (IOException e) {
@@ -1516,8 +1493,8 @@ public class ChromiumCdpTest {
 			// Assert
 			assertThat(result, notNullValue());
 			err.println("Response from " + command + ": " + result);
-		} catch (Exception e) {
-			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		// Act
 		Utils.sleep(1000);
@@ -1529,8 +1506,8 @@ public class ChromiumCdpTest {
 			// Assert
 			assertThat(result, notNullValue());
 			err.println("Response from " + command + ": " + result);
-		} catch (Exception e) {
-			err.println("Exception in " + command + " (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		// Act
 		Utils.sleep(1000);
@@ -1550,16 +1527,16 @@ public class ChromiumCdpTest {
 			dataString = (String) result.get("data");
 			// Assert
 			// like an email, but the following is failing
-			for (String field : Arrays.asList(new String[] {
-					"Snapshot-Content-Location", "Subject", "Content-Type" })) {
+			for (String field : Arrays
+					.asList(new String[] { "Snapshot-Content-Location", "Subject", "Content-Type" })) {
 				assertThat(dataString, containsString(String.format("%s:", field)));
 			}
 			// assertThat(data, containsString("\n\n"));
 			String header = dataString.split("\n\n")[0];
 			assertThat(header, notNullValue());
 			// System.err.println("Response to " + command + ": header" + header);
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -1583,8 +1560,8 @@ public class ChromiumCdpTest {
 			// Act
 			command = "Performance.enable";
 			driver.executeCdpCommand(command, new HashMap<>());
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 
 		driver.get("https://www.wikipedia.org");
@@ -1601,18 +1578,19 @@ public class ChromiumCdpTest {
 			Object metricEntry = metrics.get(0);
 			assertThat(metricEntry, notNullValue());
 			err.println("Metric Data: " + metricEntry);
+			@SuppressWarnings("unchecked")
 			Map<String, Integer> metricData = (Map<String, Integer>) metricEntry;
 			assertThat(metricData, hasKey("name"));
 			assertThat(metricData, hasKey("value"));
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 		try {
 			// Act
 			command = "Performance.disable";
 			driver.executeCdpCommand(command, new HashMap<>());
-		} catch (org.openqa.selenium.WebDriverException e) {
-			err.println("Exception (ignored): " + e.toString());
+		} catch (WebDriverException e) {
+			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
 		}
 	}
 
