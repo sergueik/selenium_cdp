@@ -26,6 +26,7 @@ import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.network.Network;
 
 import org.openqa.selenium.devtools.network.model.BlockedReason;
+import org.openqa.selenium.devtools.network.model.Headers;
 import org.openqa.selenium.devtools.network.model.InterceptionStage;
 import org.openqa.selenium.devtools.network.model.RequestPattern;
 import org.openqa.selenium.devtools.network.model.ResourceType;
@@ -61,8 +62,7 @@ public class ChromeDevToolsTest {
 
 	private final static int id = (int) (java.lang.Math.random() * 1_000_000);
 	public final static String consoleMessage = "message from test id #" + id;
-	private static Map<String, String> headers = new HashMap<>();
-	// java.util.Map<java.lang.String,java.lang.String> cannot be converted to org.openqa.selenium.devtools.network.model.Headers
+	private static Map<String, Object> headers = new HashMap<>();
 
 	@SuppressWarnings("deprecation")
 	@BeforeClass
@@ -105,7 +105,8 @@ public class ChromeDevToolsTest {
 	public void consoleMessageAddTest() {
 		// Assert
 		// add event listener to verify the console message text
-		// chromeDevTools.addListener(Log.entryAdded(), o -> Assert.assertEquals(true,
+		// chromeDevTools.addListener(Log.entryAdded(), o ->
+		// Assert.assertEquals(true,
 		// o.getText().equals(consoleMessage)));
 
 		// Act
@@ -113,24 +114,25 @@ public class ChromeDevToolsTest {
 		Utils.executeScript("console.log('" + consoleMessage + "');");
 	}
 
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setExtraHTTPHeaders
+	// see also:
+	// https://stackoverflow.com/questions/15645093/setting-request-headers-in-selenium
+	// see also:
+	// https://github.com/SeleniumHQ/selenium/blob/master/java/client/test/org/openqa/selenium/devtools/ChromeDevToolsNetworkTest.java
 	@Test
 	public void addCustomHeaders() {
-		/*
-		 * // enable Network chromeDevTools.send(Network.enable(Optional.empty(),
-		 * Optional.empty(), Optional.empty())); headers = new HashMap<>();
-		 * headers.put("customHeaderName", "customHeaderValue"); // set custom header //
-		 * incompatible types: java.util.Map<java.lang.String,java.lang.String> cannot
-		 * be converted to org.openqa.selenium.devtools.network.model.Headers
-		 * chromeDevTools.send(Network.setExtraHTTPHeaders(headers));
-		 * 
-		 * // add event listener to verify that requests are sending with the custom //
-		 * header chromeDevTools.addListener(Network.requestWillBeSent(),
-		 * requestWillBeSent -> Assert.assertEquals(
-		 * requestWillBeSent.getRequest().getHeaders().get("customHeaderName"),
-		 * "customHeaderValue"));
-		 * 
-		 * driver.get("https://apache.org");
-		 */
+		// enable Network
+		chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+		headers = new HashMap<>();
+		headers.put("customHeaderName", "customHeaderValue");
+		Headers headersData = new Headers(headers);
+		chromeDevTools.send(Network.setExtraHTTPHeaders(headersData));
+		// add event listener to verify that requests are sending with the custom //
+		chromeDevTools.addListener(Network.requestWillBeSent(),
+				o -> Assert.assertEquals(o.getRequest().getHeaders().get("customHeaderName"), "customHeaderValue"));
+		chromeDevTools.addListener(Network.requestWillBeSent(), o -> System.err.println(
+				"addCustomHeaders Listener invoked with " + o.getRequest().getHeaders().get("customHeaderName")));
+		driver.get("https://apache.org");
 	}
 
 	@Ignore
