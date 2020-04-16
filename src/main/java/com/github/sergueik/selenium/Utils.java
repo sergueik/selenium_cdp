@@ -3,6 +3,10 @@ package com.github.sergueik.selenium;
 import static java.lang.System.err;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chromium.ChromiumDriver;
@@ -52,11 +56,9 @@ public class Utils {
 		highlight(element, highlightInterval, "solid yellow");
 	}
 
-	public static void highlight(WebElement element, long highlightInterval,
-			String color) {
+	public static void highlight(WebElement element, long highlightInterval, String color) {
 		try {
-			js.executeScript(
-					String.format("arguments[0].style.border='3px %s'", color), element);
+			js.executeScript(String.format("arguments[0].style.border='3px %s'", color), element);
 			Thread.sleep(highlightInterval);
 			js.executeScript("arguments[0].style.border=''", element);
 		} catch (InterruptedException e) {
@@ -68,4 +70,19 @@ public class Utils {
 	public static Object executeScript(String script, Object... arguments) {
 		return js.executeScript(script, arguments);
 	}
+
+	public static String processExceptionMessage(String message) {
+		return processExceptionMessage(message, false);
+	}
+
+	public static String processExceptionMessage(String message, boolean flag) {
+		Pattern p = Pattern.compile("(\\{.*\\})", Pattern.MULTILINE);
+		Matcher m = p.matcher(message);
+		List<String> messages = new ArrayList<>();
+		while (m.find()) {
+			messages.add(m.group(1));
+		}
+		return flag ? messages.get(0) : String.join("\n", messages);
+	}
+
 }

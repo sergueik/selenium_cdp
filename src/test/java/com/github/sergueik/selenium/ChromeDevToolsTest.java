@@ -1,15 +1,9 @@
 package com.github.sergueik.selenium;
 
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -24,22 +18,7 @@ import org.openqa.selenium.devtools.DevTools;
 //import org.openqa.selenium.devtools.Console;
 // import org.openqa.selenium.devtools.Log;
 import org.openqa.selenium.devtools.network.Network;
-
-import org.openqa.selenium.devtools.network.model.BlockedReason;
 import org.openqa.selenium.devtools.network.model.Headers;
-import org.openqa.selenium.devtools.network.model.InterceptionStage;
-import org.openqa.selenium.devtools.network.model.RequestPattern;
-import org.openqa.selenium.devtools.network.model.ResourceType;
-import org.openqa.selenium.devtools.security.Security;
-
-// as with selenium-devtools-4.0.0-alpha-3.jar the page.Page is not public yet
-// nor is the handleJavaScriptDialog API proxy
-// import org.openqa.selenium.devtools.page.Page;
-
-import org.openqa.selenium.json.JsonInput;
-
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -120,19 +99,24 @@ public class ChromeDevToolsTest {
 	// see also:
 	// https://github.com/SeleniumHQ/selenium/blob/master/java/client/test/org/openqa/selenium/devtools/ChromeDevToolsNetworkTest.java
 	@Test
-	public void addCustomHeaders() {
+	public void addCustomHeadersTest() {
 		// enable Network
 		chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
 		headers = new HashMap<>();
 		headers.put("customHeaderName", "customHeaderValue");
+		headers.put("customHeaderName", this.getClass().getName() + " addCustomHeadersTest");
 		Headers headersData = new Headers(headers);
 		chromeDevTools.send(Network.setExtraHTTPHeaders(headersData));
-		// add event listener to verify that requests are sending with the custom //
+		// add event listener to log that requests are sending with the custom header
 		chromeDevTools.addListener(Network.requestWillBeSent(),
 				o -> Assert.assertEquals(o.getRequest().getHeaders().get("customHeaderName"), "customHeaderValue"));
 		chromeDevTools.addListener(Network.requestWillBeSent(), o -> System.err.println(
 				"addCustomHeaders Listener invoked with " + o.getRequest().getHeaders().get("customHeaderName")));
-		driver.get("https://apache.org");
+		// to test with a dummy server fire on locally and inspect the headers
+		// server-side
+		driver.get("http://127.0.0.1:8080/demo/Demo");
+		// otherwise just hit a generic web site
+		// driver.get("https://apache.org");
 	}
 
 	@Ignore

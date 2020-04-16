@@ -12,6 +12,7 @@ __cdp__ commands - an entirely different set of API communicated to the Chrome b
   * `querySelectorAll
   * `querySelector`
   * `getAttributes`
+  * `addCustomHeaders`
 overlap with classic Selenium in Classic Javascript
 and there are few specific ones.The project also exercised other new Selenium 4 API e.g. [relative nearby locators](https://dzone.com/articles/how-selenium-4-relative-locator-can-change-the-way) whidh did not apear powerful enough yet.
 
@@ -63,6 +64,49 @@ Note: some CDP API notably `Page.printToPDF` are not curently implemented:
 ```sh
 unhandled inspector error: {"code":-32000,"message":"PrintToPDF is not implemented"}(..)
 ```
+### Custom Headers
+
+This can be done both at the wrapper methods
+```java
+
+    // enable Network
+    chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+    headers = new HashMap<>();
+    headers.put("customHeaderName", "customHeaderValue");
+    Headers headersData = new Headers(headers);
+    chromeDevTools.send(Network.setExtraHTTPHeaders(headersData));
+```
+The validation can be done through hooking assert and log message to the event:
+```java
+    // add event listener to log that requests are sending with the custom header
+    chromeDevTools.addListener(Network.requestWillBeSent(),
+        o -> Assert.assertEquals(o.getRequest().getHeaders().get("customHeaderName"), "customHeaderValue"));
+    chromeDevTools.addListener(Network.requestWillBeSent(), o -> System.err.println(
+        "addCustomHeaders Listener invoked with " + o.getRequest().getHeaders().get("customHeaderName")));
+```
+and low level "commands":
+```java
+    String command = "Network.enable";
+    params = new HashMap<>();
+    params.put("maxTotalBufferSize", 0);
+    params.put("maxPostDataSize", 0);
+    params.put("maxPostDataSize", 0);
+    result = driver.executeCdpCommand(command, params);
+    command = "Network.setExtraHTTPHeaders";
+
+    params = new HashMap<>();
+    Map<String, String> headers = new HashMap<>();
+    headers.put("customHeaderName", this.getClass().getName() + " addCustomHeadersTest");
+    params.put("headers", headers);
+    result = driver.executeCdpCommand(command, params);
+```
+
+To test one can e.g. fire a tomcat server with request header logging and
+send the `GET` request
+```java    
+driver.get("http://127.0.0.1:8080/demo/Demo");
+```
+The actual validation will be done through console logs inspection of the server
 
 #### DOM Node Navigation
 

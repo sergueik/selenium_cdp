@@ -63,13 +63,14 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
-
+import org.openqa.selenium.devtools.network.Network;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.CapabilityType;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.github.sergueik.selenium.Utils;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
@@ -84,7 +85,6 @@ public class ChromiumCdpTest {
 	private static int flexibleWait = 60;
 	private static int pollingInterval = 500;
 	private static ChromiumDriver driver;
-	private static WebDriver webDriver;
 
 	private static String osName = Utils.getOSName();
 
@@ -181,7 +181,7 @@ public class ChromiumCdpTest {
 			params.put("modifiers", 0);
 			// Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
 			result = driver.executeCdpCommand(command, params);
-			sleep(100);
+			Utils.sleep(100);
 			params.clear();
 			params.put("type", "mouseReleased");
 			// mousePressed, mouseReleased, mouseMoved, mouseWhneel
@@ -192,11 +192,12 @@ public class ChromiumCdpTest {
 			params.put("modifiers", 0);
 			// Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
 			result = driver.executeCdpCommand(command, params);
-			sleep(3000);
+			Utils.sleep(3000);
 			// Assert
 			assertThat(driver.getCurrentUrl(), containsString("ru"));
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		}
 	}
 
@@ -221,7 +222,8 @@ public class ChromiumCdpTest {
 			assertTrue(Long.parseLong(data.get("nodeId").toString()) != 0);
 			err.println("Command " + command + " return node: " + new Gson().toJson(data, Map.class));
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -262,7 +264,8 @@ public class ChromiumCdpTest {
 			assertThat(data.get("nodeName"), is("#document"));
 			System.err.println("Command " + command + " returned node: " + new Gson().toJson(data, Map.class));
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -309,7 +312,7 @@ public class ChromiumCdpTest {
 			assertThat(dataString, notNullValue());
 			err.println("Command " + command + " return outerHTML: " + dataString);
 		} catch (WebDriverException e) {
-			err.println("Exception in " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println("Exception in " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -346,7 +349,8 @@ public class ChromiumCdpTest {
 			assertTrue(nodeIds.size() != 0);
 			err.println("Command " + command + " returned nodeIds: " + nodeIds);
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -397,7 +401,8 @@ public class ChromiumCdpTest {
 			System.err.println("Command " + command + " returned objectId data: " + data);
 
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in command " + command + " (ignored): " + e.toString());
 		} catch (Exception e) {
@@ -463,8 +468,9 @@ public class ChromiumCdpTest {
 			System.err.println("Command " + command + " returned objectId: " + objectId);
 		} catch (WebDriverException e) {
 			Throwable cause = e.getCause();
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage())
-					+ ((cause == null) ? "" : "cause: " + cause.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage())
+							+ ((cause == null) ? "" : "cause: " + cause.getMessage()));
 			/*
 			 * StackTraceElement[] stackTraceElements = e.getStackTrace(); for (int cnt = 0;
 			 * cnt != stackTraceElements.length; cnt++) {
@@ -566,7 +572,8 @@ public class ChromiumCdpTest {
 			result = driver.executeCdpCommand(command, new HashMap<>());
 			Utils.sleep(1000);
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -591,7 +598,8 @@ public class ChromiumCdpTest {
 			// assertTrue(isolationId != 0);
 			// Assert ?
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -619,7 +627,8 @@ public class ChromiumCdpTest {
 			assertThat(e.toString(), containsString("unexpected alert open"));
 			err.println("Exception (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 			// assertThat(e.toString(), containsString("invalid argument: Invalid
 			// parameters"));
 		} catch (Exception e) {
@@ -645,7 +654,7 @@ public class ChromiumCdpTest {
 			result = driver.executeCdpCommand(command, params);
 			System.err.println("Response to " + command + ": " + result);
 		} catch (WebDriverException e) {
-			err.println("Exception (rethrown): " + processExceptionMessage(e.getMessage()));
+			err.println("Exception (rethrown): " + Utils.processExceptionMessage(e.getMessage()));
 			throw new RuntimeException(e.toString());
 		}
 
@@ -672,7 +681,8 @@ public class ChromiumCdpTest {
 				}
 			});
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -708,7 +718,8 @@ public class ChromiumCdpTest {
 			System.err.println("Response to " + command + ": " + result);
 			// TODO: assert the response is a valid Base64-encoded pdf data.
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 			assertThat(e.toString(), containsString("PrintToPDF is not implemented"));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
@@ -728,7 +739,8 @@ public class ChromiumCdpTest {
 			driver.executeCdpCommand(command, new HashMap<>());
 			// Assert ?
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -759,7 +771,8 @@ public class ChromiumCdpTest {
 		} catch (JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -785,7 +798,8 @@ public class ChromiumCdpTest {
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -802,7 +816,7 @@ public class ChromiumCdpTest {
 			// Assert
 			assertThat(result, notNullValue());
 			System.err.println("Command " + command + " result: " + result);
-			sleep(1000);
+			Utils.sleep(1000);
 			command = "Browser.setWindowBounds";
 			params = new HashMap<String, Object>();
 			bounds = new HashMap<String, Object>();
@@ -817,7 +831,8 @@ public class ChromiumCdpTest {
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -851,7 +866,8 @@ public class ChromiumCdpTest {
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -883,7 +899,8 @@ public class ChromiumCdpTest {
 		} catch (JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -910,7 +927,8 @@ public class ChromiumCdpTest {
 		} catch (JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -949,7 +967,8 @@ public class ChromiumCdpTest {
 		} catch (JsonSyntaxException e) {
 			err.println("Exception (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -967,7 +986,8 @@ public class ChromiumCdpTest {
 			driver.executeCdpCommand(command, new HashMap<>());
 			// Assert ?
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -1038,8 +1058,8 @@ public class ChromiumCdpTest {
 				dataString = (String) result.get("data");
 				assertThat(dataString, notNullValue());
 			} catch (WebDriverException e) {
-				err.println(
-						"Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+				err.println("Exception in command " + command + " (ignored): "
+						+ Utils.processExceptionMessage(e.getMessage()));
 			} catch (Exception e) {
 				err.println("Exception: in " + command + "  " + e.toString());
 				throw (new RuntimeException(e));
@@ -1083,7 +1103,8 @@ public class ChromiumCdpTest {
 			dataString = (String) result.get("data");
 			assertThat(dataString, notNullValue());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -1124,7 +1145,8 @@ public class ChromiumCdpTest {
 			// Assert
 			err.println("Cookies count for www.google.com: " + ((List<Object>) result.get("cookies")).size() + "...");
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -1155,7 +1177,8 @@ public class ChromiumCdpTest {
 		} catch (JsonSyntaxException e) {
 			err.println("Exception deserializing cookies (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception (ignored): " + e.toString());
 		}
@@ -1185,7 +1208,8 @@ public class ChromiumCdpTest {
 		} catch (JsonSyntaxException e) {
 			err.println("Exception loading cookies (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 
 		} catch (Exception e) {
 			err.println("Exception (ignored): " + e.toString());
@@ -1255,7 +1279,8 @@ public class ChromiumCdpTest {
 		} catch (InvalidArgumentException e) {
 			err.println("Exception (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -1307,7 +1332,8 @@ public class ChromiumCdpTest {
 			assertThat(dataString, notNullValue());
 			err.println("outerHTML: " + dataString);
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -1342,7 +1368,8 @@ public class ChromiumCdpTest {
 				}
 			});
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -1410,7 +1437,8 @@ public class ChromiumCdpTest {
 		} catch (IOException e) {
 			err.println("Exception saving image file (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -1451,7 +1479,8 @@ public class ChromiumCdpTest {
 			assertThat(result, notNullValue());
 			err.println("Response from " + command + ": " + result);
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -1483,7 +1512,47 @@ public class ChromiumCdpTest {
 			assertThat(header, notNullValue());
 			// System.err.println("Response to " + command + ": header" + header);
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			err.println("Exception: in " + command + "  " + e.toString());
+			throw (new RuntimeException(e));
+		}
+	}
+
+	@Ignore
+	// https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setExtraHTTPHeaders
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void addCustomHeadersTest() {
+		// Arrange
+		String command = "Network.enable";
+		params = new HashMap<>();
+		params.put("maxTotalBufferSize", 0);
+		params.put("maxPostDataSize", 0);
+		params.put("maxPostDataSize", 0);
+		try {
+			result = driver.executeCdpCommand(command, params);
+			System.err.println("Result:" + result);
+			command = "Network.setExtraHTTPHeaders";
+			params = new HashMap<>();
+			Map<String, String> headers = new HashMap<>();
+			headers.put("customHeaderName", this.getClass().getName() + " addCustomHeadersTest");
+			params.put("headers", headers);
+			result = driver.executeCdpCommand(command, params);
+			System.err.println("Result:" + result);
+			// Act
+			// to test with a dummy server fire on locally and inspect the headers
+			// server-side
+			driver.get("http://127.0.0.1:8080/demo/Demo");
+			// Assert
+			// done through console logs inspection of the server
+			// otherwise just hit a generic web site
+			// driver.get("https://apache.org");
+		} catch (WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
@@ -1528,35 +1597,12 @@ public class ChromiumCdpTest {
 			command = "Performance.disable";
 			driver.executeCdpCommand(command, new HashMap<>());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): " + processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
 		}
-	}
-
-	public void sleep(Integer milliSeconds) {
-		try {
-			Thread.sleep((long) milliSeconds);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private String processExceptionMessage(String message) {
-		return processExceptionMessage(message, false);
-	}
-
-	private String processExceptionMessage(String message, boolean flag) {
-		Pattern p = Pattern.compile("(\\{.*\\})", Pattern.MULTILINE);
-		Matcher m = p.matcher(message);
-		List<String> messages = new ArrayList<>();
-		while (m.find()) {
-			messages.add(m.group(1));
-		}
-		// err.println("Exception message: " + messages.get(0));
-		// err.println("Exception messages: " + String.join("\n", messages));
-		return flag ? messages.get(0) : String.join("\n", messages);
 	}
 
 }
