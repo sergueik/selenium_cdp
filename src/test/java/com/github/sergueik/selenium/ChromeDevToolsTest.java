@@ -1,15 +1,23 @@
 package com.github.sergueik.selenium;
 
+import static java.lang.System.err;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.codec.binary.Base64;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 // need to use branch cdp_codegen of SeleniumHQ/selenium
 // https://github.com/SeleniumHQ/selenium/tree/cdp_codegen/java/client/src/org/openqa/selenium/devtools
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -19,6 +27,9 @@ import org.openqa.selenium.devtools.DevTools;
 // import org.openqa.selenium.devtools.Log;
 import org.openqa.selenium.devtools.network.Network;
 import org.openqa.selenium.devtools.network.model.Headers;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -38,10 +49,15 @@ public class ChromeDevToolsTest {
 	private static DevTools chromeDevTools;
 
 	private static String baseURL = "https://apache.org";
+	private static int flexibleWait = 60;
+	private static int pollingInterval = 500;
 
 	private final static int id = (int) (java.lang.Math.random() * 1_000_000);
 	public final static String consoleMessage = "message from test id #" + id;
 	private static Map<String, Object> headers = new HashMap<>();
+	private static WebElement element;
+	private static WebDriverWait wait;
+	private static Actions actions;
 
 	@SuppressWarnings("deprecation")
 	@BeforeClass
@@ -117,6 +133,42 @@ public class ChromeDevToolsTest {
 		driver.get("http://127.0.0.1:8080/demo/Demo");
 		// otherwise just hit a generic web site
 		// driver.get("https://apache.org");
+	}
+
+	// https://en.wikipedia.org/wiki/Basic_access_authentication
+	// https://examples.javacodegeeks.com/core-java/apache/commons/codec/binary/base64-binary/org-apache-commons-codec-binary-base64-example/
+	@Test
+	public void basicAuthenticationTest() {
+
+		final String username = "guest";
+		final String password = "guest";
+		try {
+			// Arrange
+			// enable Network
+			chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+			driver.get("https://jigsaw.w3.org/HTTP/");
+			headers = new HashMap<>();
+			headers.put("Authorization", "Basic "
+					+ new String((new Base64()).encode(String.format("%s:%s", username, password).getBytes())));
+			Headers headersData = new Headers(headers);
+			chromeDevTools.send(Network.setExtraHTTPHeaders(headersData));
+
+			// Act
+			element = wait.until(ExpectedConditions
+					.visibilityOf(driver.findElement(By.cssSelector("table td> a[href=\"Basic/\"]"))));
+			element.click();
+			wait.until(ExpectedConditions.urlToBe("https://jigsaw.w3.org/HTTP/Basic/"));
+
+			element = driver.findElement(By.tagName("body"));
+			assertThat("get past authentication", element.getAttribute("innerHTML"),
+					containsString("Your browser made it!"));
+			Utils.sleep(1000);
+		} catch (WebDriverException e) {
+			err.println("WebDriverException (ignored): " + Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			err.println("Exception: " + e.toString());
+			throw (new RuntimeException(e));
+		}
 	}
 
 	@Ignore

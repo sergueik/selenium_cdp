@@ -1533,15 +1533,15 @@ public class ChromiumCdpTest {
 		params.put("maxPostDataSize", 0);
 		params.put("maxPostDataSize", 0);
 		try {
-			result = driver.executeCdpCommand(command, params);
-			System.err.println("Result:" + result);
+			driver.executeCdpCommand(command, params);
+			// ignore the result
 			command = "Network.setExtraHTTPHeaders";
 			params = new HashMap<>();
 			Map<String, String> headers = new HashMap<>();
 			headers.put("customHeaderName", this.getClass().getName() + " addCustomHeadersTest");
 			params.put("headers", headers);
-			result = driver.executeCdpCommand(command, params);
-			System.err.println("Result:" + result);
+			driver.executeCdpCommand(command, params);
+			// ignore the result
 			// Act
 			// to test with a dummy server fire on locally and inspect the headers
 			// server-side
@@ -1559,7 +1559,6 @@ public class ChromiumCdpTest {
 		}
 	}
 
-
 	// https://en.wikipedia.org/wiki/Basic_access_authentication
 	// https://examples.javacodegeeks.com/core-java/apache/commons/codec/binary/base64-binary/org-apache-commons-codec-binary-base64-example/
 	@Test
@@ -1576,21 +1575,20 @@ public class ChromiumCdpTest {
 			params.put("maxTotalBufferSize", 10000000);
 			params.put("maxResourceBufferSize", 5000000);
 			params.put("maxPostDataSize", 5000000);
-			result = driver.executeCdpCommand(command, params);
+			driver.executeCdpCommand(command, params);
 			command = "Network.setExtraHTTPHeaders";
 			params = new HashMap<>();
 			Map<String, String> headers = new HashMap<>();
 			Base64 base64 = new Base64();
-			headers.put("Authorization", "Basic " + new String(base64
-					.encode(String.format("%s:%s", username, password).getBytes())));
+			headers.put("Authorization",
+					"Basic " + new String(base64.encode(String.format("%s:%s", username, password).getBytes())));
 			params.put("headers", headers);
-			result = driver.executeCdpCommand(command, params);
+			driver.executeCdpCommand(command, params);
 			// Act
-			element = wait.until(ExpectedConditions.visibilityOf(
-					driver.findElement(By.cssSelector("table td> a[href=\"Basic/\"]"))));
+			element = wait.until(ExpectedConditions
+					.visibilityOf(driver.findElement(By.cssSelector("table td> a[href=\"Basic/\"]"))));
 			element.click();
-			wait.until(
-					ExpectedConditions.urlToBe("https://jigsaw.w3.org/HTTP/Basic/"));
+			wait.until(ExpectedConditions.urlToBe("https://jigsaw.w3.org/HTTP/Basic/"));
 
 			element = driver.findElement(By.tagName("body"));
 			assertThat("get past authentication", element.getAttribute("innerHTML"),
