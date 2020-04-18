@@ -1559,6 +1559,52 @@ public class ChromiumCdpTest {
 		}
 	}
 
+
+	// https://en.wikipedia.org/wiki/Basic_access_authentication
+	// https://examples.javacodegeeks.com/core-java/apache/commons/codec/binary/base64-binary/org-apache-commons-codec-binary-base64-example/
+	@Test
+	public void basicAuthenticationTest() {
+
+		final String username = "guest";
+		final String password = "guest";
+		String command = null;
+		try {
+			// Arrange
+			command = "Network.enable";
+			driver.get("https://jigsaw.w3.org/HTTP/");
+			params = new HashMap<>();
+			params.put("maxTotalBufferSize", 10000000);
+			params.put("maxResourceBufferSize", 5000000);
+			params.put("maxPostDataSize", 5000000);
+			result = driver.executeCdpCommand(command, params);
+			command = "Network.setExtraHTTPHeaders";
+			params = new HashMap<>();
+			Map<String, String> headers = new HashMap<>();
+			Base64 base64 = new Base64();
+			headers.put("Authorization", "Basic " + new String(base64
+					.encode(String.format("%s:%s", username, password).getBytes())));
+			params.put("headers", headers);
+			result = driver.executeCdpCommand(command, params);
+			// Act
+			element = wait.until(ExpectedConditions.visibilityOf(
+					driver.findElement(By.cssSelector("table td> a[href=\"Basic/\"]"))));
+			element.click();
+			wait.until(
+					ExpectedConditions.urlToBe("https://jigsaw.w3.org/HTTP/Basic/"));
+
+			element = driver.findElement(By.tagName("body"));
+			assertThat("get past authentication", element.getAttribute("innerHTML"),
+					containsString("Your browser made it!"));
+			Utils.sleep(1000);
+		} catch (WebDriverException e) {
+			err.println("WebDriverException in command " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			err.println("Exception: in " + command + "  " + e.toString());
+			throw (new RuntimeException(e));
+		}
+	}
+
 	@Test
 	// based on:
 	// https://github.com/SrinivasanTarget/selenium4CDPsamples/blob/master/src/test/java/DevToolsTest.java
