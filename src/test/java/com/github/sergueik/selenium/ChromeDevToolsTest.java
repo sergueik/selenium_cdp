@@ -1,23 +1,24 @@
 package com.github.sergueik.selenium;
 
-import static java.lang.System.err;
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
 
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.apache.commons.codec.binary.Base64;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
 // need to use branch cdp_codegen of SeleniumHQ/selenium
 // https://github.com/SeleniumHQ/selenium/tree/cdp_codegen/java/client/src/org/openqa/selenium/devtools
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -27,9 +28,12 @@ import org.openqa.selenium.devtools.DevTools;
 // import org.openqa.selenium.devtools.Log;
 import org.openqa.selenium.devtools.network.Network;
 import org.openqa.selenium.devtools.network.model.Headers;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+
+import org.openqa.selenium.devtools.performance.Performance;
+import org.openqa.selenium.devtools.performance.model.Metric;
+import static org.openqa.selenium.devtools.performance.Performance.disable;
+import static org.openqa.selenium.devtools.performance.Performance.enable;
+import static org.openqa.selenium.devtools.performance.Performance.getMetrics;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -48,22 +52,21 @@ public class ChromeDevToolsTest {
 	private static String osName = Utils.getOSName();
 	private static DevTools chromeDevTools;
 
-	private static String baseURL = "https://apache.org";
-	private static int flexibleWait = 60;
-	private static int pollingInterval = 500;
+	private static String baseURL = "about:blank";
 
 	private final static int id = (int) (java.lang.Math.random() * 1_000_000);
 	public final static String consoleMessage = "message from test id #" + id;
 	private static Map<String, Object> headers = new HashMap<>();
-	private static WebElement element;
-	private static WebDriverWait wait;
-	private static Actions actions;
 
 	@SuppressWarnings("deprecation")
 	@BeforeClass
 	public static void setUp() throws Exception {
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+		System
+				.setProperty("webdriver.chrome.driver",
+						Paths.get(System.getProperty("user.home"))
+								.resolve("Downloads").resolve(osName.equals("windows")
+										? "chromedriver.exe" : "chromedriver")
+								.toAbsolutePath().toString());
 
 		driver = new ChromeDriver();
 		Utils.setDriver(driver);
@@ -114,61 +117,74 @@ public class ChromeDevToolsTest {
 	// https://stackoverflow.com/questions/15645093/setting-request-headers-in-selenium
 	// see also:
 	// https://github.com/SeleniumHQ/selenium/blob/master/java/client/test/org/openqa/selenium/devtools/ChromeDevToolsNetworkTest.java
+	@Ignore
 	@Test
 	public void addCustomHeadersTest() {
 		// enable Network
-		chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+		chromeDevTools.send(
+				Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
 		headers = new HashMap<>();
 		headers.put("customHeaderName", "customHeaderValue");
-		headers.put("customHeaderName", this.getClass().getName() + " addCustomHeadersTest");
+		headers.put("customHeaderName",
+				this.getClass().getName() + " addCustomHeadersTest");
 		Headers headersData = new Headers(headers);
 		chromeDevTools.send(Network.setExtraHTTPHeaders(headersData));
-		// add event listener to log that requests are sending with the custom header
+		// add event listener to log that requests are sending with the custom
+		// header
 		chromeDevTools.addListener(Network.requestWillBeSent(),
-				o -> Assert.assertEquals(o.getRequest().getHeaders().get("customHeaderName"), "customHeaderValue"));
-		chromeDevTools.addListener(Network.requestWillBeSent(), o -> System.err.println(
-				"addCustomHeaders Listener invoked with " + o.getRequest().getHeaders().get("customHeaderName")));
+				o -> Assert.assertEquals(
+						o.getRequest().getHeaders().get("customHeaderName"),
+						"customHeaderValue"));
+		chromeDevTools.addListener(Network.requestWillBeSent(),
+				o -> System.err.println("addCustomHeaders Listener invoked with "
+						+ o.getRequest().getHeaders().get("customHeaderName")));
 		// to test with a dummy server fire on locally and inspect the headers
 		// server-side
-		driver.get("http://127.0.0.1:8080/demo/Demo");
+		// driver.get("http://127.0.0.1:8080/demo/Demo");
 		// otherwise just hit a generic web site
-		// driver.get("https://apache.org");
+		driver.get("https://apache.org");
 	}
 
-	// https://en.wikipedia.org/wiki/Basic_access_authentication
-	// https://examples.javacodegeeks.com/core-java/apache/commons/codec/binary/base64-binary/org-apache-commons-codec-binary-base64-example/
+	// origin:
+	// https://github.com/SeleniumHQ/selenium/blob/cdp_codegen/java/client/test/org/openqa/selenium/devtools/ChromeDevToolsPerformanceTest.java#L72
+
+	// https://chromedevtools.github.io/devtools-protocol/tot/Performance/#method-setTimeDomain
+	// https://chromedevtools.github.io/devtools-protocol/tot/Performance/#method-disable
+	// https://chromedevtools.github.io/devtools-protocol/tot/Performance/#method-getMetrics
+	// https://chromedevtools.github.io/devtools-protocol/tot/Performance/#method-enable
+	// NOTE: test failing sporadically with TimeoutException
+	// stable when run alone
 	@Test
-	public void basicAuthenticationTest() {
+	public void getMetricsTest() {
 
-		final String username = "guest";
-		final String password = "guest";
-		try {
-			// Arrange
-			// enable Network
-			chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
-			driver.get("https://jigsaw.w3.org/HTTP/");
-			headers = new HashMap<>();
-			headers.put("Authorization", "Basic "
-					+ new String((new Base64()).encode(String.format("%s:%s", username, password).getBytes())));
-			Headers headersData = new Headers(headers);
-			chromeDevTools.send(Network.setExtraHTTPHeaders(headersData));
+		chromeDevTools.send(disable());
+		chromeDevTools.send(Performance
+				.setTimeDomain(Performance.SetTimeDomainTimeDomain.THREADTICKS));
+		chromeDevTools.send(enable());
+		driver.get("https://www.wikipedia.org");
+		List<Metric> metrics = chromeDevTools.send(getMetrics());
+		Assert.assertFalse(metrics.isEmpty());
+		assertThat(metrics, notNullValue());
+		metrics.stream()
+				.forEach(o -> System.err.println(o.getName() + " " + o.getValue()));
+		chromeDevTools.send(disable());
+		List<String> metricNames = metrics.stream().map(o -> o.getName())
+				.collect(Collectors.toList());
+		System.err.println("Verifying: " + metricNames);
 
-			// Act
-			element = wait.until(ExpectedConditions
-					.visibilityOf(driver.findElement(By.cssSelector("table td> a[href=\"Basic/\"]"))));
-			element.click();
-			wait.until(ExpectedConditions.urlToBe("https://jigsaw.w3.org/HTTP/Basic/"));
+		List<String> expectedMetricNames = Arrays
+				.asList(new String[] { "Timestamp", "Documents", "Frames",
+						"JSEventListeners", "LayoutObjects", "MediaKeySessions", "Nodes",
+						"Resources", "DomContentLoaded", "NavigationStart" });
+		// some keys
+		expectedMetricNames.forEach(o -> assertThat("Selfcheck: " + o,
+				expectedMetricNames.indexOf(o), is(greaterThan(-1))));
+		metricNames.forEach(o -> assertThat("Selfcheck(2): " + o,
+				metricNames.indexOf(o), is(greaterThan(-1))));
 
-			element = driver.findElement(By.tagName("body"));
-			assertThat("get past authentication", element.getAttribute("innerHTML"),
-					containsString("Your browser made it!"));
-			Utils.sleep(1000);
-		} catch (WebDriverException e) {
-			err.println("WebDriverException (ignored): " + Utils.processExceptionMessage(e.getMessage()));
-		} catch (Exception e) {
-			err.println("Exception: " + e.toString());
-			throw (new RuntimeException(e));
-		}
+		expectedMetricNames.forEach(o -> assertThat("Verify: " + o,
+				metricNames.indexOf(o), is(greaterThan(-1))));
+		chromeDevTools.send(disable());
 	}
 
 	@Ignore
@@ -193,3 +209,4 @@ public class ChromeDevToolsTest {
 		 */
 	}
 }
+
