@@ -1449,7 +1449,8 @@ public class ChromiumCdpTest {
 	// @Ignore
 	@Test
 	// based on:
-	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setGeolocationOverride
+	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-resetPageScaleFactor
+	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setPageScaleFactor
 	// see also:
 	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
 	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/main/java/com/sahajamit/messaging/MessageBuilder.java
@@ -1459,25 +1460,28 @@ public class ChromiumCdpTest {
 		baseURL = "https://www.google.com/maps";
 		driver.get(baseURL);
 
-		command = "Emulation.setPageScaleFactor";
+		command = "Emulation.resetPageScaleFactor";
 
-		// Act
-		params = new HashMap<String, Object>();
-		// does not appear to work
-		params.put("pageScaleFactor", 2.0);
 		try {
-			result = driver.executeCdpCommand(command, params);
-			// Assert
-			assertThat(result, notNullValue());
-			err.println("Response from " + command + ": " + result);
 			// Act
+			driver.executeCdpCommand(command, new HashMap<>());
+			// returns empty JSON
 			Utils.sleep(1000);
-			params = new HashMap<String, Object>();
+
+			command = "Emulation.setPageScaleFactor";
+			// Act
+			params.clear();
+			params.put("pageScaleFactor", 1.5);
+			driver.executeCdpCommand(command, params);
+			// returns empty JSON
+			Utils.sleep(1000);
+
+			// Act
+			params.clear();
 			params.put("pageScaleFactor", 1);
-			result = driver.executeCdpCommand(command, params);
-			// Assert
-			assertThat(result, notNullValue());
-			err.println("Response from " + command + ": " + result);
+			driver.executeCdpCommand(command, params);
+			// returns empty JSON
+			Utils.sleep(1000);
 		} catch (WebDriverException e) {
 			err.println(
 					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
@@ -1485,8 +1489,6 @@ public class ChromiumCdpTest {
 			err.println("Exception: in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
 		}
-		// Act
-		Utils.sleep(1000);
 	}
 
 	@Test
