@@ -22,6 +22,7 @@ import org.junit.Test;
 // need to use branch cdp_codegen of SeleniumHQ/selenium
 // https://github.com/SeleniumHQ/selenium/tree/cdp_codegen/java/client/src/org/openqa/selenium/devtools
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 //import org.openqa.selenium.devtools.Console;
@@ -48,8 +49,9 @@ import static org.openqa.selenium.devtools.performance.Performance.getMetrics;
 
 public class ChromeDevToolsTest {
 
-	private static ChromiumDriver driver;
+	private static boolean runHeadless = false;
 	private static String osName = Utils.getOSName();
+	private static ChromiumDriver driver;
 	private static DevTools chromeDevTools;
 
 	private static String baseURL = "about:blank";
@@ -58,17 +60,27 @@ public class ChromeDevToolsTest {
 	public final static String consoleMessage = "message from test id #" + id;
 	private static Map<String, Object> headers = new HashMap<>();
 
-	@SuppressWarnings("deprecation")
 	@BeforeClass
 	public static void setUp() throws Exception {
-		System
-				.setProperty("webdriver.chrome.driver",
-						Paths.get(System.getProperty("user.home"))
-								.resolve("Downloads").resolve(osName.equals("windows")
-										? "chromedriver.exe" : "chromedriver")
-								.toAbsolutePath().toString());
 
-		driver = new ChromeDriver();
+		if (System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
+			runHeadless = true;
+		}
+		// force the headless flag to be true to support Unix console execution
+		if (!(Utils.getOSName().equals("windows"))
+				&& !(System.getenv().containsKey("DISPLAY"))) {
+		runHeadless = true;
+		}
+System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
+				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+
+		if (runHeadless) {
+			ChromeOptions options = new ChromeOptions();
+			options.addArguments("--headless", "--disable-gpu");
+			driver = new ChromeDriver(options);
+		} else {
+			driver = new ChromeDriver();
+		}
 		Utils.setDriver(driver);
 		chromeDevTools = driver.getDevTools();
 		chromeDevTools.createSession();
@@ -121,23 +133,18 @@ public class ChromeDevToolsTest {
 	@Test
 	public void addCustomHeadersTest() {
 		// enable Network
-		chromeDevTools.send(
-				Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+		chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
 		headers = new HashMap<>();
 		headers.put("customHeaderName", "customHeaderValue");
-		headers.put("customHeaderName",
-				this.getClass().getName() + " addCustomHeadersTest");
+		headers.put("customHeaderName", this.getClass().getName() + " addCustomHeadersTest");
 		Headers headersData = new Headers(headers);
 		chromeDevTools.send(Network.setExtraHTTPHeaders(headersData));
 		// add event listener to log that requests are sending with the custom
 		// header
 		chromeDevTools.addListener(Network.requestWillBeSent(),
-				o -> Assert.assertEquals(
-						o.getRequest().getHeaders().get("customHeaderName"),
-						"customHeaderValue"));
-		chromeDevTools.addListener(Network.requestWillBeSent(),
-				o -> System.err.println("addCustomHeaders Listener invoked with "
-						+ o.getRequest().getHeaders().get("customHeaderName")));
+				o -> Assert.assertEquals(o.getRequest().getHeaders().get("customHeaderName"), "customHeaderValue"));
+		chromeDevTools.addListener(Network.requestWillBeSent(), o -> System.err.println(
+				"addCustomHeaders Listener invoked with " + o.getRequest().getHeaders().get("customHeaderName")));
 		// to test with a dummy server fire on locally and inspect the headers
 		// server-side
 		// driver.get("http://127.0.0.1:8080/demo/Demo");
@@ -158,32 +165,26 @@ public class ChromeDevToolsTest {
 	public void getMetricsTest() {
 
 		chromeDevTools.send(disable());
-		chromeDevTools.send(Performance
-				.setTimeDomain(Performance.SetTimeDomainTimeDomain.THREADTICKS));
+		chromeDevTools.send(Performance.setTimeDomain(Performance.SetTimeDomainTimeDomain.THREADTICKS));
 		chromeDevTools.send(enable());
 		driver.get("https://www.wikipedia.org");
 		List<Metric> metrics = chromeDevTools.send(getMetrics());
 		Assert.assertFalse(metrics.isEmpty());
 		assertThat(metrics, notNullValue());
-		metrics.stream()
-				.forEach(o -> System.err.println(o.getName() + " " + o.getValue()));
+		metrics.stream().forEach(o -> System.err.println(o.getName() + " " + o.getValue()));
 		chromeDevTools.send(disable());
-		List<String> metricNames = metrics.stream().map(o -> o.getName())
-				.collect(Collectors.toList());
+		List<String> metricNames = metrics.stream().map(o -> o.getName()).collect(Collectors.toList());
 		System.err.println("Verifying: " + metricNames);
 
 		List<String> expectedMetricNames = Arrays
-				.asList(new String[] { "Timestamp", "Documents", "Frames",
-						"JSEventListeners", "LayoutObjects", "MediaKeySessions", "Nodes",
-						"Resources", "DomContentLoaded", "NavigationStart" });
+				.asList(new String[] { "Timestamp", "Documents", "Frames", "JSEventListeners", "LayoutObjects",
+						"MediaKeySessions", "Nodes", "Resources", "DomContentLoaded", "NavigationStart" });
 		// some keys
-		expectedMetricNames.forEach(o -> assertThat("Selfcheck: " + o,
-				expectedMetricNames.indexOf(o), is(greaterThan(-1))));
-		metricNames.forEach(o -> assertThat("Selfcheck(2): " + o,
-				metricNames.indexOf(o), is(greaterThan(-1))));
+		expectedMetricNames
+				.forEach(o -> assertThat("Selfcheck: " + o, expectedMetricNames.indexOf(o), is(greaterThan(-1))));
+		metricNames.forEach(o -> assertThat("Selfcheck(2): " + o, metricNames.indexOf(o), is(greaterThan(-1))));
 
-		expectedMetricNames.forEach(o -> assertThat("Verify: " + o,
-				metricNames.indexOf(o), is(greaterThan(-1))));
+		expectedMetricNames.forEach(o -> assertThat("Verify: " + o, metricNames.indexOf(o), is(greaterThan(-1))));
 		chromeDevTools.send(disable());
 	}
 
@@ -209,4 +210,3 @@ public class ChromeDevToolsTest {
 		 */
 	}
 }
-
