@@ -54,9 +54,11 @@ public class ChromiumWindowSizeTest {
 	private static final int customHeight = 768;
 	private static boolean debug = false;
 	private static ChromiumDriver driver;
+	private static By locator = null;
 	private static WebElement element = null;
 
 	private static WebDriverWait wait;
+	private static Actions actions;
 	private static int flexibleWait = 60;
 	private static int pollingInterval = 500;
 	private static String osName = Utils.getOSName();
@@ -71,17 +73,23 @@ public class ChromiumWindowSizeTest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+		System
+				.setProperty("webdriver.chrome.driver",
+						Paths.get(System.getProperty("user.home"))
+								.resolve("Downloads").resolve(osName.equals("windows")
+										? "chromedriver.exe" : "chromedriver")
+								.toAbsolutePath().toString());
 
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments(Arrays.asList("--ssl-protocol=any", "--ignore-ssl-errors=true", "--disable-extensions",
+		options.addArguments(Arrays.asList("--ssl-protocol=any",
+				"--ignore-ssl-errors=true", "--disable-extensions",
 				"--ignore-certificate-errors", "--headless", "--disable-gpu",
 				String.format("window-size=%d,%d", customWidth, customHeight)));
 
 		options.setExperimentalOption("useAutomationExtension", false);
 
 		driver = new ChromeDriver(options);
+		actions = new Actions(driver);
 		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 		Utils.setDriver(driver);
@@ -103,7 +111,7 @@ public class ChromiumWindowSizeTest {
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-setWindowBounds
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#type-Bounds
 
-	// @Ignore
+	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void screenshotSizeTest() {
@@ -142,7 +150,8 @@ public class ChromiumWindowSizeTest {
 			}
 
 			if (debug) {
-				System.err.println("Internal: result class: " + result.getClass().getName());
+				System.err
+						.println("Internal: result class: " + result.getClass().getName());
 				// com.google.common.collect.SingletonImmutableBiMap
 			}
 			try {
@@ -155,8 +164,8 @@ public class ChromiumWindowSizeTest {
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
+			err.println("Exception in command " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			e.printStackTrace();
@@ -168,11 +177,12 @@ public class ChromiumWindowSizeTest {
 	public void evaluateSizeTest() {
 		page = "fixed_size_page.html";
 		driver.get(getPageContent(page));
-		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.absolute > span")));
+		element = wait.until(ExpectedConditions
+				.visibilityOfElementLocated(By.cssSelector("div.absolute > span")));
 		assertThat(element, notNullValue());
 		assertThat(element.isDisplayed(), is(true));
-		System.err.println("evaluateSizeTest element location: x=" + element.getLocation().x + "," + "y="
-				+ element.getLocation().y);
+		System.err.println("evaluateSizeTest element location: x="
+				+ element.getLocation().x + "," + "y=" + element.getLocation().y);
 		// TODO: rendering issue:
 		// evaluateSizeTest element location: x=-39,y=721
 		screenshotFileName = "fixed_size_page.png";
@@ -181,7 +191,8 @@ public class ChromiumWindowSizeTest {
 
 	protected String getPageContent(String pagename) {
 		try {
-			URI uri = ChromiumWindowSizeTest.class.getClassLoader().getResource(pagename).toURI();
+			URI uri = ChromiumWindowSizeTest.class.getClassLoader()
+					.getResource(pagename).toURI();
 			err.println("Testing local file: " + uri.toString());
 			return uri.toString();
 		} catch (URISyntaxException e) {
@@ -205,14 +216,15 @@ public class ChromiumWindowSizeTest {
 			BufferedImage o = ImageIO.read(new ByteArrayInputStream(image));
 			assertThat(o.getWidth(), greaterThan(0));
 			assertThat(o.getHeight(), greaterThan(0));
-			FileOutputStream fileOutputStream = new FileOutputStream(screenshotFileName);
+			FileOutputStream fileOutputStream = new FileOutputStream(
+					screenshotFileName);
 			fileOutputStream.write(image);
 			fileOutputStream.close();
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println(
-					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
+			err.println("Exception in command " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
 		} catch (IOException e) {
 			err.println("Exception saving image (ignored): " + e.toString());
 		} catch (Exception e) {
