@@ -7,8 +7,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -17,9 +19,14 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.After;
@@ -73,16 +80,11 @@ public class ChromiumWindowSizeTest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		System
-				.setProperty("webdriver.chrome.driver",
-						Paths.get(System.getProperty("user.home"))
-								.resolve("Downloads").resolve(osName.equals("windows")
-										? "chromedriver.exe" : "chromedriver")
-								.toAbsolutePath().toString());
+		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
+				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
 
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments(Arrays.asList("--ssl-protocol=any",
-				"--ignore-ssl-errors=true", "--disable-extensions",
+		options.addArguments(Arrays.asList("--ssl-protocol=any", "--ignore-ssl-errors=true", "--disable-extensions",
 				"--ignore-certificate-errors", "--headless", "--disable-gpu",
 				String.format("window-size=%d,%d", customWidth, customHeight)));
 
@@ -150,8 +152,7 @@ public class ChromiumWindowSizeTest {
 			}
 
 			if (debug) {
-				System.err
-						.println("Internal: result class: " + result.getClass().getName());
+				System.err.println("Internal: result class: " + result.getClass().getName());
 				// com.google.common.collect.SingletonImmutableBiMap
 			}
 			try {
@@ -164,8 +165,8 @@ public class ChromiumWindowSizeTest {
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): "
-					+ Utils.processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			e.printStackTrace();
@@ -177,12 +178,11 @@ public class ChromiumWindowSizeTest {
 	public void evaluateSizeTest() {
 		page = "fixed_size_page.html";
 		driver.get(getPageContent(page));
-		element = wait.until(ExpectedConditions
-				.visibilityOfElementLocated(By.cssSelector("div.absolute > span")));
+		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.absolute > span")));
 		assertThat(element, notNullValue());
 		assertThat(element.isDisplayed(), is(true));
-		System.err.println("evaluateSizeTest element location: x="
-				+ element.getLocation().x + "," + "y=" + element.getLocation().y);
+		System.err.println("evaluateSizeTest element location: x=" + element.getLocation().x + "," + "y="
+				+ element.getLocation().y);
 		// TODO: rendering issue:
 		// evaluateSizeTest element location: x=-39,y=721
 		screenshotFileName = "fixed_size_page.png";
@@ -191,8 +191,7 @@ public class ChromiumWindowSizeTest {
 
 	protected String getPageContent(String pagename) {
 		try {
-			URI uri = ChromiumWindowSizeTest.class.getClassLoader()
-					.getResource(pagename).toURI();
+			URI uri = ChromiumWindowSizeTest.class.getClassLoader().getResource(pagename).toURI();
 			err.println("Testing local file: " + uri.toString());
 			return uri.toString();
 		} catch (URISyntaxException e) {
@@ -216,21 +215,46 @@ public class ChromiumWindowSizeTest {
 			BufferedImage o = ImageIO.read(new ByteArrayInputStream(image));
 			assertThat(o.getWidth(), greaterThan(0));
 			assertThat(o.getHeight(), greaterThan(0));
-			FileOutputStream fileOutputStream = new FileOutputStream(
-					screenshotFileName);
+			FileOutputStream fileOutputStream = new FileOutputStream(screenshotFileName);
 			fileOutputStream.write(image);
 			fileOutputStream.close();
+			// read it back
+			ImageUtils.getImageDimension();
+			System.err.println("Dimensions: " + ImageUtils.dimension.width + "," + ImageUtils.dimension.height);
 		} catch (JsonSyntaxException e) {
 			err.println("Exception in " + command + " (ignored): " + e.toString());
 		} catch (WebDriverException e) {
-			err.println("Exception in command " + command + " (ignored): "
-					+ Utils.processExceptionMessage(e.getMessage()));
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (IOException e) {
 			err.println("Exception saving image (ignored): " + e.toString());
 		} catch (Exception e) {
 			err.println("Exception: in " + command + "  " + e.toString());
 			e.printStackTrace();
 			throw (new RuntimeException(e));
+		}
+	}
+
+	private static class ImageUtils {
+
+		// based on: https://stackoverflow.com/questions/672916/how-to-get-image
+
+		private static ImageReader reader;
+		private static ImageInputStream stream;
+		private static Dimension dimension = new Dimension(0, 0);;
+
+		public static void getImageDimension() throws IOException {
+			try {
+				reader = ImageIO.getImageReadersBySuffix("png").next();
+				stream = new FileImageInputStream(new File(screenshotFileName));
+				reader.setInput(stream);
+				int index = reader.getMinIndex();
+				dimension = new Dimension(reader.getWidth(index), reader.getHeight(index));
+			} catch (IOException e) {
+				System.err.println("Error reading image file: " + screenshotFileName + " " + e.toString());
+			} finally {
+				reader.dispose();
+			}
 		}
 	}
 }
