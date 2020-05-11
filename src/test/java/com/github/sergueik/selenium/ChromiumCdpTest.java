@@ -984,6 +984,38 @@ public class ChromiumCdpTest {
 
 	// @Ignore
 	@Test
+	public void deleteCookiesTest() {
+		baseURL = "https://www.google.com";
+		driver.get(baseURL);
+		command = "Network.deleteCookies";
+		try {
+			// Act
+			params = new HashMap<String, Object>();
+			params.put("requestId", "");
+			params = new HashMap<>();
+			String name = "NID";
+			params.put("name", name);
+			String url = "";
+			params.put("url", url);
+			String domain = ".google.com";
+			params.put("domain", domain);
+			String path = "/";
+			params.put("path", path);
+
+			result = driver.executeCdpCommand(command, params);
+			System.err.println("Result of command " + command + " = " + result);
+			// Assert ?
+		} catch (WebDriverException e) {
+			err.println(
+					"Exception in command " + command + " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			err.println("Exception: in " + command + "  " + e.toString());
+			throw (new RuntimeException(e));
+		}
+	}
+
+	@Ignore
+	@Test
 	// based on:
 	// https://qna.habr.com/q/732307
 	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
