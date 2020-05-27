@@ -422,6 +422,7 @@ The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/sr
   * yet another project [SrinivasanTarget/selenium4CDPsamples](https://github.com/SrinivasanTarget/selenium4CDPsamples)
   * Python Chrome Devtools Procotol [client](https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py)
   * Python Chrome Devtools Procotol [client](https://github.com/shish/devtools-py)
+  * Selenium 3.x CDP Exender [clone project](https://github.com/sergueik/cdp_webdriver) - the original project [sahajamit/chrome-devtools-webdriver-integration](https://github.com/sahajamit/chrome-devtools-webdriver-integration) - is somewhat stale
 
 ### License
 
