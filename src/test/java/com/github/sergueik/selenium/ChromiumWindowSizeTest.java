@@ -123,6 +123,7 @@ public class ChromiumWindowSizeTest {
 			// Assert
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("bounds"));
+
 			data = (Map<String, Object>) result.get("bounds");
 			assertThat(data, notNullValue());
 			assertThat(data, hasKey("width"));
@@ -162,7 +163,7 @@ public class ChromiumWindowSizeTest {
 	}
 
 	// @Ignore
-	@Test
+	@Test(expected = org.openqa.selenium.WebDriverException.class)
 	public void resizeBrowserWindowTest() {
 
 		driver.get(Utils.getPageContent(imagePage));
@@ -170,37 +171,29 @@ public class ChromiumWindowSizeTest {
 		try {
 			// Act
 			params = new HashMap<String, Object>();
-			params.put("windowId", windowId);
-			data.put("left", 0);
-			data.put("top", 0);
-			data.put("width", customWidth / 2);
-			data.put("height", customHeight / 2);
-			data.put("windowState", "normal");
+			params.put("windowId", (Object) windowId);
+			// java.lang.UnsupportedOperationException
+			data = new HashMap<>();
+			data.put("left", (Object) 0);
+			data.put("top", (Object) 0);
+			data.put("width", (Object) (customWidth / 2));
+			data.put("height", (Object) (customHeight / 2));
+			data.put("windowState", (Object) "normal");
 			params.put("Bounds ", data);
 			driver.executeCdpCommand(command, params);
 			// TODO: Assert
 		} catch (JsonSyntaxException e) {
 			System.err.println("JSON Syntax exception in " + command + " (ignored): " + e.toString());
 		} catch (WebDriverException e) {
+
 			System.err.println("Web Driver exception in " + command + " (ignored): "
 					+ Utils.processExceptionMessage(e.getMessage()));
+			throw e;
 		} catch (Exception e) {
 			System.err.println("Exception in " + command + "  " + e.toString());
 			e.printStackTrace();
 			throw (new RuntimeException(e));
 		}
-		/*
-		 * NOTE: Web Driver exception in command Browser.setWindowBounds (ignored): {
-		 * acceptInsecureCerts: fase, browserName: chrome, browserVersion: 83.0.4103.61,
-		 * chrome: {chromedriverVerion: 83.0.4103.39 (ccbf011cb2d2b..., userDataDir:
-		 * C:\Users\Serguei\AppData\Lo..}, goog:chromeOptions: { debuggerAddress:
-		 * localhost:51409 }, javascriptEnabled: tue, networkConnectionEnabled: false,
-		 * pageLoadStrategy: normal, platform: WINDOW, platformName: WINDOWS, proxy:
-		 * Proxy(), setWindowRect: true, strictFileInteracability: false, timeouts:
-		 * {implicit: 0, pageLoad: 300000, script: 30000}, unhanledPromptBehavior:
-		 * dismiss and notify, webauthn:virtualAuthenticators: true }
-		 */
-
 	}
 
 	@Test
