@@ -2,6 +2,8 @@ package com.github.sergueik.selenium;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +56,7 @@ public class Utils {
 	}
 
 	public static void highlight(WebElement element) {
-		highlight(element, 100, "solid yellow");
+		highlight(element, highlightInterval, "solid yellow");
 	}
 
 	public static void highlight(WebElement element, long highlightInterval) {
@@ -68,6 +70,16 @@ public class Utils {
 			js.executeScript("arguments[0].style.border=''", element);
 		} catch (InterruptedException e) {
 			// err.println("Exception (ignored): " + e.toString());
+		}
+	}
+
+	public static String getPageContent(String pagename) {
+		try {
+			URI uri = Utils.class.getClassLoader().getResource(pagename).toURI();
+			System.err.println("Testing local file: " + uri.toString());
+			return uri.toString();
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

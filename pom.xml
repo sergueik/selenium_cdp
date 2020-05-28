@@ -4,7 +4,7 @@
   <groupId>com.mycompany.app</groupId>
   <artifactId>selenum_cdp</artifactId>
   <packaging>jar</packaging>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.3-SNAPSHOT</version>
   <name>selenum_cdp</name>
   <url>http://maven.apache.org</url>
   <properties>
