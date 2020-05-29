@@ -24,7 +24,13 @@ import org.junit.Test;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
+import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.DevTools;
+import org.openqa.selenium.devtools.browser.Browser;
+import org.openqa.selenium.devtools.browser.Browser.GetWindowForTargetResponse;
+import org.openqa.selenium.devtools.browser.model.Bounds;
+import org.openqa.selenium.devtools.browser.model.WindowID;
+import org.openqa.selenium.TimeoutException;
 //import org.openqa.selenium.devtools.Console;
 // import org.openqa.selenium.devtools.Log;
 import org.openqa.selenium.devtools.network.Network;
@@ -67,11 +73,10 @@ public class ChromeDevToolsTest {
 			runHeadless = true;
 		}
 		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOSName().equals("windows"))
-				&& !(System.getenv().containsKey("DISPLAY"))) {
-		runHeadless = true;
+		if (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY"))) {
+			runHeadless = true;
 		}
-System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
+		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
 				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
 
 		if (runHeadless) {
@@ -122,6 +127,38 @@ System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user
 		// Act
 		// write console message by executing Javascript
 		Utils.executeScript("console.log('" + consoleMessage + "');");
+	}
+
+	// @Ignore
+	@Test
+	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
+	public void broserGetWindowBoundsTest() {
+		GetWindowForTargetResponse response = chromeDevTools.send(Browser.getWindowForTarget(Optional.empty()));
+		WindowID windowId = response.getWindowId();
+		Bounds bounds = response.getBounds();
+		System.err.println(String.format(
+				"Method Browser.getWindowForTarget result: windowId: %d"
+						+ "\nBounds: top: %d, left: %d, width: %d, height: %d",
+				Long.parseLong(windowId.toString()), bounds.getLeft(), bounds.getTop(), bounds.getWidth(),
+				bounds.getHeight()));
+		Optional<WindowID> windowIdArg = Optional.of(windowId);
+		try {
+			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
+
+		} catch (TimeoutException e) {
+			System.err.println("Exception (ignored): " + e.toString());
+			bounds = null;
+
+		}
+
+		if (bounds != null) {
+			System.err.println(
+					String.format("Method Browser.getWindowBounds(%d) result: top: %d, left: %d, width: %d, height: %d",
+							Long.parseLong(windowId.toString()), bounds.getLeft(), bounds.getTop(), bounds.getWidth(),
+							bounds.getHeight()));
+		} else {
+			System.err.println("Method Browser.getWindowBounds failed");
+		}
 	}
 
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setExtraHTTPHeaders
