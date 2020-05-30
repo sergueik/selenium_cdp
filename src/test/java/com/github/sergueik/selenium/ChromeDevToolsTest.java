@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.junit.AfterClass;
@@ -35,9 +36,11 @@ import org.openqa.selenium.TimeoutException;
 // import org.openqa.selenium.devtools.Log;
 import org.openqa.selenium.devtools.network.Network;
 import org.openqa.selenium.devtools.network.model.Headers;
-
+import org.openqa.selenium.devtools.network.model.RequestId;
 import org.openqa.selenium.devtools.performance.Performance;
 import org.openqa.selenium.devtools.performance.model.Metric;
+import org.openqa.selenium.devtools.target.model.SessionID;
+
 import static org.openqa.selenium.devtools.performance.Performance.disable;
 import static org.openqa.selenium.devtools.performance.Performance.enable;
 import static org.openqa.selenium.devtools.performance.Performance.getMetrics;
@@ -69,15 +72,21 @@ public class ChromeDevToolsTest {
 	@BeforeClass
 	public static void setUp() throws Exception {
 
-		if (System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
+		if (System.getenv().containsKey("HEADLESS")
+				&& System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
 			runHeadless = true;
 		}
 		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY"))) {
+		if (!(Utils.getOSName().equals("windows"))
+				&& !(System.getenv().containsKey("DISPLAY"))) {
 			runHeadless = true;
 		}
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+		System
+				.setProperty("webdriver.chrome.driver",
+						Paths.get(System.getProperty("user.home"))
+								.resolve("Downloads").resolve(osName.equals("windows")
+										? "chromedriver.exe" : "chromedriver")
+								.toAbsolutePath().toString());
 
 		if (runHeadless) {
 			ChromeOptions options = new ChromeOptions();
@@ -129,33 +138,45 @@ public class ChromeDevToolsTest {
 		Utils.executeScript("console.log('" + consoleMessage + "');");
 	}
 
-	// @Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
 	public void broserGetWindowBoundsTest() {
-		GetWindowForTargetResponse response = chromeDevTools.send(Browser.getWindowForTarget(Optional.empty()));
+		GetWindowForTargetResponse response = chromeDevTools
+				.send(Browser.getWindowForTarget(Optional.empty()));
 		WindowID windowId = response.getWindowId();
 		Bounds bounds = response.getBounds();
 		System.err.println(String.format(
 				"Method Browser.getWindowForTarget result: windowId: %d"
 						+ "\nBounds: top: %d, left: %d, width: %d, height: %d",
-				Long.parseLong(windowId.toString()), bounds.getLeft(), bounds.getTop(), bounds.getWidth(),
-				bounds.getHeight()));
+				Long.parseLong(windowId.toString()), bounds.getLeft(), bounds.getTop(),
+				bounds.getWidth(), bounds.getHeight()));
 		Optional<WindowID> windowIdArg = Optional.of(windowId);
 		try {
 			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
-
+			chromeDevTools.createSessionIfThereIsNotOne();
+			SessionID id = chromeDevTools.getCdpSession();
 		} catch (TimeoutException e) {
 			System.err.println("Exception (ignored): " + e.toString());
 			bounds = null;
-
 		}
-
-		if (bounds != null) {
+		// https://github.com/SeleniumHQ/selenium/issues/7369
+		chromeDevTools.send(
+				Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+		// https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/devtools/DevTools.java
+		// https://github.com/SeleniumHQ/selenium/blob/master/java/client/test/org/openqa/selenium/devtools/ChromeDevToolsNetworkTest.java
+		// but Browser has no events, Network has
+		chromeDevTools.addListener(Network.dataReceived(), o -> {
+			Assert.assertNotNull(o.getRequestId());
+			// TODO: Command<GetResponseBodyResponse> - get something practical 
 			System.err.println(
-					String.format("Method Browser.getWindowBounds(%d) result: top: %d, left: %d, width: %d, height: %d",
-							Long.parseLong(windowId.toString()), bounds.getLeft(), bounds.getTop(), bounds.getWidth(),
-							bounds.getHeight()));
+					"Response body: " + Network.getResponseBody(o.getRequestId()).getMethod());
+		});
+		driver.get("https://apache.org");
+		if (bounds != null) {
+			System.err.println(String.format(
+					"Method Browser.getWindowBounds(%d) result: top: %d, left: %d, width: %d, height: %d",
+					Long.parseLong(windowId.toString()), bounds.getLeft(),
+					bounds.getTop(), bounds.getWidth(), bounds.getHeight()));
 		} else {
 			System.err.println("Method Browser.getWindowBounds failed");
 		}
@@ -170,18 +191,23 @@ public class ChromeDevToolsTest {
 	@Test
 	public void addCustomHeadersTest() {
 		// enable Network
-		chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+		chromeDevTools.send(
+				Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
 		headers = new HashMap<>();
 		headers.put("customHeaderName", "customHeaderValue");
-		headers.put("customHeaderName", this.getClass().getName() + " addCustomHeadersTest");
+		headers.put("customHeaderName",
+				this.getClass().getName() + " addCustomHeadersTest");
 		Headers headersData = new Headers(headers);
 		chromeDevTools.send(Network.setExtraHTTPHeaders(headersData));
 		// add event listener to log that requests are sending with the custom
 		// header
 		chromeDevTools.addListener(Network.requestWillBeSent(),
-				o -> Assert.assertEquals(o.getRequest().getHeaders().get("customHeaderName"), "customHeaderValue"));
-		chromeDevTools.addListener(Network.requestWillBeSent(), o -> System.err.println(
-				"addCustomHeaders Listener invoked with " + o.getRequest().getHeaders().get("customHeaderName")));
+				o -> Assert.assertEquals(
+						o.getRequest().getHeaders().get("customHeaderName"),
+						"customHeaderValue"));
+		chromeDevTools.addListener(Network.requestWillBeSent(),
+				o -> System.err.println("addCustomHeaders Listener invoked with "
+						+ o.getRequest().getHeaders().get("customHeaderName")));
 		// to test with a dummy server fire on locally and inspect the headers
 		// server-side
 		// driver.get("http://127.0.0.1:8080/demo/Demo");
@@ -202,26 +228,32 @@ public class ChromeDevToolsTest {
 	public void getMetricsTest() {
 
 		chromeDevTools.send(disable());
-		chromeDevTools.send(Performance.setTimeDomain(Performance.SetTimeDomainTimeDomain.THREADTICKS));
+		chromeDevTools.send(Performance
+				.setTimeDomain(Performance.SetTimeDomainTimeDomain.THREADTICKS));
 		chromeDevTools.send(enable());
 		driver.get("https://www.wikipedia.org");
 		List<Metric> metrics = chromeDevTools.send(getMetrics());
 		Assert.assertFalse(metrics.isEmpty());
 		assertThat(metrics, notNullValue());
-		metrics.stream().forEach(o -> System.err.println(o.getName() + " " + o.getValue()));
+		metrics.stream()
+				.forEach(o -> System.err.println(o.getName() + " " + o.getValue()));
 		chromeDevTools.send(disable());
-		List<String> metricNames = metrics.stream().map(o -> o.getName()).collect(Collectors.toList());
+		List<String> metricNames = metrics.stream().map(o -> o.getName())
+				.collect(Collectors.toList());
 		System.err.println("Verifying: " + metricNames);
 
 		List<String> expectedMetricNames = Arrays
-				.asList(new String[] { "Timestamp", "Documents", "Frames", "JSEventListeners", "LayoutObjects",
-						"MediaKeySessions", "Nodes", "Resources", "DomContentLoaded", "NavigationStart" });
+				.asList(new String[] { "Timestamp", "Documents", "Frames",
+						"JSEventListeners", "LayoutObjects", "MediaKeySessions", "Nodes",
+						"Resources", "DomContentLoaded", "NavigationStart" });
 		// some keys
-		expectedMetricNames
-				.forEach(o -> assertThat("Selfcheck: " + o, expectedMetricNames.indexOf(o), is(greaterThan(-1))));
-		metricNames.forEach(o -> assertThat("Selfcheck(2): " + o, metricNames.indexOf(o), is(greaterThan(-1))));
+		expectedMetricNames.forEach(o -> assertThat("Selfcheck: " + o,
+				expectedMetricNames.indexOf(o), is(greaterThan(-1))));
+		metricNames.forEach(o -> assertThat("Selfcheck(2): " + o,
+				metricNames.indexOf(o), is(greaterThan(-1))));
 
-		expectedMetricNames.forEach(o -> assertThat("Verify: " + o, metricNames.indexOf(o), is(greaterThan(-1))));
+		expectedMetricNames.forEach(o -> assertThat("Verify: " + o,
+				metricNames.indexOf(o), is(greaterThan(-1))));
 		chromeDevTools.send(disable());
 	}
 
