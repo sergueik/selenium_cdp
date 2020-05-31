@@ -167,9 +167,9 @@ public class ChromeDevToolsTest {
 		// but Browser has no events, Network has
 		chromeDevTools.addListener(Network.dataReceived(), o -> {
 			Assert.assertNotNull(o.getRequestId());
-			// TODO: Command<GetResponseBodyResponse> - get something practical 
-			System.err.println(
-					"Response body: " + Network.getResponseBody(o.getRequestId()).getMethod());
+			// TODO: Command<GetResponseBodyResponse> - get something practical
+			System.err.println("Response body: "
+					+ Network.getResponseBody(o.getRequestId()).getMethod());
 		});
 		driver.get("https://apache.org");
 		if (bounds != null) {
@@ -230,7 +230,16 @@ public class ChromeDevToolsTest {
 		chromeDevTools.send(disable());
 		chromeDevTools.send(Performance
 				.setTimeDomain(Performance.SetTimeDomainTimeDomain.THREADTICKS));
-		chromeDevTools.send(enable());
+
+		// Selenium 4.0.0-alpha-6 change
+		// method enable in class
+		// org.openqa.selenium.devtools.performance.Performance cannot be applied to
+		// given types;
+		// required:
+		// java.util.Optional<org.openqa.selenium.devtools.performance.Performance.EnableTimeDomain>
+		// found: no arguments
+		// reason: actual and formal argument lists differ in length
+		chromeDevTools.send(enable(Optional.empty()));
 		driver.get("https://www.wikipedia.org");
 		List<Metric> metrics = chromeDevTools.send(getMetrics());
 		Assert.assertFalse(metrics.isEmpty());
