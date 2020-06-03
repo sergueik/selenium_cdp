@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.IllegalFormatConversionException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +32,7 @@ import org.openqa.selenium.devtools.browser.Browser;
 import org.openqa.selenium.devtools.browser.Browser.GetWindowForTargetResponse;
 import org.openqa.selenium.devtools.browser.model.Bounds;
 import org.openqa.selenium.devtools.browser.model.WindowID;
+import org.openqa.selenium.devtools.log.Log;
 import org.openqa.selenium.TimeoutException;
 //import org.openqa.selenium.devtools.Console;
 // import org.openqa.selenium.devtools.Log;
@@ -65,8 +67,6 @@ public class ChromeDevToolsTest {
 
 	private static String baseURL = "about:blank";
 
-	private final static int id = (int) (java.lang.Math.random() * 1_000_000);
-	public final static String consoleMessage = "message from test id #" + id;
 	private static Map<String, Object> headers = new HashMap<>();
 
 	@BeforeClass
@@ -121,21 +121,24 @@ public class ChromeDevToolsTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Console#event-messageAdded
 	// https://chromedevtools.github.io/devtools-protocol/tot/Log#event-entryAdded
 	// https://chromedevtools.github.io/devtools-protocol/tot/Log#type-LogEntry
 	public void consoleMessageAddTest() {
 		// Assert
+		final String consoleMessage = "message from the test";
+
 		// add event listener to verify the console message text
-		// chromeDevTools.addListener(Log.entryAdded(), o ->
-		// Assert.assertEquals(true,
-		// o.getText().equals(consoleMessage)));
+		chromeDevTools.addListener(Log.entryAdded(),
+				o -> Assert.assertEquals(true, o.getText().equals(consoleMessage)));
 
 		// Act
 		// write console message by executing Javascript
 		Utils.executeScript("console.log('" + consoleMessage + "');");
+		System.err
+				.println("Successfully captured console log messge: " + consoleMessage);
 	}
 
 	@Test
@@ -145,12 +148,22 @@ public class ChromeDevToolsTest {
 				.send(Browser.getWindowForTarget(Optional.empty()));
 		WindowID windowId = response.getWindowId();
 		Bounds bounds = response.getBounds();
-		System.err.println(String.format(
-				"Method Browser.getWindowForTarget result: windowId: %d"
-						+ "\nBounds: top: %d, left: %d, width: %d, height: %d",
-				Long.parseLong(windowId.toString()), bounds.getLeft(), bounds.getTop(),
-				bounds.getWidth(), bounds.getHeight()));
-		Optional<WindowID> windowIdArg = Optional.of(windowId);
+		try {
+			System.err.println(String.format(
+					"Method Browser.getWindowForTarget result: windowId: %d"
+							+ "\nBounds: top: %d, left: %d, width: %d, height: %d",
+					Long.parseLong(windowId.toString()), bounds.getLeft(),
+					bounds.getTop(), bounds.getWidth(), bounds.getHeight()));
+		} catch (IllegalFormatConversionException e) {
+			// java.util.IllegalFormatConversionException: d != java.util.Optional
+			System.err.println("Exception (ignored):" + e.getMessage());
+		}
+		try {
+			Optional<WindowID> windowIdArg = Optional.of(windowId);
+		} catch (IllegalFormatConversionException e) {
+			// java.util.IllegalFormatConversionException: d != java.util.Optional
+			System.err.println("Exception (ignored):" + e.getMessage());
+		}
 		try {
 			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
 			chromeDevTools.createSessionIfThereIsNotOne();
