@@ -152,19 +152,22 @@ public class ChromeDevToolsTest {
 			System.err.println(String.format(
 					"Method Browser.getWindowForTarget result: windowId: %d"
 							+ "\nBounds: top: %d, left: %d, width: %d, height: %d",
-					Long.parseLong(windowId.toString()), bounds.getLeft(),
-					bounds.getTop(), bounds.getWidth(), bounds.getHeight()));
+					Long.parseLong(windowId.toString()), bounds.getLeft().get(),
+					bounds.getTop().get(), bounds.getWidth().get(),
+					bounds.getHeight().get()));
 		} catch (IllegalFormatConversionException e) {
 			// java.util.IllegalFormatConversionException: d != java.util.Optional
-			System.err.println("Exception in Browser.getWindowForTarget (ignored):" + e.getMessage());
+			System.err.println("Exception in Browser.getWindowForTarget (ignored):"
+					+ e.getMessage());
 		}
 		try {
 			Optional<WindowID> windowIdArg = Optional.of(windowId);
 		} catch (IllegalFormatConversionException e) {
 			// java.util.IllegalFormatConversionException: d != java.util.Optional
-			System.err.println("Exception in reading windowId (ignored):" + e.getMessage());
+			System.err
+					.println("Exception in reading windowId (ignored):" + e.getMessage());
 		}
-		try {	
+		try {
 			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
 			chromeDevTools.createSessionIfThereIsNotOne();
 			SessionID id = chromeDevTools.getCdpSession();
