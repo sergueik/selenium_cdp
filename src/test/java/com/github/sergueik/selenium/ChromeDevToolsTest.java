@@ -148,25 +148,13 @@ public class ChromeDevToolsTest {
 				.send(Browser.getWindowForTarget(Optional.empty()));
 		WindowID windowId = response.getWindowId();
 		Bounds bounds = response.getBounds();
-		try {
-			System.err.println(String.format(
-					"Method Browser.getWindowForTarget result: windowId: %d"
-							+ "\nBounds: top: %d, left: %d, width: %d, height: %d",
-					Long.parseLong(windowId.toString()), bounds.getLeft().get(),
-					bounds.getTop().get(), bounds.getWidth().get(),
-					bounds.getHeight().get()));
-		} catch (IllegalFormatConversionException e) {
-			// java.util.IllegalFormatConversionException: d != java.util.Optional
-			System.err.println("Exception in Browser.getWindowForTarget (ignored):"
-					+ e.getMessage());
-		}
-		try {
-			Optional<WindowID> windowIdArg = Optional.of(windowId);
-		} catch (IllegalFormatConversionException e) {
-			// java.util.IllegalFormatConversionException: d != java.util.Optional
-			System.err
-					.println("Exception in reading windowId (ignored):" + e.getMessage());
-		}
+		System.err.println(String.format(
+				"Method Browser.getWindowForTarget result: windowId: %d"
+						+ "\nBounds: top: %d, left: %d, width: %d, height: %d",
+				Long.parseLong(windowId.toString()), bounds.getLeft().get(),
+				bounds.getTop().get(), bounds.getWidth().get(),
+				bounds.getHeight().get()));
+		Optional<WindowID> windowIdArg = Optional.of(windowId);
 		try {
 			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
 			chromeDevTools.createSessionIfThereIsNotOne();
