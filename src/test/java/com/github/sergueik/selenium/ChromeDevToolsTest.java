@@ -156,15 +156,15 @@ public class ChromeDevToolsTest {
 					bounds.getTop(), bounds.getWidth(), bounds.getHeight()));
 		} catch (IllegalFormatConversionException e) {
 			// java.util.IllegalFormatConversionException: d != java.util.Optional
-			System.err.println("Exception (ignored):" + e.getMessage());
+			System.err.println("Exception in Browser.getWindowForTarget (ignored):" + e.getMessage());
 		}
 		try {
 			Optional<WindowID> windowIdArg = Optional.of(windowId);
 		} catch (IllegalFormatConversionException e) {
 			// java.util.IllegalFormatConversionException: d != java.util.Optional
-			System.err.println("Exception (ignored):" + e.getMessage());
+			System.err.println("Exception in reading windowId (ignored):" + e.getMessage());
 		}
-		try {
+		try {	
 			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
 			chromeDevTools.createSessionIfThereIsNotOne();
 			SessionID id = chromeDevTools.getCdpSession();
