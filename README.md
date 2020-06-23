@@ -1,6 +1,6 @@
 ### Info
 
-The project practices Java Selenium __4.0.x alpha__ release
+The project practices Java Selenium __4.0.x__ release
 [ChromiumDriver](https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/chromium/ChromiumDriver.java)
 to execute the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/) a.k.a.
 __cdp__ commands - an entirely different set of API communicated to the Chrome browser family via `POST` [requests](https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/chromium/ChromiumDriverCommandExecutor.java) to `/session/$sessionId/goog/cdp/execute` with API-specific payload) feature (many of the cdp methods e.g. the [DOM]](https://chromedevtools.github.io/devtools-protocol/tot/DOM) ones like
@@ -13,8 +13,12 @@ __cdp__ commands - an entirely different set of API communicated to the Chrome b
   * `querySelector`
   * `getAttributes`
   * `addCustomHeaders`
+
 overlap with classic Selenium in Classic Javascript
 and there are few specific ones.The project also exercised other new Selenium 4 API e.g. [relative nearby locators](https://dzone.com/articles/how-selenium-4-relative-locator-can-change-the-way) whidh did not apear powerful enough yet.
+
+For accessing the __Chrome Devtools API__ without upgrading the Selenium driver to alpha release __4.0.x__ see [cdp_webdriver](https://github.com/sergueik/cdp_webdriver) project
+
 
 ### Examples
 
