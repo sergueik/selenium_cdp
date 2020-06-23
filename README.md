@@ -419,6 +419,7 @@ The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/sr
   * another [chrome-devtools-java-client](https://github.com/kklisura/chrome-devtools-java-client) project
   * [examples](https://github.com/adiohana/selenium-chrome-devtools-examples) with callback hook example
   * yet another project [chrome-devtools-webdriver-integration](https://github.com/sahajamit/chrome-devtools-webdriver-integration)
+  * yet another framework project [sachinguptait/SeleniumAutomation](https://github.com/sachinguptait/SeleniumAutomation) demonstrating Selenium 4 and CDP features
   * yet another project [SrinivasanTarget/selenium4CDPsamples](https://github.com/SrinivasanTarget/selenium4CDPsamples)
   * Python Chrome Devtools Procotol [client](https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py)
   * Python Chrome Devtools Procotol [client](https://github.com/shish/devtools-py)
