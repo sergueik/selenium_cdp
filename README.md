@@ -428,7 +428,8 @@ The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/sr
   * Python Chrome Devtools Procotol [client](https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py)
   * Python Chrome Devtools Procotol [client](https://github.com/shish/devtools-py)
   * Selenium 3.x CDP Exender [clone project](https://github.com/sergueik/cdp_webdriver) - the original project [sahajamit/chrome-devtools-webdriver-integration](https://github.com/sahajamit/chrome-devtools-webdriver-integration) - is somewhat stale
-
+  * Selenium 4.0x `WindowType` [feature](https://www.facebook.com/2162486093842847/posts/selenium-4-is-providing-a-new-feature-to-launch-and-switch-to-new-tab-or-window-/2253812251376897/)
+  * use CDP to switch to winows [stackoverflow](https://stackoverflow.com/questions/48219637/use-devtools-protocol-to-open-new-tab-in-window)
 ### License
 
 This project is licensed under the terms of the MIT license.

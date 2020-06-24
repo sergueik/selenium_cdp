@@ -22,8 +22,6 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.gson.Gson;
-
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
  * origin: https://github.com/sachinguptait/SeleniumAutomation
@@ -98,6 +96,8 @@ public class WindowsTabsTest {
 	}
 
 	// https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py#L32
+	// https://www.javadoc.io/static/com.machinepublishers/jbrowserdriver/1.1.1/org/openqa/selenium/WindowType.html
+	
 	@Test
 	public void tabTest() {
 		this.openNewTab(url1);
