@@ -420,7 +420,7 @@ The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/sr
   * Selenium 4 [Relative Locator](https://angiejones.tech/selenium-4-relative-locators/) DOM traversal DSL.
   * Selenium 4 [Relatve locator]( https://www.swtestacademy.com/selenium-relative-locators/) examples
   * alternative java websocket client [HubSpot/ChromeDevToolsClient](https://github.com/HubSpot/ChromeDevToolsClient) for the Chrome DevTools Protocol
-  * another [chrome-devtools-java-client](https://github.com/kklisura/chrome-devtools-java-client) project
+  * another [chrome-devtools-java-client](https://github.com/kklisura/chrome-devtools-java-client) project featuring annotation-style [builder pattern](https://dzone.com/articles/design-patterns-the-builder-pattern) design for handling chrome commandline arguments.
   * [examples](https://github.com/adiohana/selenium-chrome-devtools-examples) with callback hook example
   * yet another project [chrome-devtools-webdriver-integration](https://github.com/sahajamit/chrome-devtools-webdriver-integration)
   * yet another framework project [sachinguptait/SeleniumAutomation](https://github.com/sachinguptait/SeleniumAutomation) demonstrating Selenium 4 and CDP features
