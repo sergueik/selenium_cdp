@@ -65,6 +65,7 @@ public class ChromiumWindowSizeTest {
 
 	private static Long windowId;
 
+	private static String page = null;
 	private static String command = null;
 	private static Map<String, Object> params = new HashMap<>();
 	private static Map<String, Object> result = new HashMap<>();
@@ -73,12 +74,17 @@ public class ChromiumWindowSizeTest {
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+		System
+				.setProperty("webdriver.chrome.driver",
+						Paths.get(System.getProperty("user.home"))
+								.resolve("Downloads").resolve(osName.equals("windows")
+										? "chromedriver.exe" : "chromedriver")
+								.toAbsolutePath().toString());
 
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--ssl-protocol=any", "--ignore-ssl-errors=true", "--disable-extensions",
-				"--ignore-certificate-errors", String.format("window-size=%d,%d", customWidth, customHeight));
+		options.addArguments("--ssl-protocol=any", "--ignore-ssl-errors=true",
+				"--disable-extensions", "--ignore-certificate-errors",
+				String.format("window-size=%d,%d", customWidth, customHeight));
 		if (headless) {
 			options.addArguments("--headless", "--disable-gpu");
 		}
@@ -129,7 +135,8 @@ public class ChromiumWindowSizeTest {
 			assertThat(data, hasKey("width"));
 			assertThat(data, hasKey("height"));
 			int width = Integer.parseInt(data.get("width").toString());
-			assertThat(String.format("Expected screen width: %d", customWidth), width, is(customWidth));
+			assertThat(String.format("Expected screen width: %d", customWidth), width,
+					is(customWidth));
 			// when the browser window is visible test will likely fail
 			// because dimensions will not match:
 			// Expected: is <1366> but: was <1051>
@@ -140,7 +147,8 @@ public class ChromiumWindowSizeTest {
 			}
 
 			if (debug) {
-				System.err.println("Internal: result class: " + result.getClass().getName());
+				System.err
+						.println("Internal: result class: " + result.getClass().getName());
 				// com.google.common.collect.SingletonImmutableBiMap
 			}
 			try {
@@ -151,7 +159,8 @@ public class ChromiumWindowSizeTest {
 			screenshotFileName = "image_page.png";
 			getFullPageScreenShot();
 		} catch (JsonSyntaxException e) {
-			System.err.println("JSON Syntax exception in " + command + " (ignored): " + e.toString());
+			System.err.println("JSON Syntax exception in " + command + " (ignored): "
+					+ e.toString());
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
 					+ Utils.processExceptionMessage(e.getMessage()));
@@ -183,7 +192,8 @@ public class ChromiumWindowSizeTest {
 			driver.executeCdpCommand(command, params);
 			// TODO: Assert
 		} catch (JsonSyntaxException e) {
-			System.err.println("JSON Syntax exception in " + command + " (ignored): " + e.toString());
+			System.err.println("JSON Syntax exception in " + command + " (ignored): "
+					+ e.toString());
 		} catch (WebDriverException e) {
 
 			System.err.println("Web Driver exception in " + command + " (ignored): "
@@ -197,13 +207,30 @@ public class ChromiumWindowSizeTest {
 	}
 
 	@Test
-	public void evaluateElementLocationTest() {
-		driver.get(Utils.getPageContent(fixedSizePage));
-		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.absolute > span")));
+	public void evaluateSizeTest() {
+		page = "fixed_size_page.html";
+		driver.get(Utils.getPageContent(page));
+		element = wait.until(ExpectedConditions
+				.visibilityOfElementLocated(By.cssSelector("div.absolute > span")));
 		assertThat(element, notNullValue());
 		assertThat(element.isDisplayed(), is(true));
-		System.err.println("evaluateSizeTest element location: x=" + element.getLocation().x + "," + "y="
-				+ element.getLocation().y);
+		System.err.println("evaluateSizeTest element location: x="
+				+ element.getLocation().x + "," + "y=" + element.getLocation().y);
+		// TODO: rendering issue:
+		// evaluateSizeTest element location: x=-39,y=721
+		screenshotFileName = "fixed_size_page.png";
+		getFullPageScreenShot();
+	}
+
+	@Test
+	public void evaluateElementLocationTest() {
+		driver.get(Utils.getPageContent(fixedSizePage));
+		element = wait.until(ExpectedConditions
+				.visibilityOfElementLocated(By.cssSelector("div.absolute > span")));
+		assertThat(element, notNullValue());
+		assertThat(element.isDisplayed(), is(true));
+		System.err.println("evaluateSizeTest element location: x="
+				+ element.getLocation().x + "," + "y=" + element.getLocation().y);
 		// TODO: rendering issue:
 		// evaluateSizeTest element location: x=-39,y=721
 		// has to be
@@ -226,13 +253,15 @@ public class ChromiumWindowSizeTest {
 			BufferedImage o = ImageIO.read(new ByteArrayInputStream(image));
 			assertThat(o.getWidth(), greaterThan(0));
 			assertThat(o.getHeight(), greaterThan(0));
-			FileOutputStream fileOutputStream = new FileOutputStream(screenshotFileName);
+			FileOutputStream fileOutputStream = new FileOutputStream(
+					screenshotFileName);
 			fileOutputStream.write(image);
 			fileOutputStream.close();
 			// read it back
 			getScreenshotSize(screenshotFileName);
 		} catch (JsonSyntaxException e) {
-			System.err.println("JSON Syntax exception in " + command + " (ignored): " + e.toString());
+			System.err.println("JSON Syntax exception in " + command + " (ignored): "
+					+ e.toString());
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
 					+ Utils.processExceptionMessage(e.getMessage()));
@@ -246,8 +275,10 @@ public class ChromiumWindowSizeTest {
 	}
 
 	private void getScreenshotSize(String screenshotFileName) {
-		Map<String, Integer> dimension = Utils.getImageDimension(screenshotFileName);
-		System.err.println("Dimensions: " + dimension.get("width") + "," + dimension.get("height"));
+		Map<String, Integer> dimension = Utils
+				.getImageDimension(screenshotFileName);
+		System.err.println("Dimensions: " + dimension.get("width") + ","
+				+ dimension.get("height"));
 	}
 
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
@@ -263,7 +294,8 @@ public class ChromiumWindowSizeTest {
 			assertThat(result, hasKey("windowId"));
 			windowId = (long) result.get("windowId");
 		} catch (JsonSyntaxException e) {
-			System.err.println("JSON Syntax exception in " + command + " (ignored): " + e.toString());
+			System.err.println("JSON Syntax exception in " + command + " (ignored): "
+					+ e.toString());
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
 					+ Utils.processExceptionMessage(e.getMessage()));

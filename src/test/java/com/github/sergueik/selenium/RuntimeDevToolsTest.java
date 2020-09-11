@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -95,13 +96,8 @@ public class RuntimeDevToolsTest {
 		}
 	}
 
-	// https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setExtraHTTPHeaders
-	// see also:
-	// https://stackoverflow.com/questions/15645093/setting-request-headers-in-selenium
-	// see also:
-	// https://github.com/SeleniumHQ/selenium/blob/master/java/client/test/org/openqa/selenium/devtools/ChromeDevToolsNetworkTest.java
-	// @Ignore
-	// throws org.openqa.selenium.json.JsonException.class
+	// https://chromedevtools.github.io/devtools-protocol/1-2/Runtime/#method-evaluate
+	@Ignore
 	@Test(expected = org.openqa.selenium.json.JsonException.class)
 	public void test1() {
 		// evaluate
@@ -119,11 +115,72 @@ public class RuntimeDevToolsTest {
 			System.err.println(String.format("Result type: %s Value: %s",
 					result.getType(), result.getValue()));
 		} catch (JsonException e) {
-			System.err.println(
-					"Exception deserializing cookies (ignored): " + e.toString());
+			System.err.println("Exception reading result (ignored): " + e.toString());
+		}
+
+	}
+
+	// https://chromedevtools.github.io/devtools-protocol/1-2/Runtime/#method-evaluate
+	// @Ignore
+	// throws org.openqa.selenium.json.JsonException.class
+	// https://chromedevtools.github.io/devtools-protocol/1-2/Runtime/#method-evaluate
+	// @Ignore
+	// throws org.openqa.selenium.json.JsonException.class
+	@Test(expected = org.openqa.selenium.devtools.DevToolsException.class)
+	public void test2() {
+		// evaluate
+		chromeDevTools.send(Runtime.enable());
+		try {
+			argument = "var y = 456; y;";
+
+			// NOTE: replacing Optiona.empty() with nulls would lead to NPE
+			// EvaluateResponse response = chromeDevTools
+			// .send(Runtime.evaluate(argument, null, null, null, null, null, null,
+			// null, null, null, null, null, null));
+
+			EvaluateResponse response = chromeDevTools.send(Runtime.evaluate(argument,
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty()));
+
+			Object result = response.getResult();
+			System.err.println(String.format("Result raw %s:", result.toString()));
+		} catch (JsonException e) {
+			System.err.println("Exception reading result (ignored): " + e.toString());
 		} catch (DevToolsException e) {
-			System.err.println(
-					"Exception deserializing cookies (ignored): " + e.toString());
+			// Caused by: org.openqa.selenium.json.JsonException: Unable to create
+			// instance of class
+			// org.openqa.selenium.devtools.runtime.model.RemoteObject
+			System.err
+					.println("Exception generating result (ignored): " + e.toString());
+			throw (e);
+		}
+
+	}
+
+	@Test(expected = org.openqa.selenium.devtools.DevToolsException.class)
+	public void test3() {
+		// evaluate
+		chromeDevTools.send(Runtime.enable());
+		try {
+			argument = "var y = 456; y;";
+
+			// NOTE: replacing Optiona.empty() with nulls would lead to NPE
+			// EvaluateResponse response = chromeDevTools
+			// .send(Runtime.evaluate(argument, null, null, null, null, null, null,
+			// null, null, null, null, null, null));
+
+			Object response = chromeDevTools.send(Runtime.evaluate(argument,
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty()));
+
+			System.err
+					.println(String.format("Response raw %s:", response.toString()));
+		} catch (JsonException e) {
+			System.err.println("Exception reading result (ignored): " + e.toString());
 		}
 
 	}
