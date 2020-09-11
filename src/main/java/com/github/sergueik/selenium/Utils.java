@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +70,7 @@ public class Utils {
 			Thread.sleep(highlightInterval);
 			js.executeScript("arguments[0].style.border=''", element);
 		} catch (InterruptedException e) {
-			// err.println("Exception (ignored): " + e.toString());
+			// System.err.println("Exception (ignored): " + e.toString());
 		}
 	}
 
@@ -99,6 +100,8 @@ public class Utils {
 		while (m.find()) {
 			messages.add(m.group(1));
 		}
+		// System.err.println("Exception message: " + messages.get(0));
+		// System.err.println("Exception messages: " + String.join("\n", messages));
 		return flag ? messages.get(0) : String.join("\n", messages);
 	}
 

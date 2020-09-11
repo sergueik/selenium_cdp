@@ -430,6 +430,11 @@ The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/sr
   * Selenium 3.x CDP Exender [clone project](https://github.com/sergueik/cdp_webdriver) - the original project [sahajamit/chrome-devtools-webdriver-integration](https://github.com/sahajamit/chrome-devtools-webdriver-integration) - is somewhat stale
   * Selenium 4.0x `WindowType` [feature](https://www.facebook.com/2162486093842847/posts/selenium-4-is-providing-a-new-feature-to-launch-and-switch-to-new-tab-or-window-/2253812251376897/)
   * use CDP to switch to winows [stackoverflow](https://stackoverflow.com/questions/48219637/use-devtools-protocol-to-open-new-tab-in-window)
+  * JavaScript-style event callback design [jpuppeteer](https://github.com/sunshinex/jpuppeteer)
+  * [library inspired by Puppeteer](https://github.com/fanyong920/jvppeteer) to facilitate the use of Chrome DevTools API to control Chrome or Chromium via Java
+  * advanced [prevention headless browser detection](https://intoli.com/blog/making-chrome-headless-undetectable/)
+  * [recaptcha-3 score](https://antcpt.com/rus/information/demo-form/recaptcha-3-test-score.html)
+
 ### License
 
 This project is licensed under the terms of the MIT license.
