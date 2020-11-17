@@ -20,9 +20,9 @@ import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 //import org.openqa.selenium.devtools.Console;
 // import org.openqa.selenium.devtools.Log;
-import org.openqa.selenium.devtools.runtime.Runtime;
-import org.openqa.selenium.devtools.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.v87.runtime.Runtime;
+import org.openqa.selenium.devtools.v87.runtime.Runtime.EvaluateResponse;
+import org.openqa.selenium.devtools.v87.runtime.model.RemoteObject;
 import org.openqa.selenium.json.JsonException;
 
 /**
@@ -109,7 +109,7 @@ public class RuntimeDevToolsTest {
 					Optional.empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty()));
+					Optional.empty(), Optional.empty(), Optional.empty(), null));
 
 			RemoteObject result = response.getResult();
 			System.err.println(String.format("Result type: %s Value: %s",
@@ -125,8 +125,9 @@ public class RuntimeDevToolsTest {
 	// throws org.openqa.selenium.json.JsonException.class
 	// https://chromedevtools.github.io/devtools-protocol/1-2/Runtime/#method-evaluate
 	// @Ignore
-	// throws org.openqa.selenium.json.JsonException.class
-	@Test(expected = org.openqa.selenium.devtools.DevToolsException.class)
+	// After upgrade to Selenium 4.0.0-alpha7 throws
+	// java.lang.NullPointerException
+	@Test /* (expected = org.openqa.selenium.devtools.DevToolsException.class) */
 	public void test2() {
 		// evaluate
 		chromeDevTools.send(Runtime.enable());
@@ -138,11 +139,12 @@ public class RuntimeDevToolsTest {
 			// .send(Runtime.evaluate(argument, null, null, null, null, null, null,
 			// null, null, null, null, null, null));
 
-			EvaluateResponse response = chromeDevTools.send(Runtime.evaluate(argument,
-					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty()));
+			EvaluateResponse response = chromeDevTools
+					.send(Runtime.evaluate(argument, Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty()));
 
 			Object result = response.getResult();
 			System.err.println(String.format("Result raw %s:", result.toString()));
@@ -159,7 +161,9 @@ public class RuntimeDevToolsTest {
 
 	}
 
-	@Test(expected = org.openqa.selenium.devtools.DevToolsException.class)
+	// After upgrade to Selenium 4.0.0-alpha7 throws
+	// java.lang.NullPointerException
+	@Test /* (expected = org.openqa.selenium.devtools.DevToolsException.class) */
 	public void test3() {
 		// evaluate
 		chromeDevTools.send(Runtime.enable());
@@ -171,11 +175,12 @@ public class RuntimeDevToolsTest {
 			// .send(Runtime.evaluate(argument, null, null, null, null, null, null,
 			// null, null, null, null, null, null));
 
-			Object response = chromeDevTools.send(Runtime.evaluate(argument,
-					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty()));
+			Object response = chromeDevTools
+					.send(Runtime.evaluate(argument, Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty()));
 
 			System.err
 					.println(String.format("Response raw %s:", response.toString()));

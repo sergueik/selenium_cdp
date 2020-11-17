@@ -28,24 +28,24 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.browser.Browser;
-import org.openqa.selenium.devtools.browser.Browser.GetWindowForTargetResponse;
-import org.openqa.selenium.devtools.browser.model.Bounds;
-import org.openqa.selenium.devtools.browser.model.WindowID;
-import org.openqa.selenium.devtools.log.Log;
+import org.openqa.selenium.devtools.v87.browser.Browser;
+import org.openqa.selenium.devtools.v87.browser.Browser.GetWindowForTargetResponse;
+import org.openqa.selenium.devtools.v87.browser.model.Bounds;
+import org.openqa.selenium.devtools.v87.browser.model.WindowID;
+import org.openqa.selenium.devtools.v87.log.Log;
 import org.openqa.selenium.TimeoutException;
 //import org.openqa.selenium.devtools.Console;
 // import org.openqa.selenium.devtools.Log;
-import org.openqa.selenium.devtools.network.Network;
-import org.openqa.selenium.devtools.network.model.Headers;
-import org.openqa.selenium.devtools.network.model.RequestId;
-import org.openqa.selenium.devtools.performance.Performance;
-import org.openqa.selenium.devtools.performance.model.Metric;
-import org.openqa.selenium.devtools.target.model.SessionID;
+import org.openqa.selenium.devtools.v87.network.Network;
+import org.openqa.selenium.devtools.v87.network.model.Headers;
+import org.openqa.selenium.devtools.v87.network.model.RequestId;
+import org.openqa.selenium.devtools.v87.performance.Performance;
+import org.openqa.selenium.devtools.v87.performance.model.Metric;
+import org.openqa.selenium.devtools.idealized.target.model.SessionID;
 
-import static org.openqa.selenium.devtools.performance.Performance.disable;
-import static org.openqa.selenium.devtools.performance.Performance.enable;
-import static org.openqa.selenium.devtools.performance.Performance.getMetrics;
+import static org.openqa.selenium.devtools.v87.performance.Performance.disable;
+import static org.openqa.selenium.devtools.v87.performance.Performance.enable;
+import static org.openqa.selenium.devtools.v87.performance.Performance.getMetrics;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -260,11 +260,6 @@ public class ChromeDevToolsTest {
 						"JSEventListeners", "LayoutObjects", "MediaKeySessions", "Nodes",
 						"Resources", "DomContentLoaded", "NavigationStart" });
 		// some keys
-		expectedMetricNames.forEach(o -> assertThat("Selfcheck: " + o,
-				expectedMetricNames.indexOf(o), is(greaterThan(-1))));
-		metricNames.forEach(o -> assertThat("Selfcheck(2): " + o,
-				metricNames.indexOf(o), is(greaterThan(-1))));
-
 		expectedMetricNames.forEach(o -> assertThat("Verify: " + o,
 				metricNames.indexOf(o), is(greaterThan(-1))));
 		chromeDevTools.send(disable());
