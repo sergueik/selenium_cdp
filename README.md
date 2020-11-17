@@ -434,9 +434,9 @@ The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/sr
   * [library inspired by Puppeteer](https://github.com/fanyong920/jvppeteer) to facilitate the use of Chrome DevTools API to control Chrome or Chromium via Java
   * advanced [prevention headless browser detection](https://intoli.com/blog/making-chrome-headless-undetectable/)
   * [recaptcha-3 score](https://antcpt.com/rus/information/demo-form/recaptcha-3-test-score.html)
+  * [Puppeteer Documentation](https://devdocs.io/puppeteer/)
 
 ### License
-
 This project is licensed under the terms of the MIT license.
 
 ### Author
