@@ -1,35 +1,26 @@
 package com.github.sergueik.selenium;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-// need to use branch cdp_codegen of SeleniumHQ/selenium
-// https://github.com/SeleniumHQ/selenium/tree/cdp_codegen/java/client/src/org/openqa/selenium/devtools
+
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
-// import org.openqa.selenium.devtools.Console;
-// import org.openqa.selenium.devtools.Log;
 import org.openqa.selenium.devtools.v87.runtime.Runtime;
 import org.openqa.selenium.devtools.v87.runtime.Runtime.EvaluateResponse;
 import org.openqa.selenium.devtools.v87.runtime.model.ExecutionContextId;
 import org.openqa.selenium.devtools.v87.runtime.model.RemoteObject;
 import org.openqa.selenium.devtools.v87.runtime.model.TimeDelta;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.is;
-
 import org.openqa.selenium.json.JsonException;
 
 /**
@@ -44,13 +35,9 @@ public class RuntimeDevToolsTest {
 	private static String osName = Utils.getOSName();
 	private static ChromiumDriver driver;
 	private static DevTools chromeDevTools;
-	private static WebElement element = null;
-	private static By locator = null;
 	private static String expression = null;
 
 	private final static String baseURL = "https://www.google.com";
-
-	private static Map<String, Object> headers = new HashMap<>();
 
 	@BeforeClass
 	public static void setUp() throws Exception {
@@ -84,16 +71,7 @@ public class RuntimeDevToolsTest {
 	}
 
 	@BeforeClass
-	// https://chromedevtools.github.io/devtools-protocol/tot/Console#method-enable
-	// https://chromedevtools.github.io/devtools-protocol/tot/Log#method-enable
 	public static void beforeClass() throws Exception {
-		// NOTE:
-		// the github location of package org.openqa.selenium.devtools.console
-		// is uncertain
-		// enable Console
-		// chromeDevTools.send(Log.enable());
-		// add event listener to show in host console the browser console message
-		// chromeDevTools.addListener(Log.entryAdded(), System.err::println);
 		driver.get(baseURL);
 	}
 
@@ -189,15 +167,13 @@ public class RuntimeDevToolsTest {
 
 	}
 
-	// NOTE: replacing Optional.empty() arguments with nulls leads to NPE
 	@Test(expected = java.lang.NullPointerException.class)
 	public void test4() {
 		// evaluate
 		chromeDevTools.send(Runtime.enable());
 		expression = "var y = 42; y;";
-		EvaluateResponse response = chromeDevTools
-				.send(Runtime.evaluate(expression, null, null, null, null, null, null,
-						null, null, null, null, null, null, null));
+		chromeDevTools.send(Runtime.evaluate(expression, null, null, null, null,
+				null, null, null, null, null, null, null, null, null));
 	}
 
 	@Test(expected = org.openqa.selenium.TimeoutException.class)
@@ -293,4 +269,3 @@ public class RuntimeDevToolsTest {
 	}
 
 }
-
