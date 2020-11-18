@@ -22,6 +22,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import org.openqa.selenium.net.PortProber;
+
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
  * origin: https://github.com/sachinguptait/SeleniumAutomation
@@ -49,28 +51,33 @@ public class WindowsTabsTest {
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 
-		if ((System.getenv().containsKey("HEADLESS")
-				&& System.getenv("HEADLESS").matches("(?:true|yes|1)"))
-				|| (!(Utils.getOSName().equals("windows"))
-						&& !(System.getenv().containsKey("DISPLAY")))) {
+		if ((System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)"))
+				|| (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY")))) {
 			runHeadless = true;
 		}
 
-		System
-				.setProperty("webdriver.chrome.driver",
-						Paths.get(System.getProperty("user.home"))
-								.resolve("Downloads").resolve(osName.equals("windows")
-										? "chromedriver.exe" : "chromedriver")
-								.toAbsolutePath().toString());
+		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
+				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
 
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--ssl-protocol=any", "--ignore-ssl-errors=true",
-				"--disable-extensions", "--ignore-certificate-errors");
+		options.addArguments("--ssl-protocol=any", "--ignore-ssl-errors=true", "--disable-extensions",
+				"--ignore-certificate-errors");
 		options.setExperimentalOption("useAutomationExtension", false);
 		if (runHeadless) {
 			options.addArguments("--headless", "--disable-gpu");
 		}
-
+		// uncomment the next line to get
+		// java.lang.NoClassDefFoundError: Could not initialize class
+		// org.openqa.selenium.net.PortProber
+		// and
+		// java.lang.NoSuchMethodError:
+		// java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/charset/Charset;)V
+		// at
+		// org.openqa.selenium.net.LinuxEphemeralPortRangeDetector.getInstance(LinuxEphemeralPortRangeDetector.java:36)
+		// at org.openqa.selenium.net.PortProber.<clinit>(PortProber.java:42)
+		// the method FileReader​(File file, Charset charset) is added in JDK 11
+		// https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/FileReader.html
+		// int port = PortProber.findFreePort();
 		driver = new ChromeDriver(options);
 		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
 		Utils.setDriver(driver);
@@ -97,7 +104,7 @@ public class WindowsTabsTest {
 
 	// https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py#L32
 	// https://www.javadoc.io/static/com.machinepublishers/jbrowserdriver/1.1.1/org/openqa/selenium/WindowType.html
-	
+
 	@Test
 	public void tabTest() {
 		this.openNewTab(url1);

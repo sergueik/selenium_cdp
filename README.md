@@ -450,3 +450,13 @@ java.lang.NoClassDefFoundError: Could not initialize class org.openqa.selenium.n
 	at org.openqa.selenium.chrome.ChromeDriverService.createServiceWithConfig(ChromeDriverService.java:133)
 
 ```
+and
+```sh
+java.lang.NoSuchMethodError: java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/charset/Charset;)V
+	at org.openqa.selenium.net.LinuxEphemeralPortRangeDetector.getInstance(LinuxEphemeralPortRangeDetector.java:36)
+	at org.openqa.selenium.net.PortProber.<clinit>(PortProber.java:42)
+```
+
+```sh
+find ~/.m2/repository/ -iname 'selenium*jar' |xargs -IX sh -c "echo X; jar tvf X" | tee a
+```
