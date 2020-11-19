@@ -63,7 +63,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.devtools.v87.network.Network;
+import org.openqa.selenium.devtools.network.Network;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.CapabilityType;

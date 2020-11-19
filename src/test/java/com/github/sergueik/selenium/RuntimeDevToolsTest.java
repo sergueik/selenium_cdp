@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -16,11 +17,11 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v87.runtime.Runtime;
-import org.openqa.selenium.devtools.v87.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.v87.runtime.model.ExecutionContextId;
-import org.openqa.selenium.devtools.v87.runtime.model.RemoteObject;
-import org.openqa.selenium.devtools.v87.runtime.model.TimeDelta;
+import org.openqa.selenium.devtools.runtime.Runtime;
+import org.openqa.selenium.devtools.runtime.Runtime.EvaluateResponse;
+import org.openqa.selenium.devtools.runtime.model.ExecutionContextId;
+import org.openqa.selenium.devtools.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.runtime.model.TimeDelta;
 import org.openqa.selenium.json.JsonException;
 
 /**
@@ -83,6 +84,7 @@ public class RuntimeDevToolsTest {
 	}
 
 	// NOTE: some arguments *must* be empty
+	@Ignore
 	@Test
 	public void test1() {
 		// evaluate
@@ -91,7 +93,9 @@ public class RuntimeDevToolsTest {
 			expression = "var y = 123; y;";
 
 			EvaluateResponse response = chromeDevTools
-					.send(Runtime.evaluate(expression, Optional.of(""), // objectGroup
+					.send(Runtime.evaluate(
+							expression, 
+							Optional.of(""), // objectGroup
 							Optional.of(false), // includeCommandLineAPI
 							Optional.of(false), // silent
 							Optional.empty(), // contextId
@@ -102,8 +106,7 @@ public class RuntimeDevToolsTest {
 							Optional.of(false), // throwOnSideEffect
 							Optional.empty(), // timeout
 							Optional.of(false), // disableBreaks
-							Optional.of(false), // replMode
-							Optional.of(false) // allowUnsafeEvalBlockedByCSP
+							Optional.of(false) // replMode
 			));
 
 			RemoteObject result = response.getResult();
@@ -116,6 +119,7 @@ public class RuntimeDevToolsTest {
 
 	}
 
+	@Ignore
 	// NOTE: replacing Optiona.empty() with nulls would lead to NPE
 	@Test
 	public void test2() {
@@ -128,7 +132,7 @@ public class RuntimeDevToolsTest {
 							Optional.empty(), Optional.empty(), Optional.empty(),
 							Optional.empty(), Optional.empty(), Optional.empty(),
 							Optional.empty(), Optional.empty(), Optional.empty(),
-							Optional.empty(), Optional.empty()));
+							Optional.empty()));
 
 			Object result = response.getResult();
 			System.err.println(String.format("Result raw %s:", result.toString()));
@@ -145,6 +149,7 @@ public class RuntimeDevToolsTest {
 
 	}
 
+	@Ignore
 	@Test
 	public void test3() {
 		// evaluate
@@ -157,7 +162,7 @@ public class RuntimeDevToolsTest {
 							Optional.empty(), Optional.empty(), Optional.empty(),
 							Optional.empty(), Optional.empty(), Optional.empty(),
 							Optional.empty(), Optional.empty(), Optional.empty(),
-							Optional.empty(), Optional.empty()));
+							Optional.empty()));
 			assertThat(response, notNullValue());
 			System.err
 					.println(String.format("Response type is %s", response.getClass()));
@@ -167,13 +172,14 @@ public class RuntimeDevToolsTest {
 
 	}
 
+	
 	@Test(expected = java.lang.NullPointerException.class)
 	public void test4() {
 		// evaluate
 		chromeDevTools.send(Runtime.enable());
 		expression = "var y = 42; y;";
 		chromeDevTools.send(Runtime.evaluate(expression, null, null, null, null,
-				null, null, null, null, null, null, null, null, null));
+				null, null, null, null, null, null, null, null));
 	}
 
 	@Test(expected = org.openqa.selenium.TimeoutException.class)
@@ -195,8 +201,7 @@ public class RuntimeDevToolsTest {
 							Optional.of(false), // throwOnSideEffect
 							Optional.of(new TimeDelta(1000)), // timeout
 							Optional.of(false), // disableBreaks
-							Optional.of(false), // replMode
-							Optional.of(false) // allowUnsafeEvalBlockedByCSP
+							Optional.of(false) // replMode
 			));
 
 			response.getResult();
@@ -224,8 +229,7 @@ public class RuntimeDevToolsTest {
 							Optional.of(false), // throwOnSideEffect
 							Optional.of(new TimeDelta(1000)), // timeout
 							Optional.of(false), // disableBreaks
-							Optional.of(false), // replMode
-							Optional.of(false) // allowUnsafeEvalBlockedByCSP
+							Optional.of(false) // replMode
 			));
 
 			response.getResult();
@@ -247,7 +251,7 @@ public class RuntimeDevToolsTest {
 							Optional.empty(), Optional.empty(), Optional.empty(),
 							Optional.empty(), Optional.empty(), Optional.empty(),
 							Optional.empty(), Optional.empty(), Optional.empty(),
-							Optional.empty(), Optional.empty()));
+							Optional.empty()));
 
 			Object rawResult = response.getResult();
 			System.err.println(String.format("Result raw %s:", rawResult.toString()));
