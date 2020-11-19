@@ -3,7 +3,7 @@
 The project practices Java Selenium __4.0.x__ release
 [ChromiumDriver](https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/chromium/ChromiumDriver.java)
 to execute the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/) a.k.a.
-__cdp__ commands - an entirely different set of API communicated to the Chrome browser family via `POST` [requests](https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/chromium/ChromiumDriverCommandExecutor.java) to `/session/$sessionId/goog/cdp/execute` with API-specific payload) feature (many of the cdp methods e.g. the [DOM]](https://chromedevtools.github.io/devtools-protocol/tot/DOM) ones like
+__cdp__ commands - an entirely different set of API communicated to the Chrome browser family via `POST` [requests](https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/chromium/ChromiumDriverCommandExecutor.java) to `/session/$sessionId/goog/cdp/execute` with API-specific payload) feature (many of the cdp methods e.g. the [DOM](https://chromedevtools.github.io/devtools-protocol/tot/DOM) ones like
 
   * `performSearch`,
   * `getSearchResults`
@@ -17,7 +17,7 @@ __cdp__ commands - an entirely different set of API communicated to the Chrome b
 overlap with classic Selenium in Classic Javascript
 and there are few specific ones.The project also exercised other new Selenium 4 API e.g. [relative nearby locators](https://dzone.com/articles/how-selenium-4-relative-locator-can-change-the-way) whidh did not apear powerful enough yet.
 
-For accessing the __Chrome Devtools API__ without upgrading the Selenium driver to alpha release __4.0.x__ see [cdp_webdriver](https://github.com/sergueik/cdp_webdriver) project
+For accessing the __Chrome Devtools API__ with Selenium driver __3.x__ see [cdp_webdriver](https://github.com/sergueik/cdp_webdriver) project
 
 
 ### Examples
@@ -406,6 +406,35 @@ The
 
 The [devtools](https://github.com/SeleniumHQ/selenium/tree/master/java/client/src/org/openqa/selenium/devtools) and [chromium](https://github.com/SeleniumHQ/selenium/tree/master/java/client/src/org/openqa/selenium/chromium) subprojects of selenium client of official [seleniumhq/selenium](https://github.com/SeleniumHQ/selenium) project have no dependencies and can be cloned and built locally allowing one to use CDP API with Selenium __3.x__ e.g. Selenium __3.13.0__. This is currently attempted this way in this project. Moving away form default __4.0.0.alpha__ maven profiles is a work in progress.
 
+### Breaking Changes in Selenium 4.0.0-alpha-7
+
+With Selenium driver release __4.0.0-alpha-7__  just to make the project compile changes imported package names need to change all
+`org.openqa.selenium.devtools.browser` references with `org.openqa.selenium.devtools.v87.browser` and similar to other packages inside `org.openqa.selenium.devtools` were requied. Without this multiple compile errors like:
+```sh
+package org.openqa.selenium.devtools.browser does not exist
+```
+are observed
+
+Also the following run time errors indicate that `selenium-api-4.0.0-alpha-7.jar` was build on JDK 11 and is notloadable in JDK 8.
+
+This manifests through the runtime exception
+```sh
+java.lang.NoClassDefFoundError: Could not initialize class org.openqa.selenium.net.PortProber
+  at org.openqa.selenium.remote.service.DriverService$Builder.build(DriverService.java:401)
+  at org.openqa.selenium.chrome.ChromeDriverService.createServiceWithConfig(ChromeDriverService.java:133)
+```
+the usual classpath scan reveals the jar containing the class in question, to be actually present in classpath
+```sh
+find ~/.m2/repository/ -iname 'selenium*jar' |xargs -IX sh -c "echo X; jar tvf X" | tee a
+```
+and method signature exception 
+```sh
+java.lang.NoSuchMethodError: java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/charset/Charset;)V
+  at org.openqa.selenium.net.LinuxEphemeralPortRangeDetector.getInstance(LinuxEphemeralPortRangeDetector.java:36)
+  at org.openqa.selenium.net.PortProber.<clinit>(PortProber.java:42)
+```
+the method the exception is complainign was [added](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/FileReader.html#%3Cinit%3E(java.io.File,java.nio.charset.Charset)) in Java 11
+
 ### See Also
 
   * [chrome devtools](https://github.com/ChromeDevTools/awesome-chrome-devtools) project
@@ -442,21 +471,3 @@ This project is licensed under the terms of the MIT license.
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
-### TODO
-
-```sh
-java.lang.NoClassDefFoundError: Could not initialize class org.openqa.selenium.net.PortProber
-	at org.openqa.selenium.remote.service.DriverService$Builder.build(DriverService.java:401)
-	at org.openqa.selenium.chrome.ChromeDriverService.createServiceWithConfig(ChromeDriverService.java:133)
-
-```
-and
-```sh
-java.lang.NoSuchMethodError: java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/charset/Charset;)V
-	at org.openqa.selenium.net.LinuxEphemeralPortRangeDetector.getInstance(LinuxEphemeralPortRangeDetector.java:36)
-	at org.openqa.selenium.net.PortProber.<clinit>(PortProber.java:42)
-```
-
-```sh
-find ~/.m2/repository/ -iname 'selenium*jar' |xargs -IX sh -c "echo X; jar tvf X" | tee a
-```
