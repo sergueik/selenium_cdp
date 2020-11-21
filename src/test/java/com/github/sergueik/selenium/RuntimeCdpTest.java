@@ -47,16 +47,17 @@ public class RuntimeCdpTest {
 	private static int flexibleWait = 60;
 	private static int pollingInterval = 500;
 
-	private static String expression = null;
 	private static final String command = "Runtime.evaluate";
 
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> params = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
 	private static Map<String, Object> data2 = new HashMap<>();
-	private static String dataString = null;
 
 	private static Gson gson = new Gson();
+	private String expression;
+	private static final boolean returnByValue = false;
+
 	private static WebElement element = null;
 	private static By locator = null;
 	private final static String baseURL = "https://www.google.com";
@@ -103,16 +104,14 @@ public class RuntimeCdpTest {
 		driver.get("about:blank");
 	}
 
-	// @Ignore
+	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test1() {
-		// Arrange
 		try {
 			// Act
 			params = new HashMap<>();
 			expression = "var x = 42; x;";
-			boolean returnByValue = false;
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
 			result = driver.executeCdpCommand(command, params);
@@ -135,14 +134,19 @@ public class RuntimeCdpTest {
 		}
 	}
 
+	// @Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test2() {
 		try {
 			// Act
 			params = new HashMap<>();
-			expression = "window.document.querySelector('body')";
-			boolean returnByValue = false;
+
+			// final
+			String selector = "body";
+			selector = "center > input.gNO89b";//
+			selector = "input[value=\\\"Google Search\\\"]";
+			expression = String.format("window.document.querySelector('%s')", selector);
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
 			result = driver.executeCdpCommand(command, params);
@@ -163,6 +167,7 @@ public class RuntimeCdpTest {
 		}
 	}
 
+	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test3() {
@@ -172,7 +177,6 @@ public class RuntimeCdpTest {
 			expression = "//body";
 			// $x is not defined
 			expression = String.format("$x(\"//body\")[0]", expression);
-			boolean returnByValue = false;
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
 			result = driver.executeCdpCommand(command, params);
@@ -204,7 +208,6 @@ public class RuntimeCdpTest {
 			// Act
 			params = new HashMap<>();
 			expression = "const letters = ['a', 'b', 'c']; letters.push('d'); letters";
-			boolean returnByValue = false;
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
 			result = driver.executeCdpCommand(command, params);
@@ -216,6 +219,31 @@ public class RuntimeCdpTest {
 			for (String field : Arrays.asList(new String[] { "className", "description" })) {
 				assertThat(data, hasKey(field));
 			}
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception in " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			System.err.println("Exception in " + command + ": " + e.toString());
+			throw (new RuntimeException(e));
+		}
+	}
+
+	@Ignore
+	@SuppressWarnings("unchecked")
+	@Test
+	public void test5() {
+		try {
+			// Act
+			params = new HashMap<>();
+			final String selector = "center > input.gNO89b";// "input[value='Google Search']";
+			expression = String.format("$('%s')", selector);
+			params.put("expression", expression);
+			params.put("returnByValue", returnByValue);
+			result = driver.executeCdpCommand(command, params);
+			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
+			assertThat(result, notNullValue());
+			assertThat(result, hasKey("result"));
+			data = (Map<String, Object>) result.get("result");
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
 					+ Utils.processExceptionMessage(e.getMessage()));
