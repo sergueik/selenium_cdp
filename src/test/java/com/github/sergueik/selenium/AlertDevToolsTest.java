@@ -59,8 +59,11 @@ public class AlertDevToolsTest {
 	public final static int pollingInterval = 500;
 	private final static long highlightInterval = 100;
 	private Alert alert = null;
-	private String name = null;
+	private static String name = null;
+	private static WebElement element;
+	private static List<WebElement> elements;
 	private final static String baseURL = "https://www.w3schools.com/js/tryit.asp?filename=tryjs_alert";
+
 
 	@SuppressWarnings("deprecation")
 	@BeforeClass
@@ -102,9 +105,7 @@ public class AlertDevToolsTest {
 		// wait.pollingEvery(pollingInterval, TimeUnit.MILLISECONDS);
 		chromeDevTools = driver.getDevTools();
 		chromeDevTools.createSession();
-		Page.enable();
-
-		// TODO: Nothing is logged
+		chromeDevTools.send(Page.enable());
 
 		// https://chromedevtools.github.io/devtools-protocol/1-2/Page/#event-frameAttached
 		chromeDevTools.addListener(Page.frameAttached(), o -> System.err.println(
@@ -118,10 +119,7 @@ public class AlertDevToolsTest {
 				o -> System.err
 						.println(String.format("Page has dialog %s of type %s opening",
 								o.getMessage(), o.getType())));
-		// https://chromedevtools.github.io/devtools-protocol/1-2/Page/#event-javascriptDialogClosed
-		chromeDevTools.addListener(Page.javascriptDialogClosed(),
-				o -> assertThat(o.getResult(), is(true)));
-
+		// TODO: prompt
 		// chromeDevTools.addListener(Page.javascriptDialogClosed(),
 		// o -> System.err.println("User input:" + o.getUserInput()));
 	}
@@ -138,20 +136,9 @@ public class AlertDevToolsTest {
 		}
 	}
 
-	// https://chromedevtools.github.io/devtools-protocol/1-3/Page/#event-javascriptDialogClosed
-	@Test
-	public void test8() {
-		// register to alert events
-		/*	
-			chromeDevTools.addListener(new Event("Page.javascriptDialogClosed",
-					JavascriptDialogClosed.class), new Consumer<Object>() {
-						@Override
-						public void accept(Object o) {
-							// do something
-						}
-					});
-					*/
-		List<WebElement> elements = driver.findElements(By.tagName("iframe"));
+	private static WebElement findButton() {
+
+		elements = driver.findElements(By.tagName("iframe"));
 		if (debug) {
 			// System.err.println("page: " + driver.getPageSource());
 		}
@@ -178,32 +165,81 @@ public class AlertDevToolsTest {
 			System.err.println(String.format("Selenium found button: %s\n",
 					element.getAttribute("outerHTML")));
 		highlight(element, 1000);
-		// element.sendKeys(Keys.ENTER);
-		element.click();
+		return element;
+	}
+
+	// https://chromedevtools.github.io/devtools-protocol/1-3/Page/#event-javascriptDialogClosed
+	@Test
+	public void test1() {
+		// register to alert events
+		/*	
+			chromeDevTools.addListener(new Event("Page.javascriptDialogClosed",
+					JavascriptDialogClosed.class), new Consumer<Object>() {
+						@Override
+						public void accept(Object o) {
+							// do something
+						}
+					});
+					*/
+		element = findButton();
+		element.sendKeys(Keys.ENTER);
 		sleep(100);
-		// Assert
-		// alert = wait.until(ExpectedConditions.alertIsPresent());
+		// NOTE: fragile
+		// org.openqa.selenium.NoAlertPresentException
 		alert = driver.switchTo().alert();
+		// Assert
 		assertThat(alert, notNullValue());
 		sleep(1000);
 		if (debug)
 			System.err.println("Selenium accepting alert:");
+		// assert that dialog was accepted
+		chromeDevTools.addListener(Page.javascriptDialogClosed(),
+				o -> assertThat(o.getResult(), is(true)));
+
+		alert.accept();
+	}
+
+	@Test
+	public void test2() {
+		// register to alert events
+		/*	
+			chromeDevTools.addListener(new Event("Page.javascriptDialogClosed",
+					JavascriptDialogClosed.class), new Consumer<Object>() {
+						@Override
+						public void accept(Object o) {
+							// do something
+						}
+					});
+					*/
+		chromeDevTools.send(Page.reload(Optional.of(true), Optional.empty()));
+		element = findButton();
+		element.click();
+		sleep(100);
 		// NOTE: fragile
 		// org.openqa.selenium.NoAlertPresentException
-		alert.accept();
-		// sleep(1000);
-		Page.reload(Optional.of(true), Optional.empty());
+		alert = wait.until(ExpectedConditions.alertIsPresent());
+		// Assert
+		assertThat(alert, notNullValue());
+		sleep(1000);
+		if (debug)
+			System.err.println("Selenium accepting alert:");
+		// assert that dialog was canceled
+		chromeDevTools.addListener(Page.javascriptDialogClosed(),
+				o -> assertThat(o.getResult(), is(false)));
+
+		alert.dismiss();
+		chromeDevTools.send(Page.reload(Optional.of(true), Optional.empty()));
 	}
 
 	public void highlight(WebElement element) {
 		highlight(element, 100, "solid yellow");
 	}
 
-	public void highlight(WebElement element, long highlightInterval) {
+	public static void highlight(WebElement element, long highlightInterval) {
 		highlight(element, highlightInterval, "solid yellow");
 	}
 
-	public void highlight(WebElement element, long highlightInterval,
+	public static void highlight(WebElement element, long highlightInterval,
 			String color) {
 		// err.println("Color: " + color);
 		if (wait == null) {
@@ -227,28 +263,17 @@ public class AlertDevToolsTest {
 	}
 
 	// http://www.javawithus.com/tutorial/using-ellipsis-to-accept-variable-number-of-arguments
-	public Object executeScript(String script, Object... arguments) {
+	public static Object executeScript(String script, Object... arguments) {
 		if (driver instanceof JavascriptExecutor) {
 			JavascriptExecutor javascriptExecutor = JavascriptExecutor.class
 					.cast(driver);
-			/*
-			 *
-			 * // currently unsafe err.println(arguments.length + " arguments received.");
-			 * String argStr = "";
-			 * 
-			 * for (int i = 0; i < arguments.length; i++) { argStr = argStr + " " +
-			 * (arguments[i] == null ? "null" : arguments[i].toString()); }
-			 * 
-			 * err.println("Calling " + script.substring(0, 40) + "..." + \n" + "with
-			 * arguments: " + argStr);
-			 */
 			return javascriptExecutor.executeScript(script, arguments);
 		} else {
 			throw new RuntimeException("Script execution failed.");
 		}
 	}
 
-	public void sleep(Integer milliSeconds) {
+	public static void sleep(Integer milliSeconds) {
 		try {
 			Thread.sleep((long) milliSeconds);
 		} catch (InterruptedException e) {
@@ -257,3 +282,4 @@ public class AlertDevToolsTest {
 	}
 
 }
+
