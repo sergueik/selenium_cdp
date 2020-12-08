@@ -48,19 +48,17 @@ public class AlertDevToolsTest extends EventSubscriptionCommonTest {
 		alert = driver.switchTo().alert();
 		// Assert alert displayed
 		assertThat(alert, notNullValue());
-		sleep(1000);
-		if (debug)
-			System.err.println("Selenium accepting alert:");
 		// assert that dialog was accepted
 		chromeDevTools.addListener(Page.javascriptDialogClosed(),
 				o -> assertThat(o.getResult(), is(true)));
-
+		if (debug)
+			System.err.println("Selenium accepting alert.");
 		alert.accept();
 	}
 
 	@Test
 	public void dismissTest() {
-		chromeDevTools.send(Page.reload(Optional.of(true), Optional.empty()));
+		// chromeDevTools.send(Page.reload(Optional.of(true), Optional.empty()));
 		element = findButton();
 		element.click();
 		sleep(100);

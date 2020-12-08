@@ -65,6 +65,7 @@ public class NetworkDevToolsTest {
 	private static ChromiumDriver driver;
 	private static DevTools chromeDevTools;
 
+	private int cnt = 0;
 	private static String baseURL = "about:blank";
 
 	private static Map<String, Object> headers = new HashMap<>();
@@ -126,7 +127,7 @@ public class NetworkDevToolsTest {
 	// https://stackoverflow.com/questions/15645093/setting-request-headers-in-selenium
 	// see also:
 	// https://github.com/SeleniumHQ/selenium/blob/master/java/client/test/org/openqa/selenium/devtools/ChromeDevToolsNetworkTest.java
-	@Ignore
+	// @Ignore
 	@Test
 	public void addCustomHeadersTest() {
 		// enable Network
@@ -134,16 +135,17 @@ public class NetworkDevToolsTest {
 				Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
 		headers = new HashMap<>();
 		headers.put("customHeaderName", "customHeaderValue");
+		/*
 		headers.put("customHeaderName",
 				this.getClass().getName() + " addCustomHeadersTest");
+				*/
 		Headers headersData = new Headers(headers);
 		chromeDevTools.send(Network.setExtraHTTPHeaders(headersData));
 		// add event listener to log that requests are sending with the custom
 		// header
 		chromeDevTools.addListener(Network.requestWillBeSent(),
-				o -> Assert.assertEquals(
-						o.getRequest().getHeaders().get("customHeaderName"),
-						"customHeaderValue"));
+				o -> assertThat(o.getRequest().getHeaders().get("customHeaderName"),
+						is("customHeaderValue")));
 		chromeDevTools.addListener(Network.requestWillBeSent(),
 				o -> System.err.println("addCustomHeaders Listener invoked with "
 						+ o.getRequest().getHeaders().get("customHeaderName")));
@@ -160,10 +162,12 @@ public class NetworkDevToolsTest {
 	public void eventTest() {
 		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
 				Optional.empty()));
-		chromeDevTools.addListener(Network.dataReceived(),
-				o -> System.err
+		chromeDevTools.addListener(Network.dataReceived(), o -> {
+			if (cnt++ < 10)
+				System.err
 						.println(String.format("Network request %s data received at %s",
-								o.getRequestId(), o.getTimestamp())));
+								o.getRequestId(), o.getTimestamp()));
+		});
 		// https://chromedevtools.github.io/devtools-protocol/1-2/Network/#method-setCacheDisabled
 		chromeDevTools.send(Network.setCacheDisabled(true));
 		driver.get("https://apache.org");
