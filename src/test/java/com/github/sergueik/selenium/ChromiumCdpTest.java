@@ -153,6 +153,47 @@ public class ChromiumCdpTest {
 		driver.get("about:blank");
 	}
 
+	@Ignore
+	@Test
+	// https://chromedevtools.github.io/devtools-protocol/1-2/Input/#method-dispatchKeyEvent
+	public void zoomDefaultTest() {
+		// Assert
+		driver.get("https://ya.ru");
+		command = "Input.dispatchKeyEvent";
+		try {
+			// Act
+			for (int cnt = 0; cnt != 10; cnt++) {
+				params.clear();
+				params.put("type", "char");
+				params.put("keyIdentifier", "U+002D"); // minus
+				params.put("modifiers", 2);
+				// params.put("text", "-");
+				driver.executeCdpCommand(command, params);
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+			}
+			params.clear();
+			params.put("type", "char");
+			// keyDown, keyUp, rawKeyDown, char
+			params.put("text", "0");
+			params.put("modifiers", 2);
+			// Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
+			driver.executeCdpCommand(command, params);
+		} catch (JsonSyntaxException e) {
+			System.err.println("JSON Syntax exception in " + command + " (ignored): "
+					+ e.toString());
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception in " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			System.err.println("Exception in " + command + "  " + e.toString());
+			throw (new RuntimeException(e));
+		}
+
+	}
+
 	// https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py#L32
 	@Test
 	public void dispatchMouseEventTest() {
