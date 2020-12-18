@@ -32,6 +32,8 @@ import org.openqa.selenium.devtools.browser.Browser;
 import org.openqa.selenium.devtools.browser.Browser.GetWindowForTargetResponse;
 import org.openqa.selenium.devtools.browser.model.Bounds;
 import org.openqa.selenium.devtools.browser.model.WindowID;
+import org.openqa.selenium.devtools.input.Input;
+import org.openqa.selenium.devtools.input.Input.DispatchKeyEventType;
 import org.openqa.selenium.devtools.log.Log;
 import org.openqa.selenium.TimeoutException;
 //import org.openqa.selenium.devtools.Console;
@@ -286,4 +288,32 @@ public class ChromeDevToolsTest {
 		 * ); chromeDevTools.send(Network.disable());
 		 */
 	}
+
+	@Ignore
+	@Test
+	// https://chromedevtools.github.io/devtools-protocol/1-2/Input/#method-dispatchKeyEvent
+	public void zoomTest() {
+		// Assert
+		driver.get("https://ya.ru");
+		// Act
+		for (int cnt = 0; cnt != 3; cnt++) {
+			chromeDevTools.send(Input.dispatchKeyEvent(DispatchKeyEventType.KEYDOWN,
+					Optional.of(4), Optional.empty(), Optional.of("-"), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty()));
+
+			chromeDevTools.send(Input.dispatchKeyEvent(DispatchKeyEventType.KEYUP,
+					Optional.of(0), Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty()));
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+
 }
