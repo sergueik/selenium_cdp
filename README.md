@@ -465,6 +465,8 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
   * [recaptcha-3 score](https://antcpt.com/rus/information/demo-form/recaptcha-3-test-score.html)
   * [Puppeteer Documentation](https://devdocs.io/puppeteer/)
   * [difference between WebDriver and DevTool protocol](https://stackoverflow.com/questions/50939116/what-is-the-difference-between-webdriver-and-devtool-protocol/50942942#50942942) explained
+  * [using Chrome DevTools Protocol](https://github.com/aslushnikov/getting-started-with-cdp)
+
 ### License
 This project is licensed under the terms of the MIT license.
 

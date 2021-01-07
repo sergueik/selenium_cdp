@@ -1212,7 +1212,9 @@ public class ChromiumCdpTest {
 		MonthDay monthDay = MonthDay.now();
 		baseURL = String.format("http://almetpt.ru/%s/site/schedulegroups/0/1/%s-%02d-%02d", year.toString(),
 				year.toString(), month.getValue(), monthDay.getDayOfMonth());
-		String xpath = "//div[@class=\"card-columns\"]//div[contains(@class, \"card\")][div[contains(@class, \"card-header\")]]";
+		baseURL = "http://almetpt.ru/2020/site/schedulegroups/0/1/2020-03-02";
+		String xpath = "//div[@class=\"card-columns\"]//div[contains(@class, \"card\")]"
+				+ "[div[contains(@class, \"card-header\")]]";
 		driver.get(baseURL);
 		result = null;
 		dataString = null;
