@@ -97,6 +97,7 @@ public class ChromiumCdpTest {
 	private static Map<String, Object> params = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
 	private static Map<String, Object> data2 = new HashMap<>();
+	private static List<Object> data3 = new ArrayList<>();
 	private static String dataString = null;
 	private static List<Map<String, Object>> cookies = new ArrayList<>();
 	public static Long nodeId = (long) -1;
@@ -2071,4 +2072,65 @@ public class ChromiumCdpTest {
 			throw (new RuntimeException(e));
 		}
 	}
+
+	// https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-getFrameTree
+  // https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-Frame
+	@SuppressWarnings("unchecked")
+	@Test
+	public void frameTreeTest() {
+		// Arrange
+		command = "Page.getFrameTree";
+		params = new HashMap<>();
+		driver.get("https://cloud.google.com/products/calculator");
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			System.err.println("Result: " + result);
+			Map<String, Object> frameTree = (Map<String, Object>) result
+					.get("frameTree");
+			assertThat(frameTree, notNullValue());
+			System.err.println("Frame tree: " + Arrays.asList(frameTree.keySet()));
+			data = (Map<String, Object>) frameTree.get("frame");
+			System.err.println("Frame frame keys: " + Arrays.asList(data.keySet()));
+			assertThat(data, hasKey("url"));
+			assertThat(data, hasKey("id"));
+			System.err.println(String.format("Frame id: %s, url: %s", data.get("id"),
+					data.get("url")));
+			data3 = (List<Object>) frameTree.get("childFrames");
+			assertThat(data3, notNullValue());
+			assertThat(data3.size(), greaterThan(0));
+			System.err.println(data3.size() + " child frames");
+			for (Object childFrame : data3) {
+				data = (Map<String, Object>) childFrame;
+				assertThat(data, hasKey("frame"));
+				data2 = (Map<String, Object>) data.get("frame");
+				assertThat(data2, hasKey("url"));
+				assertThat(data2, hasKey("id"));
+				assertThat(data2, hasKey("parentId"));
+				System.err.println(String.format("Child frame id: %s, url: %s",
+						data2.get("id"), data2.get("url")));
+				// Web Driver exception in Overlay.highlightFrame
+				/*
+				command = "Overlay.highlightFrame";
+				params = new HashMap<>();
+				params.put("frameId", data2.get("id"));
+				data = new HashMap<>();
+				data.put("r", "255");
+				data.put("g", "0");
+				data.put("b", "0");
+				params.put("contentColor", data);
+				params.put("contentOutlineColor", data);
+				driver.executeCdpCommand(command, params);
+				Utils.sleep(1000);
+				*/
+			}
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception in " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			System.err.println("Exception in " + command + "  " + e.toString());
+			throw (new RuntimeException(e));
+		}
+	}
+
 }
