@@ -124,14 +124,66 @@ public class ChromiumCdpTest {
 								.toAbsolutePath().toString());
 
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--ssl-protocol=any", "--ignore-ssl-errors=true",
-				"--disable-extensions", "--ignore-certificate-errors");
-		options.setExperimentalOption("useAutomationExtension", false);
+		// see also:
+		// https://ivanderevianko.com/2020/04/disable-logging-in-selenium-chromedriver
+		// https://antoinevastel.com/bot%20detection/2017/08/05/detect-chrome-headless.html
+		// @formatter:off
+		for (String optionAgrument : (new String[] {
+				"--allow-insecure-localhost",
+				"--allow-running-insecure-content",
+				"--browser.download.folderList=2",
+				"--browser.helperApps.neverAsk.saveToDisk=image/jpg,text/csv,text/xml,application/xml,application/vnd.ms-excel,application/x-excel,application/x-msexcel,application/excel,application/pdf",
+				"--disable-blink-features=AutomationControlled",
+				"--disable-default-app",
+				"--disable-dev-shm-usage",
+				"--disable-extensions",
+				"--disable-gpu",
+				"--disable-infobars",
+				"--disable-in-process-stack-traces",
+				"--disable-logging",
+				"--disable-notifications",
+				"--disable-popup-blocking",
+				"--disable-save-password-bubble",
+				"--disable-translate",
+				"--disable-web-security",
+				"--enable-local-file-accesses",
+				"--ignore-certificate-errors",
+				"--ignore-certificate-errors",
+				"--ignore-ssl-errors=true",
+				"--log-level=3",
+				"--no-proxy-server",
+				"--no-sandbox",
+				"--output=/dev/null",
+				"--ssl-protocol=any",
+				// "--start-fullscreen",
+				// "--start-maximized" ,
+				"--user-agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20120101 Firefox/33.0",
+				// String.format("--browser.download.dir=%s", downloadFilepath)
+				/*
+				 * "--user-data-dir=/path/to/your/custom/profile",
+				 * "--profile-directory=name_of_custom_profile_directory",
+				 */
+		})) {
+			options.addArguments(optionAgrument);
+		}
+		// @formatter:on
+		// options for headless
+		// NOTE: Deprecated chrome option is ignored: useAutomationExtension
+		// options.setExperimentalOption("useAutomationExtension", false);
 		if (runHeadless) {
 			options.addArguments("--headless", "--disable-gpu");
 		}
 
 		driver = new ChromeDriver(options);
+		// TODO:
+		/*
+		DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+		capabilities.setBrowserName(DesiredCapabilities.chrome().getBrowserName());
+		capabilities.setCapability(
+				org.openqa.selenium.chrome.ChromeOptions.CAPABILITY, options);
+		capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+		driver = new ChromeDriver(capabilities);
+		*/
 		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
 		Utils.setDriver(driver);
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
@@ -152,6 +204,38 @@ public class ChromiumCdpTest {
 	@After
 	public void clearPage() {
 		driver.get("about:blank");
+	}
+
+	// https://stackoverflow.com/questions/60409219/how-do-you-disable-navigator-webdriver-in-chromedriver
+	// https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-addScriptToEvaluateOnNewDocument
+	@Test
+	public void scriptOnNewDocumentTest() {
+		// Arrange
+		command = "Page.addScriptToEvaluateOnNewDocument";
+		params = new HashMap<>();
+		final String script = "Object.defineProperty(navigator, 'webdriver', { get: () => undefined })";
+		params.put("source", script);
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, params);
+			System.err.println("Result: " + result);
+			String dataString = (String) result.get("identifier");
+			assertThat(dataString, notNullValue());
+			System.err.println("Script injected: " + dataString);
+			driver.get(
+					"https://intoli.com/blog/not-possible-to-block-chrome-headless/chrome-headless-test.html");
+			Utils.sleep(4000);
+			command = "Page.removeScriptToEvaluateOnNewDocument";
+			params = new HashMap<>();
+			params.put("identifier", dataString);
+			driver.executeCdpCommand(command, params);
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception in " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			System.err.println("Exception in " + command + "  " + e.toString());
+			throw (new RuntimeException(e));
+		}
 	}
 
 	// https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#type-RGBA
