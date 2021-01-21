@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -50,6 +51,7 @@ import org.junit.Test;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidArgumentException;
+import org.openqa.selenium.InvalidSelectorException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.UnhandledAlertException;
@@ -208,21 +210,22 @@ public class ChromiumCdpTest {
 	}
 
 	// https://stackoverflow.com/questions/60409219/how-do-you-disable-navigator-webdriver-in-chromedriver
+	// https://intoli.com/blog/not-possible-to-block-chrome-headless/chrome-headless-test.js
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-addScriptToEvaluateOnNewDocument
 	@Test
 	public void scriptOnNewDocumentTest() {
-		// Arrange
-		command = "Page.addScriptToEvaluateOnNewDocument";
-		params = new HashMap<>();
-		final String script = "Object.defineProperty(navigator, 'webdriver', { get: () => undefined })";
-		params.put("source", script);
 		try {
-			// Act
+			// Arrange
+			command = "Page.addScriptToEvaluateOnNewDocument";
+			params = new HashMap<>();
+			final String script = "Object.defineProperty(navigator, 'webdriver', { get: () => undefined })";
+			params.put("source", script);
 			result = driver.executeCdpCommand(command, params);
 			System.err.println("Result: " + result);
 			String dataString = (String) result.get("identifier");
 			assertThat(dataString, notNullValue());
 			System.err.println("Script injected: " + dataString);
+			// Act
 			driver.get(
 					"https://intoli.com/blog/not-possible-to-block-chrome-headless/chrome-headless-test.html");
 			Utils.sleep(4000);
@@ -238,6 +241,81 @@ public class ChromiumCdpTest {
 			throw (new RuntimeException(e));
 		}
 	}
+
+	// https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-grantPermissions
+	// https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-setPermission
+	// https://chromedevtools.github.io/devtools-protocol/tot/Browser/#type-PermissionType
+	// https://chromedevtools.github.io/devtools-protocol/tot/Browser/#type-PermissionSetting
+	// https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/modules/permissions/permission_descriptor.idl
+	@Test
+	public void chromeHeadlessDetectionTest() {
+
+		try {
+			// Arrange
+			command = "Browser.setPermission";
+			params = new HashMap<>();
+			data = new HashMap<>();
+			data.put("name", "notifications");
+			params.put("permission", data);
+			params.put("setting", "prompt");
+			result = driver.executeCdpCommand(command, params);
+			System.err.println("Result: " + result);
+
+			command = "Browser.grantPermissions";
+			params = new HashMap<>();
+			params.put("permissions", Arrays.asList("notifications"));
+			result = driver.executeCdpCommand(command, params);
+			System.err.println("Result: " + result);
+			// Act
+			driver.navigate().to(
+					"https://intoli.com/blog/not-possible-to-block-chrome-headless/chrome-headless-test.html");
+
+			List<WebElement> elements = new ArrayList<>();
+			WebElement element = null;
+			WebElement element2 = null;
+
+			Map<String, String> statuses = new HashMap<>();
+			elements.clear();
+			elements = driver
+					.findElements(By.xpath("//*[contains(@class, 'result')]"));
+			assertTrue(elements.size() > 0);
+
+			for (int cnt = 0; cnt != elements.size(); cnt++) {
+				element = elements.get(cnt);
+				String value = element.getAttribute("class").replaceAll("result", "")
+						.replaceAll("\\s", "");
+				Utils.highlight(element);
+
+				element2 = element.findElement(By.xpath("preceding-sibling::td"));
+				Utils.highlight(element);
+				// NOTE: not descriptive
+				String key = element.getAttribute("id");
+				System.err
+						.println("Collecting " + element2.getText().replaceAll("\\n", " "));
+				statuses.put(key, value);
+				Utils.sleep(500);
+			}
+			for (Entry<String, String> entry : statuses.entrySet()) {
+				System.err.println(entry.getKey() + " = " + entry.getValue());
+			}
+
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception in " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			System.err.println("Exception in " + command + "  " + e.toString());
+			throw (new RuntimeException(e));
+		}
+	}
+	/*
+	 *  headless mode:
+	 *  permissions-result = failed
+	 * 	chrome-result = failed
+	 *  languages-result = passed
+	 * 	webdriver-result = passed
+	 * 	plugins-length-result = failed
+	 * 	user-agent-result = passed
+	 */
 
 	// https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#type-RGBA
 	// https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#method-highlightNode
@@ -1398,8 +1476,10 @@ public class ChromiumCdpTest {
 		Year year = Year.from(localDate);
 		Month month = Month.from(localDate);
 		MonthDay monthDay = MonthDay.now();
-		baseURL = String.format("http://almetpt.ru/%s/site/schedulegroups/0/1/%s-%02d-%02d", year.toString(),
-				year.toString(), month.getValue(), monthDay.getDayOfMonth());
+		baseURL = String.format(
+				"http://almetpt.ru/%s/site/schedulegroups/0/1/%s-%02d-%02d",
+				year.toString(), year.toString(), month.getValue(),
+				monthDay.getDayOfMonth());
 		baseURL = "http://almetpt.ru/2020/site/schedulegroups/0/1/2020-03-02";
 		String xpath = "//div[@class=\"card-columns\"]//div[contains(@class, \"card\")]"
 				+ "[div[contains(@class, \"card-header\")]]";
@@ -2074,7 +2154,7 @@ public class ChromiumCdpTest {
 	}
 
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-getFrameTree
-  // https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-Frame
+	// https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-Frame
 	@SuppressWarnings("unchecked")
 	@Test
 	public void frameTreeTest() {
