@@ -41,10 +41,12 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.devtools.network.Network;
 import org.openqa.selenium.devtools.network.model.Headers;
 import org.openqa.selenium.devtools.network.model.RequestId;
+import org.openqa.selenium.devtools.page.Page;
+import org.openqa.selenium.devtools.page.model.ScriptIdentifier;
 import org.openqa.selenium.devtools.performance.Performance;
 import org.openqa.selenium.devtools.performance.model.Metric;
 import org.openqa.selenium.devtools.target.model.SessionID;
-
+import org.openqa.selenium.devtools.page.Page;
 import static org.openqa.selenium.devtools.performance.Performance.disable;
 import static org.openqa.selenium.devtools.performance.Performance.enable;
 import static org.openqa.selenium.devtools.performance.Performance.getMetrics;
@@ -186,6 +188,27 @@ public class ChromeDevToolsTest {
 		} else {
 			System.err.println("Method Browser.getWindowBounds failed");
 		}
+	}
+
+	// https://stackoverflow.com/questions/60409219/how-do-you-disable-navigator-webdriver-in-chromedriver
+	// https://intoli.com/blog/not-possible-to-block-chrome-headless/chrome-headless-test.js
+	// https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-addScriptToEvaluateOnNewDocument
+	// https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-ScriptIdentifier
+	@Test
+	public void scriptOnNewDocumentTest() {
+		// Arrange
+		final String script = "Object.defineProperty(navigator, 'webdriver', { get: () => undefined });";
+		ScriptIdentifier response = chromeDevTools
+				.send(Page.addScriptToEvaluateOnNewDocument(script, Optional.empty()));
+		System.err.println(String.format(
+				"Method Page.addScriptToEvaluateOnNewDocument result: %s", response));
+
+		// chromeDevTools.send(Debugger.getScriptSource((ScriptId) response));
+		// Cannot cast from ScriptIdentifier to ScriptId
+		driver.get(
+				"https://intoli.com/blog/not-possible-to-block-chrome-headless/chrome-headless-test.html");
+		Utils.sleep(100);
+		chromeDevTools.send(Page.removeScriptToEvaluateOnNewDocument(response));
 	}
 
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setExtraHTTPHeaders
