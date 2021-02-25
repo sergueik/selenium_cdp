@@ -4,7 +4,7 @@
   <groupId>com.mycompany.app</groupId>
   <artifactId>selenum_cdp</artifactId>
   <packaging>jar</packaging>
-  <version>0.7.1-SNAPSHOT</version>
+  <version>0.7.2-SNAPSHOT</version>
   <name>selenum_cdp</name>
   <description>testing new Chrome Dev Tools bridge offered by Selenium 4.x </description>
   <url>http://maven.apache.org</url>

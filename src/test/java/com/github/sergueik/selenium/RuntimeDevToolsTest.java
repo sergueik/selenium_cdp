@@ -85,8 +85,7 @@ public class RuntimeDevToolsTest {
 	}
 
 	// NOTE: some arguments *must* be empty
-	// @Ignore
-	@Test(expected = org.openqa.selenium.devtools.DevToolsException.class)
+	@Test
 	public void test1() {
 		// evaluate
 		chromeDevTools.send(Runtime.enable());
@@ -115,15 +114,11 @@ public class RuntimeDevToolsTest {
 					result.getType(), result.getValue()));
 		} catch (JsonException e) {
 			System.err.println("Exception reading result (ignored): " + e.toString());
-		} catch (org.openqa.selenium.devtools.DevToolsException e) {
-			System.err
-					.println("Exception from devtools (rethrowing): " + e.toString());
-			throw e;
 		}
 
 	}
 
-	@Test(expected = org.openqa.selenium.devtools.DevToolsException.class)
+	@Test
 	public void test2() {
 		chromeDevTools.send(Runtime.enable());
 		try {
@@ -140,18 +135,10 @@ public class RuntimeDevToolsTest {
 			System.err.println(String.format("Result raw %s:", result.toString()));
 		} catch (JsonException e) {
 			System.err.println("Exception reading result (ignored): " + e.toString());
-		} catch (DevToolsException e) {
-			// Caused by: org.openqa.selenium.json.JsonException: Unable to create
-			// instance of class
-			// org.openqa.selenium.devtools.runtime.model.RemoteObject
-			System.err
-					.println("Exception generating result (ignored): " + e.toString());
-			throw e;
 		}
-
 	}
 
-	@Test(expected = org.openqa.selenium.devtools.DevToolsException.class)
+	@Test
 	public void test3() {
 		// evaluate
 		chromeDevTools.send(Runtime.enable());
@@ -189,7 +176,7 @@ public class RuntimeDevToolsTest {
 				null, null, null, null, null, null, null, null, Optional.empty()));
 	}
 
-	@Test(expected = org.openqa.selenium.TimeoutException.class)
+	@Test(expected = org.openqa.selenium.devtools.DevToolsException.class)
 	public void test5() {
 		// evaluate
 		chromeDevTools.send(Runtime.enable());
@@ -206,10 +193,15 @@ public class RuntimeDevToolsTest {
 							Optional.of(false), // userGesture
 							Optional.of(false), // awaitPromise
 							Optional.of(false), // throwOnSideEffect
-							Optional.of(new TimeDelta(1000)), // timeout
+							Optional.of(new TimeDelta(new Double(100))), // timeout
 							Optional.of(false), // disableBreaks
 							Optional.of(false), // replMode
-							Optional.empty()));
+							Optional.of(false)
+			/* Optional.of(false) */ // allowUnsafeEvalBlockedByCSP
+			/* Optional.empty() */
+			// uniqueContextId
+			// NOTE - dropped uniqueContextId string last argument
+			));
 
 			response.getResult();
 		} catch (JsonException e) {
@@ -217,7 +209,7 @@ public class RuntimeDevToolsTest {
 		}
 	}
 
-	@Test(expected = org.openqa.selenium.TimeoutException.class)
+	@Test(expected = org.openqa.selenium.devtools.DevToolsException.class)
 	public void test6() {
 		// evaluate
 		chromeDevTools.send(Runtime.enable());
@@ -234,15 +226,19 @@ public class RuntimeDevToolsTest {
 							Optional.of(false), // userGesture
 							Optional.of(false), // awaitPromise
 							Optional.of(false), // throwOnSideEffect
-							Optional.of(new TimeDelta(1000)), // timeout
+							Optional.of(new TimeDelta(new Double(100))), // timeout
 							Optional.of(false), // disableBreaks
 							Optional.of(false), // replMode
-							Optional.empty()));
+							Optional.of(false) // allowUnsafeEvalBlockedByCSP
+			/* Optional.empty() */));
 
 			response.getResult();
 		} catch (JsonException e) {
 			System.err.println("Exception reading result (ignored): " + e.toString());
 		}
+		// {"code":-32602,"message":"Invalid parameters","data":"Failed to
+		// deserialize params.timeout - BINDINGS: double value expected at position
+		// 175"},"sessionId":"91EA16790E5732D1D741B5996757CE2"}(..)
 
 	}
 

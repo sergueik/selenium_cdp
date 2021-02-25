@@ -205,9 +205,8 @@ public class ChromiumCdpInjectedScriptTest {
 		}
 	}
 
-	@Ignore
-	// confusingly this does not throw NoSuchElementException 
-	@Test(expected = NoSuchElementException.class)
+	// @Ignore
+	@Test(expected = java.lang.AssertionError.class)
 	public void scriptToOnLoadTest2() {
 		try {
 			// Arrange
@@ -225,8 +224,8 @@ public class ChromiumCdpInjectedScriptTest {
 			Utils.sleep(1000);
 			element = driver.findElement(By.cssSelector("div.democlass"));
 			assertThat(element, notNullValue());
-			System.err.println(
-					"Test 2 found the dynamic element " + element.getAttribute("outerHTML"));
+			System.err.println("Test 2 found the dynamic element "
+					+ element.getAttribute("outerHTML"));
 
 			command = "Page.removeScriptToEvaluateOnNewDocument";
 			params = new HashMap<>();
