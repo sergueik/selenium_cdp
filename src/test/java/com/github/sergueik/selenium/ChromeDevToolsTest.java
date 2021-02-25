@@ -28,31 +28,31 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.browser.Browser;
-import org.openqa.selenium.devtools.browser.Browser.GetWindowForTargetResponse;
-import org.openqa.selenium.devtools.browser.model.Bounds;
-import org.openqa.selenium.devtools.browser.model.WindowID;
-import org.openqa.selenium.devtools.input.Input;
-import org.openqa.selenium.devtools.input.Input.DispatchKeyEventType;
-import org.openqa.selenium.devtools.log.Log;
+import org.openqa.selenium.devtools.v89.browser.Browser;
+import org.openqa.selenium.devtools.v89.browser.Browser.GetWindowForTargetResponse;
+import org.openqa.selenium.devtools.v89.browser.model.Bounds;
+import org.openqa.selenium.devtools.v89.browser.model.WindowID;
+import org.openqa.selenium.devtools.v89.input.Input;
+import org.openqa.selenium.devtools.v89.input.Input.DispatchKeyEventType;
+import org.openqa.selenium.devtools.v89.log.Log;
 import org.openqa.selenium.TimeoutException;
 //import org.openqa.selenium.devtools.Console;
 // import org.openqa.selenium.devtools.Log;
-import org.openqa.selenium.devtools.network.Network;
-import org.openqa.selenium.devtools.network.model.Headers;
-import org.openqa.selenium.devtools.network.model.RequestId;
-import org.openqa.selenium.devtools.overlay.Overlay;
-import org.openqa.selenium.devtools.page.Page;
-import org.openqa.selenium.devtools.page.model.ScriptIdentifier;
-import org.openqa.selenium.devtools.performance.Performance;
-import org.openqa.selenium.devtools.performance.model.Metric;
-import org.openqa.selenium.devtools.target.model.SessionID;
-import org.openqa.selenium.devtools.page.model.FrameTree;
-import org.openqa.selenium.devtools.dom.model.RGBA;
+import org.openqa.selenium.devtools.v89.network.Network;
+import org.openqa.selenium.devtools.v89.network.model.Headers;
+import org.openqa.selenium.devtools.v89.network.model.RequestId;
+import org.openqa.selenium.devtools.v89.overlay.Overlay;
+import org.openqa.selenium.devtools.v89.page.Page;
+import org.openqa.selenium.devtools.v89.page.model.ScriptIdentifier;
+import org.openqa.selenium.devtools.v89.performance.Performance;
+import org.openqa.selenium.devtools.v89.performance.model.Metric;
+import org.openqa.selenium.devtools.v89.target.model.SessionID;
+import org.openqa.selenium.devtools.v89.page.model.FrameTree;
+import org.openqa.selenium.devtools.v89.dom.model.RGBA;
 
-import static org.openqa.selenium.devtools.performance.Performance.disable;
-import static org.openqa.selenium.devtools.performance.Performance.enable;
-import static org.openqa.selenium.devtools.performance.Performance.getMetrics;
+import static org.openqa.selenium.devtools.v89.performance.Performance.disable;
+import static org.openqa.selenium.devtools.v89.performance.Performance.enable;
+import static org.openqa.selenium.devtools.v89.performance.Performance.getMetrics;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -167,7 +167,8 @@ public class ChromeDevToolsTest {
 			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
 			chromeDevTools.createSessionIfThereIsNotOne();
 			@SuppressWarnings("unused")
-			SessionID id = chromeDevTools.getCdpSession();
+			org.openqa.selenium.devtools.idealized.target.model.SessionID id = chromeDevTools
+					.getCdpSession();
 		} catch (TimeoutException e) {
 			System.err.println("Exception (ignored): " + e.toString());
 			bounds = null;
@@ -330,13 +331,15 @@ public class ChromeDevToolsTest {
 					Optional.of(4), Optional.empty(), Optional.of("-"), Optional.empty(),
 					Optional.empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty()));
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty()));
 
 			chromeDevTools.send(Input.dispatchKeyEvent(DispatchKeyEventType.KEYUP,
 					Optional.of(0), Optional.empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty()));
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty()));
 
 			try {
 				Thread.sleep(1000);

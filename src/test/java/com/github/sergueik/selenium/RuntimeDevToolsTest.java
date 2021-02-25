@@ -17,11 +17,11 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.runtime.Runtime;
-import org.openqa.selenium.devtools.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.runtime.model.ExecutionContextId;
-import org.openqa.selenium.devtools.runtime.model.RemoteObject;
-import org.openqa.selenium.devtools.runtime.model.TimeDelta;
+import org.openqa.selenium.devtools.v89.runtime.Runtime;
+import org.openqa.selenium.devtools.v89.runtime.Runtime.EvaluateResponse;
+import org.openqa.selenium.devtools.v89.runtime.model.ExecutionContextId;
+import org.openqa.selenium.devtools.v89.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.v89.runtime.model.TimeDelta;
 import org.openqa.selenium.json.JsonException;
 
 /**
@@ -44,15 +44,21 @@ public class RuntimeDevToolsTest {
 	@BeforeClass
 	public static void setUp() throws Exception {
 
-		if (System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
+		if (System.getenv().containsKey("HEADLESS")
+				&& System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
 			runHeadless = true;
 		}
 		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY"))) {
+		if (!(Utils.getOSName().equals("windows"))
+				&& !(System.getenv().containsKey("DISPLAY"))) {
 			runHeadless = true;
 		}
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+		System
+				.setProperty("webdriver.chrome.driver",
+						Paths.get(System.getProperty("user.home"))
+								.resolve("Downloads").resolve(osName.equals("windows")
+										? "chromedriver.exe" : "chromedriver")
+								.toAbsolutePath().toString());
 
 		if (runHeadless) {
 			ChromeOptions options = new ChromeOptions();
@@ -87,28 +93,31 @@ public class RuntimeDevToolsTest {
 		try {
 			expression = "var y = 123; y;";
 
-			EvaluateResponse response = chromeDevTools.send(Runtime.evaluate(expression, Optional.of(""), // objectGroup
-					Optional.of(false), // includeCommandLineAPI
-					Optional.of(false), // silent
-					Optional.empty(), // contextId
-					Optional.of(false), // returnByValue
-					Optional.of(false), // generatePreview
-					Optional.of(false), // userGesture
-					Optional.of(false), // awaitPromise
-					Optional.of(false), // throwOnSideEffect
-					Optional.empty(), // timeout
-					Optional.of(false), // disableBreaks
-					Optional.of(false) // replMode
-			// not passing allowUnsafeEvalBlockedByCSP argument
-			));
+			EvaluateResponse response = chromeDevTools
+					.send(Runtime.evaluate(expression, Optional.of(""), // objectGroup
+							Optional.of(false), // includeCommandLineAPI
+							Optional.of(false), // silent
+							Optional.empty(), // contextId
+							Optional.of(false), // returnByValue
+							Optional.of(false), // generatePreview
+							Optional.of(false), // userGesture
+							Optional.of(false), // awaitPromise
+							Optional.of(false), // throwOnSideEffect
+							Optional.empty(), // timeout
+							Optional.of(false), // disableBreaks
+							Optional.of(false) // replMode
+							// not passing allowUnsafeEvalBlockedByCSP argument
+							, Optional.empty()));
 
 			RemoteObject result = response.getResult();
 			assertThat(result, notNullValue());
-			System.err.println(String.format("Result type: %s Value: %s", result.getType(), result.getValue()));
+			System.err.println(String.format("Result type: %s Value: %s",
+					result.getType(), result.getValue()));
 		} catch (JsonException e) {
 			System.err.println("Exception reading result (ignored): " + e.toString());
 		} catch (org.openqa.selenium.devtools.DevToolsException e) {
-			System.err.println("Exception from devtools (rethrowing): " + e.toString());
+			System.err
+					.println("Exception from devtools (rethrowing): " + e.toString());
 			throw e;
 		}
 
@@ -121,9 +130,11 @@ public class RuntimeDevToolsTest {
 			expression = "var y = 456; y;";
 
 			EvaluateResponse response = chromeDevTools
-					.send(Runtime.evaluate(expression, Optional.empty(), Optional.empty(), Optional.empty(),
-							Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-							Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
+					.send(Runtime.evaluate(expression, Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty()));
 
 			Object result = response.getResult();
 			System.err.println(String.format("Result raw %s:", result.toString()));
@@ -133,7 +144,8 @@ public class RuntimeDevToolsTest {
 			// Caused by: org.openqa.selenium.json.JsonException: Unable to create
 			// instance of class
 			// org.openqa.selenium.devtools.runtime.model.RemoteObject
-			System.err.println("Exception generating result (ignored): " + e.toString());
+			System.err
+					.println("Exception generating result (ignored): " + e.toString());
 			throw e;
 		}
 
@@ -146,18 +158,23 @@ public class RuntimeDevToolsTest {
 		try {
 			expression = "var y = 456; y;";
 
-			Object response = chromeDevTools.send(Runtime.evaluate(expression, Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
+			Object response = chromeDevTools
+					.send(Runtime.evaluate(expression, Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty()));
 			assertThat(response, notNullValue());
-			System.err.println(String.format("Response type is %s", response.getClass()));
+			System.err
+					.println(String.format("Response type is %s", response.getClass()));
 		} catch (JsonException e) {
 			System.err.println("Exception reading result (ignored): " + e.toString());
 		} catch (DevToolsException e) {
 			// Caused by: org.openqa.selenium.json.JsonException: Unable to create
 			// instance of class
 			// org.openqa.selenium.devtools.runtime.model.RemoteObject
-			System.err.println("Exception generating result (ignored): " + e.toString());
+			System.err
+					.println("Exception generating result (ignored): " + e.toString());
 			throw e;
 		}
 
@@ -168,8 +185,8 @@ public class RuntimeDevToolsTest {
 		// evaluate
 		chromeDevTools.send(Runtime.enable());
 		expression = "var y = 42; y;";
-		chromeDevTools.send(
-				Runtime.evaluate(expression, null, null, null, null, null, null, null, null, null, null, null, null));
+		chromeDevTools.send(Runtime.evaluate(expression, null, null, null, null,
+				null, null, null, null, null, null, null, null, Optional.empty()));
 	}
 
 	@Test(expected = org.openqa.selenium.TimeoutException.class)
@@ -179,19 +196,20 @@ public class RuntimeDevToolsTest {
 		try {
 			expression = "var y = 123; y;";
 
-			EvaluateResponse response = chromeDevTools.send(Runtime.evaluate(expression, Optional.of(""), // objectGroup
-					Optional.of(false), // includeCommandLineAPI
-					Optional.of(false), // silent
-					Optional.of(new ExecutionContextId(0)), // contextId
-					Optional.of(false), // returnByValue
-					Optional.of(false), // generatePreview
-					Optional.of(false), // userGesture
-					Optional.of(false), // awaitPromise
-					Optional.of(false), // throwOnSideEffect
-					Optional.of(new TimeDelta(1000)), // timeout
-					Optional.of(false), // disableBreaks
-					Optional.of(false) // replMode
-			));
+			EvaluateResponse response = chromeDevTools
+					.send(Runtime.evaluate(expression, Optional.of(""), // objectGroup
+							Optional.of(false), // includeCommandLineAPI
+							Optional.of(false), // silent
+							Optional.of(new ExecutionContextId(0)), // contextId
+							Optional.of(false), // returnByValue
+							Optional.of(false), // generatePreview
+							Optional.of(false), // userGesture
+							Optional.of(false), // awaitPromise
+							Optional.of(false), // throwOnSideEffect
+							Optional.of(new TimeDelta(1000)), // timeout
+							Optional.of(false), // disableBreaks
+							Optional.of(false), // replMode
+							Optional.empty()));
 
 			response.getResult();
 		} catch (JsonException e) {
@@ -206,19 +224,20 @@ public class RuntimeDevToolsTest {
 		try {
 			expression = "var y = 123; y;";
 
-			EvaluateResponse response = chromeDevTools.send(Runtime.evaluate(expression, Optional.of(""), // objectGroup
-					Optional.of(false), // includeCommandLineAPI
-					Optional.of(false), // silent
-					Optional.empty(), // contextId
-					Optional.of(false), // returnByValue
-					Optional.of(false), // generatePreview
-					Optional.of(false), // userGesture
-					Optional.of(false), // awaitPromise
-					Optional.of(false), // throwOnSideEffect
-					Optional.of(new TimeDelta(1000)), // timeout
-					Optional.of(false), // disableBreaks
-					Optional.of(false) // replMode
-			));
+			EvaluateResponse response = chromeDevTools
+					.send(Runtime.evaluate(expression, Optional.of(""), // objectGroup
+							Optional.of(false), // includeCommandLineAPI
+							Optional.of(false), // silent
+							Optional.empty(), // contextId
+							Optional.of(false), // returnByValue
+							Optional.of(false), // generatePreview
+							Optional.of(false), // userGesture
+							Optional.of(false), // awaitPromise
+							Optional.of(false), // throwOnSideEffect
+							Optional.of(new TimeDelta(1000)), // timeout
+							Optional.of(false), // disableBreaks
+							Optional.of(false), // replMode
+							Optional.empty()));
 
 			response.getResult();
 		} catch (JsonException e) {
@@ -235,9 +254,11 @@ public class RuntimeDevToolsTest {
 			expression = "const letters = ['a', 'b', 'c']; letters.push('d'); letters";
 
 			EvaluateResponse response = chromeDevTools
-					.send(Runtime.evaluate(expression, Optional.empty(), Optional.empty(), Optional.empty(),
-							Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-							Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
+					.send(Runtime.evaluate(expression, Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty()));
 
 			Object rawResult = response.getResult();
 			System.err.println(String.format("Result raw %s:", rawResult.toString()));
@@ -251,7 +272,8 @@ public class RuntimeDevToolsTest {
 			// Caused by: org.openqa.selenium.json.JsonException: Unable to create
 			// instance of class
 			// org.openqa.selenium.devtools.runtime.model.RemoteObject
-			System.err.println("Exception generating result (ignored): " + e.toString());
+			System.err
+					.println("Exception generating result (ignored): " + e.toString());
 			throw (e);
 		}
 

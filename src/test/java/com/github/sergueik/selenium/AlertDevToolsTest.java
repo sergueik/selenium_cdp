@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.devtools.page.Page;
+import org.openqa.selenium.devtools.v89.page.Page;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 /**
