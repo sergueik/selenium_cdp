@@ -21,8 +21,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.page.Page;
-import org.openqa.selenium.devtools.page.model.ScriptIdentifier;
+import org.openqa.selenium.devtools.v89.page.Page;
+import org.openqa.selenium.devtools.v89.page.model.ScriptIdentifier;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -100,10 +100,10 @@ public class ChromeDevToolsInjectedScriptTest {
 		}
 	}
 
-	@Ignore
 	// https://github.com/SeleniumHQ/selenium/blob/0f197cbd4fa9acdd2ac3ddebbe0cc9b4ca26bff8/rb/spec/integration/selenium/webdriver/chrome/driver_spec.rb
+	@Ignore
 	@Test
-	public void scriptToOnLoadTest() {
+	public void scriptToEvaluateOnNewDocumentTest() {
 		// Arrange
 		script = "window.was_here='true';";
 		identifier = chromeDevTools
@@ -123,23 +123,26 @@ public class ChromeDevToolsInjectedScriptTest {
 
 	// @Ignore
 	// https://github.com/SeleniumHQ/selenium/blob/0f197cbd4fa9acdd2ac3ddebbe0cc9b4ca26bff8/rb/spec/integration/selenium/webdriver/chrome/driver_spec.rb
-	@Test
-	public void scriptToOnLoadTest2() {
+	@SuppressWarnings("deprecation")
+	@Test(expected = java.lang.AssertionError.class)
+	public void scriptToOnLoadTest() {
 		// Arrange
 		String script = "window.was_here=true;";
 		identifier = chromeDevTools.send(Page.addScriptToEvaluateOnLoad(script));
 		System.err.println(String.format(
 				"Method Page.addScriptToEvaluateOnLoad result: %s", identifier));
 		driver.get(baseURL);
-		Utils.sleep(1000);
+		driver.navigate().refresh();
+		Utils.sleep(100);
 		Boolean data = (Boolean) Utils.executeScript("return window.was_here");
-		assertThat(data, is(true));
+		assertThat(data, notNullValue());
 
 		chromeDevTools.send(Page.removeScriptToEvaluateOnLoad(identifier));
 	}
 
 	// @Ignore
 	// https://github.com/SeleniumHQ/selenium/blob/0f197cbd4fa9acdd2ac3ddebbe0cc9b4ca26bff8/rb/spec/integration/selenium/webdriver/chrome/driver_spec.rb
+	@Ignore
 	@Test
 	public void scriptOnNewDocumentTest2() {
 		// Arrange

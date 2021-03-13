@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.devtools.page.Page;
+import org.openqa.selenium.devtools.v89.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

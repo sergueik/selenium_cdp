@@ -65,17 +65,23 @@ public class RuntimeCdpTest {
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 
-		if ((System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)"))
-				|| (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY")))) {
+		if ((System.getenv().containsKey("HEADLESS")
+				&& System.getenv("HEADLESS").matches("(?:true|yes|1)"))
+				|| (!(Utils.getOSName().equals("windows"))
+						&& !(System.getenv().containsKey("DISPLAY")))) {
 			runHeadless = true;
 		}
 
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+		System
+				.setProperty("webdriver.chrome.driver",
+						Paths.get(System.getProperty("user.home"))
+								.resolve("Downloads").resolve(osName.equals("windows")
+										? "chromedriver.exe" : "chromedriver")
+								.toAbsolutePath().toString());
 
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--ssl-protocol=any", "--ignore-ssl-errors=true", "--disable-extensions",
-				"--ignore-certificate-errors");
+		options.addArguments("--ssl-protocol=any", "--ignore-ssl-errors=true",
+				"--disable-extensions", "--ignore-certificate-errors");
 		options.setExperimentalOption("useAutomationExtension", false);
 		if (runHeadless) {
 			options.addArguments("--headless", "--disable-gpu");
@@ -104,7 +110,6 @@ public class RuntimeCdpTest {
 		driver.get("about:blank");
 	}
 
-	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test1() {
@@ -117,14 +122,17 @@ public class RuntimeCdpTest {
 			result = driver.executeCdpCommand(command, params);
 			// smoke test call
 			data = gson.fromJson(result.toString(), Map.class);
-			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
+			System.err.println(String.format("Command \"%s\" raw response: %s",
+					command, result.toString()));
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("result"));
 			data = (Map<String, Object>) result.get("result");
-			for (String field : Arrays.asList(new String[] { "description", "type", "value" })) {
+			for (String field : Arrays
+					.asList(new String[] { "description", "type", "value" })) {
 				assertThat(data, hasKey(field));
 			}
-			System.err.println("Command " + command + " result value: " + (Long) data.get("value"));
+			System.err.println(
+					"Command " + command + " result value: " + (Long) data.get("value"));
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
 					+ Utils.processExceptionMessage(e.getMessage()));
@@ -134,7 +142,6 @@ public class RuntimeCdpTest {
 		}
 	}
 
-	// @Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test2() {
@@ -146,18 +153,23 @@ public class RuntimeCdpTest {
 			String selector = "body";
 			selector = "center > input.gNO89b";//
 			selector = "input[value=\\\"Google Search\\\"]";
-			expression = String.format("window.document.querySelector('%s')", selector);
+			expression = String.format("window.document.querySelector('%s')",
+					selector);
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
+			params.put("timout", new Double(100));
 			result = driver.executeCdpCommand(command, params);
-			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
+			System.err.println(String.format("Command \"%s\" raw response: %s",
+					command, result.toString()));
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("result"));
 			data = (Map<String, Object>) result.get("result");
-			for (String field : Arrays.asList(new String[] { "className", "type", "subtype", "objectId" })) {
+			for (String field : Arrays.asList(
+					new String[] { "className", "type", "subtype", "objectId" })) {
 				assertThat(data, hasKey(field));
 			}
-			System.err.println("Command " + command + " objectId: " + (String) data.get("objectId"));
+			System.err.println(
+					"Command " + command + " objectId: " + (String) data.get("objectId"));
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
 					+ Utils.processExceptionMessage(e.getMessage()));
@@ -167,7 +179,7 @@ public class RuntimeCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test3() {
@@ -183,13 +195,15 @@ public class RuntimeCdpTest {
 			// data = gson.fromJson(result.toString(), Map.class);
 			// JsonException: Unterminated object at line 1 column 100 path
 			// $..exception.description
-			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
+			System.err.println(String.format("Command \"%s\" raw response: %s",
+					command, result.toString()));
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("exceptionDetails"));
 			data = (Map<String, Object>) result.get("exceptionDetails");
 			assertThat(data, hasKey("exception"));
 			data2 = (Map<String, Object>) data.get("exception");
-			for (String field : Arrays.asList(new String[] { "className", "description" })) {
+			for (String field : Arrays
+					.asList(new String[] { "className", "description" })) {
 				assertThat(data2, hasKey(field));
 			}
 		} catch (WebDriverException e) {
@@ -211,12 +225,14 @@ public class RuntimeCdpTest {
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
 			result = driver.executeCdpCommand(command, params);
-			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
+			System.err.println(String.format("Command \"%s\" raw response: %s",
+					command, result.toString()));
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("result"));
 			data = (Map<String, Object>) result.get("result");
 			assertThat(result, hasKey("result"));
-			for (String field : Arrays.asList(new String[] { "className", "description" })) {
+			for (String field : Arrays
+					.asList(new String[] { "className", "description" })) {
 				assertThat(data, hasKey(field));
 			}
 		} catch (WebDriverException e) {
@@ -228,19 +244,21 @@ public class RuntimeCdpTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test5() {
 		try {
 			// Act
 			params = new HashMap<>();
-			final String selector = "center > input.gNO89b";// "input[value='Google Search']";
+			final String selector = "center > input.gNO89b";// "input[value='Google
+																											// Search']";
 			expression = String.format("$('%s')", selector);
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
 			result = driver.executeCdpCommand(command, params);
-			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
+			System.err.println(String.format("Command \"%s\" raw response: %s",
+					command, result.toString()));
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("result"));
 			data = (Map<String, Object>) result.get("result");
