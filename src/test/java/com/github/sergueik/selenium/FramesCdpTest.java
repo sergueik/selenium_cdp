@@ -5,28 +5,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
 
-import java.nio.file.Paths;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import com.google.gson.Gson;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
@@ -36,141 +23,48 @@ import com.google.gson.Gson;
  *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
+@SuppressWarnings("unchecked")
 
-public class FramesCdpTest {
-
-	private static String osName = Utils.getOSName();
-
-	private static ChromiumDriver driver;
-	private static WebDriverWait wait;
-	private static boolean runHeadless = false;
-
-	private static int flexibleWait = 60;
-	private static int pollingInterval = 500;
-
-	private static Gson gson = new Gson();
+public class FramesCdpTest extends BaseCdpTest {
 
 	private static String command = null;
+	private static String html = null;
 	private static Map<String, Object> result = new HashMap<>();
-	private static Map<String, Object> params = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
 	private static Map<String, Object> data2 = new HashMap<>();
 	private static List<Object> data3 = new ArrayList<>();
-	private static String dataString = null;
-	private static List<Map<String, Object>> cookies = new ArrayList<>();
+	private static Map<String, Object> params = new HashMap<>();
 	public static Long nodeId = (long) -1;
-	public static String isolationId = null;
+	private final List<String> frameKeys = Arrays
+			.asList(new String[] { "domainAndRegistry", "securityOrigin",
+					"secureContextType", "id", "url", "mimeType" });
+	// note: "parentId" only is set for children frames
 
-	private static WebElement element = null;
-	private static By locator = null;
-	private static String baseURL = "https:// cloud.google.com/products/calculator";
-
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-
-		if ((System.getenv().containsKey("HEADLESS")
-				&& System.getenv("HEADLESS").matches("(?:true|yes|1)"))
-				|| (!(Utils.getOSName().equals("windows"))
-						&& !(System.getenv().containsKey("DISPLAY")))) {
-			runHeadless = true;
-		}
-
-		System
-				.setProperty("webdriver.chrome.driver",
-						Paths.get(System.getProperty("user.home"))
-								.resolve("Downloads").resolve(osName.equals("windows")
-										? "chromedriver.exe" : "chromedriver")
-								.toAbsolutePath().toString());
-
-		ChromeOptions options = new ChromeOptions();
-		// see also:
-		// https://ivanderevianko.com/2020/04/disable-logging-in-selenium-chromedriver
-		// https://antoinevastel.com/bot%20detection/2017/08/05/detect-chrome-headless.html
-		// @formatter:off
-		for (String optionAgrument : (new String[] {
-				"--allow-insecure-localhost",
-				"--allow-running-insecure-content",
-				"--browser.download.folderList=2",
-				"--browser.helperApps.neverAsk.saveToDisk=image/jpg,text/csv,text/xml,application/xml,application/vnd.ms-excel,application/x-excel,application/x-msexcel,application/excel,application/pdf",
-				"--disable-blink-features=AutomationControlled",
-				"--disable-default-app",
-				"--disable-dev-shm-usage",
-				"--disable-extensions",
-				"--disable-gpu",
-				"--disable-infobars",
-				"--disable-in-process-stack-traces",
-				"--disable-logging",
-				"--disable-notifications",
-				"--disable-popup-blocking",
-				"--disable-save-password-bubble",
-				"--disable-translate",
-				"--disable-web-security",
-				"--enable-local-file-accesses",
-				"--ignore-certificate-errors",
-				"--ignore-certificate-errors",
-				"--ignore-ssl-errors=true",
-				"--log-level=3",
-				"--no-proxy-server",
-				"--no-sandbox",
-				"--output=/dev/null",
-				"--ssl-protocol=any",
-				// "--start-fullscreen",
-				// "--start-maximized" ,
-				"--user-agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20120101 Firefox/33.0",
-				// String.format("--browser.download.dir=%s", downloadFilepath)
-				/*
-				 * "--user-data-dir=/path/to/your/custom/profile",
-				 * "--profile-directory=name_of_custom_profile_directory",
-				 */
-		})) {
-			options.addArguments(optionAgrument);
-		}
-		// @formatter:on
-		// options for headless
-		// NOTE: Deprecated chrome option is ignored: useAutomationExtension
-		// options.setExperimentalOption("useAutomationExtension", false);
-		if (runHeadless) {
-			options.addArguments("--headless", "--disable-gpu");
-		}
-
-		driver = new ChromeDriver(options);
-		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
-		Utils.setDriver(driver);
-		wait.pollingEvery(Duration.ofMillis(pollingInterval));
+	@Before
+	public void loadPage() {
 	}
 
-	@AfterClass
-	public static void tearDown() {
-		if (driver != null) {
-			driver.quit();
-		}
-	}
-
-	@After
-	public void clearPage() {
-		driver.get("about:blank");
-	}
-
-	@Ignore
 	@Test
 	public void test1() {
 		// Arrange
 		command = "Page.getFrameTree";
-		params = new HashMap<>();
-		baseURL = "https:// cloud.google.com/products/calculator";
+		baseURL = "https://cloud.google.com/products/calculator";
 		driver.get(baseURL);
 		try {
 			// Act
 			result = driver.executeCdpCommand(command, new HashMap<>());
-			System.err.println("Result: " + result);
+			if (debug)
+				System.err.println("Raw result: " + result);
 			Map<String, Object> frameTree = (Map<String, Object>) result
 					.get("frameTree");
 			assertThat(frameTree, notNullValue());
-			System.err.println("Frame tree: " + Arrays.asList(frameTree.keySet()));
+			System.err
+					.println("Frame tree keys: " + Arrays.asList(frameTree.keySet()));
 			data = (Map<String, Object>) frameTree.get("frame");
-			System.err.println("Frame frame keys: " + Arrays.asList(data.keySet()));
-			assertThat(data, hasKey("url"));
-			assertThat(data, hasKey("id"));
+			System.err.println("Frame keys: " + Arrays.asList(data.keySet()));
+			for (String key : frameKeys) {
+				assertThat(data, hasKey(key));
+			}
 			System.err.println(String.format("Frame id: %s, url: %s", data.get("id"),
 					data.get("url")));
 			data3 = (List<Object>) frameTree.get("childFrames");
@@ -181,12 +75,35 @@ public class FramesCdpTest {
 				data = (Map<String, Object>) childFrame;
 				assertThat(data, hasKey("frame"));
 				data2 = (Map<String, Object>) data.get("frame");
-				assertThat(data2, hasKey("url"));
-				assertThat(data2, hasKey("id"));
+				System.err
+						.println("Child frame keys: " + Arrays.asList(data2.keySet()));
+				for (String key : frameKeys) {
+					assertThat(data2, hasKey(key));
+				}
 				assertThat(data2, hasKey("parentId"));
 				System.err.println(String.format("Child frame id: %s, url: %s",
 						data2.get("id"), data2.get("url")));
+				command = "DOM.getFrameOwner";
+				params = new HashMap<>();
+				params.put("frameId", data2.get("id"));
+				result = driver.executeCdpCommand(command, params);
+				if (debug)
+					System.err.println("Raw result: " + result);
+				nodeId = Long.parseLong(result.get("nodeId").toString());
+
+				command = "DOM.getOuterHTML";
+				params.clear();
+				params.put("nodeId", nodeId);
+				result = driver.executeCdpCommand(command, params);
+				assertThat(result, notNullValue());
+				assertThat(result, hasKey("outerHTML"));
+				html = (String) result.get("outerHTML");
+				assertThat(html, notNullValue());
+				System.err
+						.println("DOM.getOuterHTML(DOM.getFrameOwner()) result: " + html);
+
 			}
+
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
 					+ Utils.processExceptionMessage(e.getMessage()));
@@ -200,7 +117,6 @@ public class FramesCdpTest {
 	public void test2() {
 		// Arrange
 		command = "Page.getFrameTree";
-		params = new HashMap<>();
 		// fails with the below
 		// that uses the old style frameset and frame tags
 		// baseURL =
@@ -211,18 +127,22 @@ public class FramesCdpTest {
 		// baseURL =
 		// "https://www.sitepoint.com/community/t/can-i-use-iframe-inside-an-iframe/214310";
 		baseURL = "https://www.javatpoint.com/oprweb/test.jsp?filename=htmliframes";
+		driver.get(baseURL);
 		try {
 			// Act
 			result = driver.executeCdpCommand(command, new HashMap<>());
-			System.err.println("Result: " + result);
+			if (debug)
+				System.err.println("Raw result: " + result);
 			Map<String, Object> frameTree = (Map<String, Object>) result
 					.get("frameTree");
 			assertThat(frameTree, notNullValue());
-			System.err.println("Frame tree: " + Arrays.asList(frameTree.keySet()));
+			System.err
+					.println("Frame tree keys: " + Arrays.asList(frameTree.keySet()));
 			data = (Map<String, Object>) frameTree.get("frame");
-			System.err.println("Frame frame keys: " + Arrays.asList(data.keySet()));
-			assertThat(data, hasKey("url"));
-			assertThat(data, hasKey("id"));
+			System.err.println("Frame keys: " + Arrays.asList(data.keySet()));
+			for (String key : frameKeys) {
+				assertThat(data, hasKey(key));
+			}
 			System.err.println(String.format("Frame id: %s, url: %s", data.get("id"),
 					data.get("url")));
 			data3 = (List<Object>) frameTree.get("childFrames");
@@ -233,8 +153,11 @@ public class FramesCdpTest {
 				data = (Map<String, Object>) childFrame;
 				assertThat(data, hasKey("frame"));
 				data2 = (Map<String, Object>) data.get("frame");
-				assertThat(data2, hasKey("url"));
-				assertThat(data2, hasKey("id"));
+				System.err
+						.println("Child frame keys: " + Arrays.asList(data2.keySet()));
+				for (String key : frameKeys) {
+					assertThat(data2, hasKey(key));
+				}
 				assertThat(data2, hasKey("parentId"));
 				System.err.println(String.format("Child frame id: %s, url: %s",
 						data2.get("id"), data2.get("url")));
