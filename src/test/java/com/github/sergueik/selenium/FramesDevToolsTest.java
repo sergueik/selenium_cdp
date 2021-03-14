@@ -17,10 +17,16 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
+import org.openqa.selenium.devtools.DevToolsException;
+import org.openqa.selenium.devtools.v89.dom.DOM;
+import org.openqa.selenium.devtools.v89.dom.model.BackendNodeId;
+import org.openqa.selenium.devtools.v89.dom.model.NodeId;
 import org.openqa.selenium.devtools.v89.dom.model.RGBA;
 import org.openqa.selenium.devtools.v89.overlay.Overlay;
 import org.openqa.selenium.devtools.v89.page.Page;
+import org.openqa.selenium.devtools.v89.page.model.FrameId;
 import org.openqa.selenium.devtools.v89.page.model.FrameTree;
+import org.openqa.selenium.remote.Command;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -33,75 +39,17 @@ import org.openqa.selenium.devtools.v89.page.model.FrameTree;
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-public class FramesDevToolsTest {
-
-	private static boolean runHeadless = false;
-	private static String osName = Utils.getOSName();
-	private static ChromiumDriver driver;
-	private static DevTools chromeDevTools;
-
-	private static String baseURL = "about:blank";
+public class FramesDevToolsTest extends BaseDevToolsTest {
 
 	private static Map<String, Object> headers = new HashMap<>();
 
-	@BeforeClass
-	public static void setUp() throws Exception {
-
-		if (System.getenv().containsKey("HEADLESS")
-				&& System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
-			runHeadless = true;
-		}
-		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOSName().equals("windows"))
-				&& !(System.getenv().containsKey("DISPLAY"))) {
-			runHeadless = true;
-		}
-		System
-				.setProperty("webdriver.chrome.driver",
-						Paths.get(System.getProperty("user.home"))
-								.resolve("Downloads").resolve(osName.equals("windows")
-										? "chromedriver.exe" : "chromedriver")
-								.toAbsolutePath().toString());
-
-		if (runHeadless) {
-			ChromeOptions options = new ChromeOptions();
-			options.addArguments("--headless", "--disable-gpu");
-			driver = new ChromeDriver(options);
-		} else {
-			driver = new ChromeDriver();
-		}
-		Utils.setDriver(driver);
-		chromeDevTools = driver.getDevTools();
-		chromeDevTools.createSession();
-	}
-
-	@BeforeClass
-	// https://chromedevtools.github.io/devtools-protocol/tot/Console#method-enable
-	// https://chromedevtools.github.io/devtools-protocol/tot/Log#method-enable
-	public static void beforeClass() throws Exception {
-		// NOTE:
-		// the github location of package org.openqa.selenium.devtools.console
-		// is uncertain
-		// enable Console
-		// chromeDevTools.send(Log.enable());
-		// add event listener to show in host console the browser console message
-		// chromeDevTools.addListener(Log.entryAdded(), System.err::println);
-		driver.get(baseURL);
-	}
-
-	@AfterClass
-	public static void tearDown() {
-		if (driver != null) {
-			driver.quit();
-		}
-	}
-
-	@Ignore
+	// @Ignore
 	@Test
 	public void test1() {
 		// Arrange
 		driver.get("https://cloud.google.com/products/calculator");
 		FrameTree response = chromeDevTools.send(Page.getFrameTree());
+		System.err.println("API response: " + response.getClass());
 		Optional<List<FrameTree>> frames = response.getChildFrames();
 		if (frames.isPresent()) {
 			frames.get().stream().map(o -> o.getFrame())
@@ -114,6 +62,21 @@ public class FramesDevToolsTest {
 			RGBA color = new RGBA(128, 0, 0, Optional.empty());
 			frames.get().stream().map(o -> o.getFrame()).forEach(frame -> {
 				try {
+					FrameId frameId = frame.getId();
+					DOM.GetFrameOwnerResponse response2 = chromeDevTools
+							.send(DOM.getFrameOwner(frameId));
+					if (response2.getNodeId().isPresent()) {
+						NodeId nodeId = response2.getNodeId().get();
+						System.err.println("Frame owner node id: " + nodeId);
+					}
+					BackendNodeId backendNodeId = response2.getBackendNodeId();
+					System.err.println("Frame owner backend node id: " + backendNodeId);
+
+					String data = chromeDevTools
+							.send(DOM.getOuterHTML(response2.getNodeId(),
+									Optional.of(response2.getBackendNodeId()), Optional.empty()));
+					System.err.println("API response: " + data);
+
 					chromeDevTools.send(Overlay.highlightFrame(frame.getId(),
 							Optional.of(color), Optional.empty()));
 				} catch (TimeoutException e) {
@@ -122,6 +85,8 @@ public class FramesDevToolsTest {
 					// parameters","data":"Failed to deserialize params.contentColor.a -
 					// BINDINGS: double value expected at position
 					// 71"},"sessionId":"02D4DB8D745FBC153C1753C69CB75C14"}
+				} catch (DevToolsException e) {
+					System.err.println("Exception (ignored): " + e.toString());
 				}
 			});
 		}
