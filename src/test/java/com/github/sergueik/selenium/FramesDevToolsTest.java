@@ -1,13 +1,11 @@
 package com.github.sergueik.selenium;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.v89.dom.DOM;
 import org.openqa.selenium.devtools.v89.dom.model.BackendNodeId;
@@ -91,6 +89,8 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 	@Test
 	public void test2() {
 		// Act
+		baseURL = "https://www.javatpoint.com/oprweb/test.jsp?filename=htmliframes";
+		driver.get(baseURL);
 		response = chromeDevTools.send(Page.getFrameTree());
 		frames = response.getChildFrames();
 		if (frames.isPresent()) {
@@ -105,11 +105,14 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 				try {
 					chromeDevTools.send(DOM.enable());
 					chromeDevTools.send(Overlay.enable());
-					RGBA color = new RGBA(128, 0, 0, Optional.empty());
+					RGBA color = new RGBA(Utils.getRandomColor(), Utils.getRandomColor(),
+							Utils.getRandomColor(), Optional.empty());
 					FrameId frameId = frame.getId();
 					chromeDevTools.send(Overlay.highlightFrame(frameId,
 							Optional.of(color), Optional.empty()));
 					System.err.println("Attempted to highlight frame " + frameId);
+					Utils.sleep(1000);
+
 				} catch (DevToolsException e) {
 					System.err.println("Exception (ignored): " + e.toString());
 				}

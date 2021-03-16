@@ -4,18 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
-import javax.imageio.stream.ImageInputStream;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -64,9 +63,11 @@ public class Utils {
 		highlight(element, highlightInterval, "solid yellow");
 	}
 
-	public static void highlight(WebElement element, long highlightInterval, String color) {
+	public static void highlight(WebElement element, long highlightInterval,
+			String color) {
 		try {
-			js.executeScript(String.format("arguments[0].style.border='3px %s'", color), element);
+			js.executeScript(
+					String.format("arguments[0].style.border='3px %s'", color), element);
 			Thread.sleep(highlightInterval);
 			js.executeScript("arguments[0].style.border=''", element);
 		} catch (InterruptedException e) {
@@ -114,18 +115,26 @@ public class Utils {
 		ImageReader reader = null;
 		Map<String, Integer> result = new HashMap<>();
 		try {
-			reader = ImageIO.getImageReadersBySuffix(filename.replaceFirst(".*\\.", "")).next();
+			reader = ImageIO
+					.getImageReadersBySuffix(filename.replaceFirst(".*\\.", "")).next();
 			reader.setInput(new FileImageInputStream(new File(filename)));
 			int index = reader.getMinIndex();
 			result.put("width", reader.getWidth(index));
 			result.put("height", reader.getHeight(index));
 		} catch (IOException e) {
 			System.err.println("Error (ignored): " + e.toString());
-			// e.g. javax.imageio.IIOException: Not a JPEG file: starts with 0x89 0x50
 		} finally {
 			reader.dispose();
 		}
 		return result;
 	}
 
+	public static int getRandomColor(int min, int max) {
+		Random random = new Random();
+		return random.nextInt(max - min) + min;
+	}
+
+	public static int getRandomColor() {
+		return getRandomColor(0, 255);
+	}
 }

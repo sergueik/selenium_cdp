@@ -10,9 +10,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.openqa.selenium.WebDriverException;
 
 /**
@@ -22,6 +24,7 @@ import org.openqa.selenium.WebDriverException;
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getFrameOwner
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getOuterHTML
  * https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-Frame
+ * https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-FrameId
  *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
@@ -34,7 +37,9 @@ public class FramesCdpTest extends BaseCdpTest {
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
 	private static Map<String, Object> data2 = new HashMap<>();
+	private static Map<String, Integer> rgb_data = new HashMap<>();
 	private static List<Object> data3 = new ArrayList<>();
+	private String frameId = null;
 	private static Map<String, Object> params = new HashMap<>();
 	public static Long nodeId = (long) -1;
 	private final List<String> frameKeys = Arrays
@@ -90,7 +95,7 @@ public class FramesCdpTest extends BaseCdpTest {
 				params.put("frameId", data2.get("id"));
 				result = driver.executeCdpCommand(command, params);
 				if (debug)
-					System.err.println("Raw result: " + result);
+					System.err.println("DOM.getFrameOwner result: " + result);
 				nodeId = Long.parseLong(result.get("nodeId").toString());
 
 				command = "DOM.getOuterHTML";
@@ -121,7 +126,7 @@ public class FramesCdpTest extends BaseCdpTest {
 				params.put("frameId", data2.get("id"));
 				result = driver.executeCdpCommand(command, params);
 				if (debug)
-					System.err.println("Raw result: " + result);
+					System.err.println("DOM.getFrameOwner result: " + result);
 				nodeId = Long.parseLong(result.get("nodeId").toString());
 
 				command = "DOM.getOuterHTML";
@@ -132,8 +137,7 @@ public class FramesCdpTest extends BaseCdpTest {
 				assertThat(result, hasKey("outerHTML"));
 				html = (String) result.get("outerHTML");
 				assertThat(html, notNullValue());
-				System.err
-						.println("DOM.getOuterHTML(DOM.getFrameOwner()) result: " + html);
+				System.err.println("Frame owner outer HTML: " + html);
 
 			}
 
@@ -165,7 +169,7 @@ public class FramesCdpTest extends BaseCdpTest {
 			// Act
 			result = driver.executeCdpCommand(command, new HashMap<>());
 			if (debug)
-				System.err.println("Raw result: " + result);
+				System.err.println("Page.getFrameTree result: " + result);
 			Map<String, Object> frameTree = (Map<String, Object>) result
 					.get("frameTree");
 			assertThat(frameTree, notNullValue());
@@ -194,6 +198,72 @@ public class FramesCdpTest extends BaseCdpTest {
 				assertThat(data2, hasKey("parentId"));
 				System.err.println(String.format("Child frame id: %s, url: %s",
 						data2.get("id"), data2.get("url")));
+			}
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception in " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			System.err.println("Exception in " + command + " " + e.toString());
+			throw (new RuntimeException(e));
+		}
+	}
+
+	@Test
+	public void test3() {
+		// Arrange
+		command = "Page.getFrameTree";
+		baseURL = "https://www.javatpoint.com/oprweb/test.jsp?filename=htmliframes";
+		driver.get(baseURL);
+		try {
+			// Act
+			result = driver.executeCdpCommand(command, new HashMap<>());
+			if (debug)
+				System.err.println("Page.getFrameTree result: " + result);
+			Map<String, Object> frameTree = (Map<String, Object>) result
+					.get("frameTree");
+			assertThat(frameTree, notNullValue());
+			System.err
+					.println("Frame tree keys: " + Arrays.asList(frameTree.keySet()));
+			data = (Map<String, Object>) frameTree.get("frame");
+			System.err.println("Frame keys: " + Arrays.asList(rgb_data.keySet()));
+			for (String key : frameKeys) {
+				assertThat(data, hasKey(key));
+			}
+			System.err.println(String.format("Frame id: %s, url: %s",
+					rgb_data.get("id"), rgb_data.get("url")));
+			data3 = (List<Object>) frameTree.get("childFrames");
+			assertThat(data3, notNullValue());
+			assertThat(data3.size(), greaterThan(0));
+			System.err.println(data3.size() + " child frames");
+			for (Object childFrame : data3) {
+				data = (Map<String, Object>) childFrame;
+				assertThat(data, hasKey("frame"));
+				data2 = (Map<String, Object>) data.get("frame");
+				System.err
+						.println("Child frame keys: " + Arrays.asList(data2.keySet()));
+				for (String key : frameKeys) {
+					assertThat(data2, hasKey(key));
+				}
+				assertThat(data2, hasKey("parentId"));
+				System.err.println(String.format("Child frame id: %s, url: %s",
+						data2.get("id"), data2.get("url")));
+
+				// THREE calls
+				driver.executeCdpCommand("DOM.enable", new HashMap<>());
+				driver.executeCdpCommand("Overlay.enable", new HashMap<>());
+				rgb_data.clear();
+				rgb_data.put("r", Utils.getRandomColor());
+				rgb_data.put("g", Utils.getRandomColor());
+				rgb_data.put("b", Utils.getRandomColor());
+				rgb_data.put("a", 1);
+				params.clear();
+				frameId = data2.get("id").toString();
+				params.put("frameId", frameId);
+				params.put("contentColor", rgb_data);
+				command = "Overlay.highlightFrame";
+				System.err.println("Attempted to highlight frame " + frameId);
+				driver.executeCdpCommand(command, params);
+				Utils.sleep(1000);
 			}
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
