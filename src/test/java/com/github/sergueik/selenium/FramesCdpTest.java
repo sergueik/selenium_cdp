@@ -19,6 +19,8 @@ import org.openqa.selenium.WebDriverException;
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
  * https://the-internet.herokuapp.com/nested_frames
  * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-getFrameTree
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getFrameOwner
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getOuterHTML
  * https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-Frame
  *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
@@ -46,8 +48,8 @@ public class FramesCdpTest extends BaseCdpTest {
 
 	@Test
 	public void test1() {
-		// Arrange
 		command = "Page.getFrameTree";
+		// Arrange
 		baseURL = "https://cloud.google.com/products/calculator";
 		driver.get(baseURL);
 		try {
@@ -71,6 +73,37 @@ public class FramesCdpTest extends BaseCdpTest {
 			assertThat(data3, notNullValue());
 			assertThat(data3.size(), greaterThan(0));
 			System.err.println(data3.size() + " child frames");
+			for (Object childFrame : data3) {
+				data = (Map<String, Object>) childFrame;
+				assertThat(data, hasKey("frame"));
+				data2 = (Map<String, Object>) data.get("frame");
+				System.err
+						.println("Child frame keys: " + Arrays.asList(data2.keySet()));
+				for (String key : frameKeys) {
+					assertThat(data2, hasKey(key));
+				}
+				assertThat(data2, hasKey("parentId"));
+				System.err.println(String.format("Child frame id: %s, url: %s",
+						data2.get("id"), data2.get("url")));
+				command = "DOM.getFrameOwner";
+				params = new HashMap<>();
+				params.put("frameId", data2.get("id"));
+				result = driver.executeCdpCommand(command, params);
+				if (debug)
+					System.err.println("Raw result: " + result);
+				nodeId = Long.parseLong(result.get("nodeId").toString());
+
+				command = "DOM.getOuterHTML";
+				params.clear();
+				params.put("nodeId", nodeId);
+				result = driver.executeCdpCommand(command, params);
+				assertThat(result, notNullValue());
+				assertThat(result, hasKey("outerHTML"));
+				html = (String) result.get("outerHTML");
+				assertThat(html, notNullValue());
+				System.err.println("Frame owner outer HTML: " + html);
+
+			}
 			for (Object childFrame : data3) {
 				data = (Map<String, Object>) childFrame;
 				assertThat(data, hasKey("frame"));
@@ -171,4 +204,3 @@ public class FramesCdpTest extends BaseCdpTest {
 		}
 	}
 }
-
