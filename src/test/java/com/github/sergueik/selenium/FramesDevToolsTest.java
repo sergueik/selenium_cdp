@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.openqa.selenium.devtools.DevToolsException;
@@ -35,21 +36,25 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 
 	private FrameTree response = null;
 	private FrameId frameId = null;
+	private RGBA color = null;
 	private String html = null;
 	Optional<List<FrameTree>> frames = null;
+	private BackendNodeId backendNodeId = null;
+	private NodeId nodeId = null;
 
 	// @Ignore
 
 	@Before
 	public void before() throws Exception {
-		baseURL = "https://cloud.google.com/products/calculator";
-		// Arrange
-		driver.get(baseURL);
 	}
 
+	// @Ignore
 	@Test
 	public void test1() {
 		// Act
+		// Arrange
+		baseURL = "https://cloud.google.com/products/calculator";
+		driver.get(baseURL);
 		response = chromeDevTools.send(Page.getFrameTree());
 		frames = response.getChildFrames();
 		if (frames.isPresent()) {
@@ -66,10 +71,10 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 					DOM.GetFrameOwnerResponse response2 = chromeDevTools
 							.send(DOM.getFrameOwner(frameId));
 					if (response2.getNodeId().isPresent()) {
-						NodeId nodeId = response2.getNodeId().get();
+						nodeId = response2.getNodeId().get();
 						System.err.println("Frame owner node id: " + nodeId);
 					}
-					BackendNodeId backendNodeId = response2.getBackendNodeId();
+					backendNodeId = response2.getBackendNodeId();
 					System.err.println("Frame owner backend node id: " + backendNodeId);
 
 					html = chromeDevTools.send(DOM.getOuterHTML(response2.getNodeId(),
@@ -91,34 +96,22 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 		// Act
 		baseURL = "https://www.javatpoint.com/oprweb/test.jsp?filename=htmliframes";
 		driver.get(baseURL);
-		response = chromeDevTools.send(Page.getFrameTree());
-		frames = response.getChildFrames();
-		if (frames.isPresent()) {
-			frames.get().stream().map(o -> o.getFrame())
-					.map(frame -> String.format("Frame %s id: %s url: %s",
-							frame.getName().isPresent()
-									? String.format("name: %s", frame.getName().get()) : "",
-							frame.getId(), frame.getUrl()))
-					.forEach(System.err::println);
-
-			frames.get().stream().map(o -> o.getFrame()).forEach(frame -> {
-				try {
-					chromeDevTools.send(DOM.enable());
-					chromeDevTools.send(Overlay.enable());
-					RGBA color = new RGBA(Utils.getRandomColor(), Utils.getRandomColor(),
-							Utils.getRandomColor(), Optional.empty());
-					FrameId frameId = frame.getId();
-					chromeDevTools.send(Overlay.highlightFrame(frameId,
-							Optional.of(color), Optional.empty()));
-					System.err.println("Attempted to highlight frame " + frameId);
-					Utils.sleep(1000);
-
-				} catch (DevToolsException e) {
-					System.err.println("Exception (ignored): " + e.toString());
-				}
-			});
-		} else {
-			System.err.println("No Frames found on " + baseURL);
-		}
+		frames = chromeDevTools.send(Page.getFrameTree()).getChildFrames();
+		chromeDevTools.send(DOM.enable());
+		chromeDevTools.send(Overlay.enable());
+		frames.get().stream().map(o -> o.getFrame()).forEach(frame -> {
+			try {
+				color = new RGBA(Utils.getRandomColor(), Utils.getRandomColor(),
+						Utils.getRandomColor(), Optional.empty());
+				frameId = frame.getId();
+				chromeDevTools.send(Overlay.highlightFrame(frameId, Optional.of(color),
+						Optional.empty()));
+				System.err.println("Attempted to highlight frame " + frameId);
+				Utils.sleep(1000);
+			} catch (DevToolsException e) {
+				System.err.println("Exception (ignored): " + e.toString());
+			}
+		});
 	}
 }
+

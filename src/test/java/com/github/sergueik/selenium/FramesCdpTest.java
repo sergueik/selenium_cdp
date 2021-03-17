@@ -10,9 +10,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.openqa.selenium.WebDriverException;
@@ -37,6 +37,7 @@ public class FramesCdpTest extends BaseCdpTest {
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
 	private static Map<String, Object> data2 = new HashMap<>();
+	private static Map<String, Object> frameTree = new HashMap<>();
 	private static Map<String, Integer> rgb_data = new HashMap<>();
 	private static List<Object> data3 = new ArrayList<>();
 	private String frameId = null;
@@ -51,6 +52,7 @@ public class FramesCdpTest extends BaseCdpTest {
 	public void loadPage() {
 	}
 
+	// @Ignore
 	@Test
 	public void test1() {
 		command = "Page.getFrameTree";
@@ -61,9 +63,8 @@ public class FramesCdpTest extends BaseCdpTest {
 			// Act
 			result = driver.executeCdpCommand(command, new HashMap<>());
 			if (debug)
-				System.err.println("Raw result: " + result);
-			Map<String, Object> frameTree = (Map<String, Object>) result
-					.get("frameTree");
+				System.err.println("Page.getFrameTree result: " + result);
+			frameTree = (Map<String, Object>) result.get("frameTree");
 			assertThat(frameTree, notNullValue());
 			System.err
 					.println("Frame tree keys: " + Arrays.asList(frameTree.keySet()));
@@ -150,19 +151,11 @@ public class FramesCdpTest extends BaseCdpTest {
 		}
 	}
 
+	// @Ignore
 	@Test
 	public void test2() {
 		// Arrange
 		command = "Page.getFrameTree";
-		// fails with the below
-		// that uses the old style frameset and frame tags
-		// baseURL =
-		// "http://www.maths.surrey.ac.uk/explore/nigelspages/framenest.htm";
-		// baseURL = "https://the-internet.herokuapp.com/nested_frames";
-		// baseURL = "https://nunzioweb.com/iframes-example.htm";
-		// https://jwcooney.com/2014/11/03/calling-page-elements-in-nested-iframes-with-javascript/
-		// baseURL =
-		// "https://www.sitepoint.com/community/t/can-i-use-iframe-inside-an-iframe/214310";
 		baseURL = "https://www.javatpoint.com/oprweb/test.jsp?filename=htmliframes";
 		driver.get(baseURL);
 		try {
@@ -170,8 +163,7 @@ public class FramesCdpTest extends BaseCdpTest {
 			result = driver.executeCdpCommand(command, new HashMap<>());
 			if (debug)
 				System.err.println("Page.getFrameTree result: " + result);
-			Map<String, Object> frameTree = (Map<String, Object>) result
-					.get("frameTree");
+			frameTree = (Map<String, Object>) result.get("frameTree");
 			assertThat(frameTree, notNullValue());
 			System.err
 					.println("Frame tree keys: " + Arrays.asList(frameTree.keySet()));
@@ -208,6 +200,7 @@ public class FramesCdpTest extends BaseCdpTest {
 		}
 	}
 
+	// @Ignore
 	@Test
 	public void test3() {
 		// Arrange
@@ -219,8 +212,7 @@ public class FramesCdpTest extends BaseCdpTest {
 			result = driver.executeCdpCommand(command, new HashMap<>());
 			if (debug)
 				System.err.println("Page.getFrameTree result: " + result);
-			Map<String, Object> frameTree = (Map<String, Object>) result
-					.get("frameTree");
+			frameTree = (Map<String, Object>) result.get("frameTree");
 			assertThat(frameTree, notNullValue());
 			System.err
 					.println("Frame tree keys: " + Arrays.asList(frameTree.keySet()));
@@ -248,7 +240,6 @@ public class FramesCdpTest extends BaseCdpTest {
 				System.err.println(String.format("Child frame id: %s, url: %s",
 						data2.get("id"), data2.get("url")));
 
-				// THREE calls
 				driver.executeCdpCommand("DOM.enable", new HashMap<>());
 				driver.executeCdpCommand("Overlay.enable", new HashMap<>());
 				rgb_data.clear();
@@ -274,3 +265,4 @@ public class FramesCdpTest extends BaseCdpTest {
 		}
 	}
 }
+
