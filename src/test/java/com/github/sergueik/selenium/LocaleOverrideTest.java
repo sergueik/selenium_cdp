@@ -33,7 +33,7 @@ public class LocaleOverrideTest extends BaseCdpTest {
 		command = "Runtime.evaluate";
 		params = new HashMap<>();
 		params.put("expression",
-				"function example(){ return navigator.language;} example();");
+				"function example(){ return navigator.userLanguage || (navigator.languages && navigator.languages.length && navigator.languages[0]) || navigator.language || navigator.browserLanguage || navigator.systemLanguage || 'en';} example();");
 		result = driver.executeCdpCommand(command, params);
 		System.err.println("Response to " + command + ": " + result);
 		command = "Runtime.evaluate";
