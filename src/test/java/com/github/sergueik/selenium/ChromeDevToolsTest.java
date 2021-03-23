@@ -347,39 +347,4 @@ public class ChromeDevToolsTest {
 			}
 		}
 	}
-
-	// https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-getFrameTree
-	// https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-Frame
-	// https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#method-highlightFrame
-	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-RGBA
-	@Test
-	public void frameTreeTest() {
-		// Arrange
-		driver.get("https://cloud.google.com/products/calculator");
-		FrameTree response = chromeDevTools.send(Page.getFrameTree());
-		Optional<List<FrameTree>> frames = response.getChildFrames();
-		if (frames.isPresent()) {
-			frames.get().stream().map(o -> o.getFrame())
-					.map(frame -> String.format("Frame %s id: %s url: %s",
-							frame.getName().isPresent()
-									? String.format("name: %s", frame.getName().get()) : "",
-							frame.getId(), frame.getUrl()))
-					.forEach(System.err::println);
-
-			RGBA color = new RGBA(128, 0, 0, Optional.empty());
-			frames.get().stream().map(o -> o.getFrame()).forEach(frame -> {
-				try {
-					chromeDevTools.send(Overlay.highlightFrame(frame.getId(),
-							Optional.of(color), Optional.empty()));
-				} catch (TimeoutException e) {
-					// WARNING: Unhandled type:
-					// {"id":9,"error":{"code":-32602,"message":"Invalid
-					// parameters","data":"Failed to deserialize params.contentColor.a -
-					// BINDINGS: double value expected at position
-					// 71"},"sessionId":"02D4DB8D745FBC153C1753C69CB75C14"}
-				}
-			});
-		}
-	}
-
 }

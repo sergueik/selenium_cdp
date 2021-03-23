@@ -7,6 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -31,58 +32,14 @@ import org.openqa.selenium.net.PortProber;
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-public class WindowsTabsTest {
-
-	private static String osName = Utils.getOSName();
-
-	private static ChromiumDriver driver;
-	private static WebDriverWait wait;
-	private static boolean runHeadless = false;
-
-	private static int flexibleWait = 60;
-	private static int pollingInterval = 500;
+public class WindowsTabsTest extends BaseCdpTest {
 
 	private static String url1 = "https://en.wikipedia.org/wiki/Main_Page";
 	private static String url2 = "https://www.google.com";
+	// NOTE: http://ww1.demoaut.com no longer exits, domain it for sale
 	private static String url3 = "http://newtours.demoaut.com/";
 	private static Map<Integer, String> data = new HashMap<>();
 	private static String baseURL = "about:blank";
-
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-
-		if ((System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)"))
-				|| (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY")))) {
-			runHeadless = true;
-		}
-
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
-
-		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--ssl-protocol=any", "--ignore-ssl-errors=true", "--disable-extensions",
-				"--ignore-certificate-errors");
-		options.setExperimentalOption("useAutomationExtension", false);
-		if (runHeadless) {
-			options.addArguments("--headless", "--disable-gpu");
-		}
-		// uncomment the next line to get
-		// java.lang.NoClassDefFoundError: Could not initialize class
-		// org.openqa.selenium.net.PortProber
-		// and
-		// java.lang.NoSuchMethodError:
-		// java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/charset/Charset;)V
-		// at
-		// org.openqa.selenium.net.LinuxEphemeralPortRangeDetector.getInstance(LinuxEphemeralPortRangeDetector.java:36)
-		// at org.openqa.selenium.net.PortProber.<clinit>(PortProber.java:42)
-		// the method FileReader​(File file, Charset charset) is added in JDK 11
-		// https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/FileReader.html
-		// int port = PortProber.findFreePort();
-		driver = new ChromeDriver(options);
-		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
-		Utils.setDriver(driver);
-		wait.pollingEvery(Duration.ofMillis(pollingInterval));
-	}
 
 	@Before
 	public void beforeTest() throws Exception {
@@ -106,7 +63,50 @@ public class WindowsTabsTest {
 	// https://www.javadoc.io/static/com.machinepublishers/jbrowserdriver/1.1.1/org/openqa/selenium/WindowType.html
 
 	@Test
-	public void tabTest() {
+	public void test1() {
+		this.openNewTab(url1);
+		data.put(1, url1);
+		Utils.sleep(100);
+		this.openNewTab(url2);
+		data.put(2, url2);
+		Utils.sleep(100);
+		this.openNewTab(url3);
+		data.put(3, url3);
+		Utils.sleep(100);
+		switchToWindow(1);
+		assertThat(driver.getTitle(), is("Wikipedia, the free encyclopedia"));
+		Utils.sleep(100);
+		switchToWindow(2);
+		assertThat(driver.getTitle(), is("Google"));
+		assertThat(driver.getCurrentUrl(),
+				containsString("https://www.google.com/"));
+		Utils.sleep(100);
+		switchToWindow(3);
+		System.err.println("Window handle: " + driver.getWindowHandle());
+		assertThat(driver.getWindowHandle(), containsString("CDwindow-"));
+		Utils.sleep(100);
+		switchToWindow(0);
+		// NOTE: cannot closeWindow (1,2,3)
+		closeWindow(1);
+		System.err.println("Available /remaining window hanles: "
+				+ Arrays.asList(getAllWindows()));
+		Utils.sleep(300);
+		closeWindow(1);
+		System.err.println("Available /remaining window hanles: "
+				+ Arrays.asList(getAllWindows()));
+		Utils.sleep(300);
+		closeWindow(1);
+		System.err.println("Available /remaining window hanles: "
+				+ Arrays.asList(getAllWindows()));
+		Utils.sleep(300);
+		// NOTE: unstable
+		assertThat(driver.getTitle(), is("about:blank"));
+		// assertThat(driver.getTitle(), is("Wikipedia, the free encyclopedia"));
+		Utils.sleep(1000);
+	}
+
+	@Test
+	public void test3() {
 		this.openNewTab(url1);
 		Utils.sleep(100);
 		this.openNewWindow(url2);
