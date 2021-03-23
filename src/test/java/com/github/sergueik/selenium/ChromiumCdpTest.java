@@ -1099,42 +1099,6 @@ public class ChromiumCdpTest {
 	}
 
 	// @Ignore
-	// https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setUserAgentOverride
-	// https://stackoverflow.com/questions/29916054/change-user-agent-for-selenium-driver
-	@SuppressWarnings("serial")
-	@Test
-	public void setUserAgentOverrideTest() {
-		// Arrange
-		driver.get("https://www.whoishostingthis.com/tools/user-agent/");
-		locator = By.cssSelector("a[href='/']");
-		element = driver.findElement(locator);
-		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
-		// Expected: a string containing "Mozilla" but: was "WhoIsHostingThis
-		// Act
-		try {
-			driver.executeCdpCommand("Network.setUserAgentOverride",
-					new HashMap<String, Object>() {
-						{
-							put("userAgent", "python 2.7");
-							put("platform", "Windows");
-						}
-					});
-		} catch (WebDriverException e) {
-			System.err.println("Web Driver exception in " + command + " (ignored): "
-					+ Utils.processExceptionMessage(e.getMessage()));
-		} catch (Exception e) {
-			System.err.println("Exception in " + command + "  " + e.toString());
-			throw (new RuntimeException(e));
-		}
-		driver.navigate().refresh();
-		Utils.sleep(1000);
-
-		element = driver.findElement(locator);
-		assertThat(element.isDisplayed(), is(true));
-		assertThat(element.getAttribute("innerText"), is("python 2.7"));
-	}
-
-	// @Ignore
 	// see:
 	// https://github.com/sergueik/powershell_selenium/blob/master/python/print_pdf.py
 	// origin: https://habr.com/ru/post/459112/
