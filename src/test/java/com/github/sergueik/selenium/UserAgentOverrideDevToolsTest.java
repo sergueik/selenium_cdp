@@ -1,0 +1,72 @@
+package com.github.sergueik.selenium;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import org.junit.After;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.devtools.idealized.Network.UserAgent;
+//import org.openqa.selenium.devtools.Console;
+// import org.openqa.selenium.devtools.Log;
+import org.openqa.selenium.devtools.v89.network.Network;
+
+/**
+ * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setUserAgentOverride
+ * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ */
+
+public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
+
+	private static WebElement element = null;
+	private static By locator = By.xpath(
+			"//*[@id=\"content-base\"]//table//th[contains(text(),\"USER-AGENT\")]/../td");
+
+	private static String baseURL = "https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending";
+
+	private final static int id = (int) (java.lang.Math.random() * 1_000_000);
+	public final static String consoleMessage = "message from test id #" + id;
+
+	@Test
+	public void test() {
+		// Arrange
+		driver.get(baseURL);
+		element = driver.findElement(locator);
+		Utils.highlight(element);
+		Utils.sleep(100);
+		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
+		System.err
+				.println("Vanilla USER-AGENT: " + element.getAttribute("innerText"));
+
+		// Act
+		try {
+			UserAgent userAgent = new UserAgent("python 2.7");
+			userAgent.platform("windows");
+			chromeDevTools.send(Network.setUserAgentOverride(userAgent.userAgent(),
+					Optional.empty(), Optional.empty(), Optional.empty()));
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			System.err.println("Exception " + e.toString());
+			throw (new RuntimeException(e));
+		}
+		driver.navigate().refresh();
+		Utils.sleep(1000);
+
+		element = driver.findElement(locator);
+		assertThat(element.isDisplayed(), is(true));
+		assertThat(element.getAttribute("innerText"), is("python 2.7"));
+		System.err
+				.println("Updated USER-AGENT: " + element.getAttribute("innerText"));
+	}
+
+}
