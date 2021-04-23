@@ -19,7 +19,7 @@
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
     <selenium.version>4.0.0-alpha-7</selenium.version><!-- NOTE: 4.0.0l-alpha-7 requires Java 11 -->
-    <selenium.version>4.0.0-beta-2</selenium.version><!-- NOTE: a big number of ChromeDevTools*java tests are failing with unresolved package references e.g.
+    <selenium.version>4.0.0-beta-3</selenium.version><!-- NOTE: a big number of ChromeDevTools*java tests are failing with unresolved package references e.g.
     org.openqa.selenium.devtools.page.Page needs to be replaced with 
 	    org.openqa.selenium.devtools.v89.page.Page -->
     <selenium-chromium-driver.version>${selenium.version}</selenium-chromium-driver.version>
