@@ -32,9 +32,6 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 
 	private static String baseURL = "https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending";
 
-	private final static int id = (int) (java.lang.Math.random() * 1_000_000);
-	public final static String consoleMessage = "message from test id #" + id;
-
 	@Test
 	public void test() {
 		// Arrange
