@@ -3,6 +3,10 @@ package com.github.sergueik.selenium;
  * Copyright 2021 Serguei Kouzmine
  */
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
 import java.nio.file.Paths;
 import java.time.Duration;
 
@@ -119,5 +123,18 @@ public class BaseCdpTest {
 	public void clearPage() {
 		driver.get("about:blank");
 	}
-}
 
+	// origin:
+	// https://stackoverflow.com/questions/3584210/preferred-java-way-to-ping-an-http-url-for-availability
+	public boolean pingHost(String host, int port, int timeout) {
+		try (Socket socket = new Socket()) {
+			System.err.println(
+					String.format("Trying to connect to host %s port %d", host, port));
+			socket.connect(new InetSocketAddress(host, port), timeout);
+			return true;
+		} catch (IOException e) {
+			System.err.println("timeout or unreachable or failed DNS lookup.");
+			return false; // timeout or unreachable or failed DNS lookup.
+		}
+	}
+}

@@ -4,11 +4,14 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
@@ -27,15 +30,29 @@ import org.openqa.selenium.devtools.v89.network.Network;
 public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 
 	private static WebElement element = null;
+	private static List<WebElement> elements = new ArrayList<>();
 	private static By locator = By.xpath(
 			"//*[@id=\"content-base\"]//table//th[contains(text(),\"USER-AGENT\")]/../td");
 
 	private static String baseURL = "https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending";
 
+	private final static int id = (int) (java.lang.Math.random() * 1_000_000);
+	public final static String consoleMessage = "message from test id #" + id;
+
 	@Test
 	public void test() {
+		// the site may be down, and it can also reject autoated browsing
+		// pingHost() does not work reliably yet
+		// Assume.assumeTrue(pingHost("www.whoishostingthis.com", 443, 3));
 		// Arrange
 		driver.get(baseURL);
+		locator = By.cssSelector("#content-base div.content-block-main");
+		elements = driver.findElements(locator);
+		if (elements.size() > 0) {
+			// You have been blocked
+			return;
+		}
+
 		element = driver.findElement(locator);
 		Utils.highlight(element);
 		Utils.sleep(100);
