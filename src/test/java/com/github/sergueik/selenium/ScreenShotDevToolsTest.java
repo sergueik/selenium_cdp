@@ -17,9 +17,12 @@ import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
-import org.openqa.selenium.devtools.v89.dom.model.Rect;
-import org.openqa.selenium.devtools.v89.emulation.Emulation;
-import org.openqa.selenium.devtools.v89.page.Page;
+import org.openqa.selenium.devtools.DevToolsException;
+import org.openqa.selenium.devtools.v92.css.CSS;
+import org.openqa.selenium.devtools.v92.dom.DOM;
+import org.openqa.selenium.devtools.v92.dom.model.Rect;
+import org.openqa.selenium.devtools.v92.emulation.Emulation;
+import org.openqa.selenium.devtools.v92.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -34,6 +37,8 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 	private static Rect rect;
 	private int width, height;
 	private double deviceScaleFactor = 0.85;
+	private String screenshotFileName = "temp.jpg";
+	private Base64 base64 = new Base64();
 
 	@Before
 	public void before() throws Exception {
@@ -41,14 +46,13 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 		driver.get(baseURL);
 	}
 
-
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-getLayoutMetrics
 	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setDeviceMetricsOverride
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
 	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-clearDeviceMetricsOverride
-	public void test() {
-
+	public void test1() {
+		screenshotFileName = "test1.jpg";
 		layoutMetrics = chromeDevTools.send(Page.getLayoutMetrics());
 		rect = layoutMetrics.getContentSize();
 		width = rect.getWidth().intValue();
@@ -86,7 +90,6 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 		);
 		chromeDevTools.send(Emulation.clearDeviceMetricsOverride());
 
-		Base64 base64 = new Base64();
 		byte[] image = base64.decode(dataString);
 		try {
 			BufferedImage o = ImageIO.read(new ByteArrayInputStream(image));
@@ -99,7 +102,6 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 		} catch (IOException e) {
 			System.err.println("Exception loading image (ignored): " + e.toString());
 		}
-		String screenshotFileName = "temp.jpg";
 		try {
 			FileOutputStream fileOutputStream = new FileOutputStream(
 					screenshotFileName);
@@ -108,6 +110,60 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 		} catch (IOException e) {
 			System.err.println("Exception saving image (ignored): " + e.toString());
 		}
+	}
 
+	@Test
+	public void test2() {
+
+		screenshotFileName = "test2.jpg";
+		chromeDevTools.send(CSS.disable());
+		try {
+			chromeDevTools.send(DOM.disable());
+		} catch (DevToolsException e) {
+			// DOM agent hasn't been enabled
+		}
+		chromeDevTools.send(
+				// @formatter:off
+				Emulation.setDeviceMetricsOverride(
+					rect.getWidth().intValue(), 
+					rect.getHeight().intValue(),
+					1.0, 
+					false, 
+					Optional.empty(), 
+					Optional.empty(),
+					Optional.empty(), 
+					Optional.empty(), 
+					Optional.empty(), 
+					Optional.empty(),
+					Optional.empty(), 
+					Optional.empty(), 
+					Optional.empty()
+				)
+				// @formatter:on
+		);
+		chromeDevTools.send(DOM.enable());
+		chromeDevTools.send(CSS.enable());
+		String dataString = chromeDevTools.send(
+				// @formatter:off
+				Page.captureScreenshot(
+						Optional.of(Page.CaptureScreenshotFormat.JPEG), 
+						Optional.of(100),
+						Optional.empty(), 
+						Optional.of(true), 
+						Optional.of(true)
+				)
+				// @formatter:off
+		);
+
+		Base64 base64 = new Base64();
+		byte[] image = base64.decode(dataString);
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream(
+					screenshotFileName);
+			fileOutputStream.write(image);
+			fileOutputStream.close();
+		} catch (IOException e) {
+			System.err.println("Exception saving image (ignored): " + e.toString());
+		}
 	}
 }

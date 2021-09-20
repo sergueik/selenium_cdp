@@ -5,7 +5,9 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.devtools.v89.page.Page;
+import org.openqa.selenium.devtools.v92.page.Page;
+import org.openqa.selenium.devtools.v92.page.model.Frame;
+import org.openqa.selenium.devtools.v92.page.model.FrameNavigated;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -31,8 +33,8 @@ public class FrameDevToolsTest extends EventSubscriptionCommonTest {
 				System.err.println(
 						String.format("Page has frame %s attached: ", o.getFrameId()));
 		});
-		chromeDevTools.addListener(Page.frameNavigated(), o -> System.err
-				.println(String.format("Page has frame %s navigated: ", o.getId())));
+		chromeDevTools.addListener(Page.frameNavigated(), o -> System.err.println(
+				String.format("Page has frame %s navigated: ", o.getFrame().getId())));
 		driver.get(baseURL);
 	}
 

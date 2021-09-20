@@ -28,24 +28,22 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v89.browser.Browser;
-import org.openqa.selenium.devtools.v89.browser.Browser.GetWindowForTargetResponse;
-import org.openqa.selenium.devtools.v89.browser.model.Bounds;
-import org.openqa.selenium.devtools.v89.browser.model.WindowID;
-import org.openqa.selenium.devtools.v89.log.Log;
-import org.openqa.selenium.TimeoutException;
-//import org.openqa.selenium.devtools.Console;
-// import org.openqa.selenium.devtools.Log;
-import org.openqa.selenium.devtools.v89.network.Network;
-import org.openqa.selenium.devtools.v89.network.model.Headers;
-import org.openqa.selenium.devtools.v89.network.model.RequestId;
-import org.openqa.selenium.devtools.v89.performance.Performance;
-import org.openqa.selenium.devtools.v89.performance.model.Metric;
-import org.openqa.selenium.devtools.v89.target.model.SessionID;
+import org.openqa.selenium.devtools.v92.browser.Browser;
+import org.openqa.selenium.devtools.v92.browser.Browser.GetWindowForTargetResponse;
+import org.openqa.selenium.devtools.v92.browser.model.Bounds;
+import org.openqa.selenium.devtools.v92.browser.model.WindowID;
+import org.openqa.selenium.devtools.v92.log.Log;
+import org.openqa.selenium.devtools.v92.network.Network;
+import org.openqa.selenium.devtools.v92.network.model.Headers;
+import org.openqa.selenium.devtools.v92.network.model.RequestId;
+import org.openqa.selenium.devtools.v92.performance.Performance;
+import org.openqa.selenium.devtools.v92.performance.model.Metric;
+import org.openqa.selenium.devtools.v92.target.model.SessionID;
 
-import static org.openqa.selenium.devtools.v89.performance.Performance.disable;
-import static org.openqa.selenium.devtools.v89.performance.Performance.enable;
-import static org.openqa.selenium.devtools.v89.performance.Performance.getMetrics;
+import org.openqa.selenium.TimeoutException;
+
+//import org.openqa.selenium.devtools.Console;
+//import org.openqa.selenium.devtools.Log;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

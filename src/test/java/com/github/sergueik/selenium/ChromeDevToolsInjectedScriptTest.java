@@ -21,8 +21,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v89.page.Page;
-import org.openqa.selenium.devtools.v89.page.model.ScriptIdentifier;
+import org.openqa.selenium.devtools.v92.page.Page;
+import org.openqa.selenium.devtools.v92.page.model.ScriptIdentifier;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -106,8 +106,8 @@ public class ChromeDevToolsInjectedScriptTest {
 	public void scriptToEvaluateOnNewDocumentTest() {
 		// Arrange
 		script = "window.was_here='true';";
-		identifier = chromeDevTools
-				.send(Page.addScriptToEvaluateOnNewDocument(script, Optional.empty()));
+		identifier = chromeDevTools.send(Page.addScriptToEvaluateOnNewDocument(
+				script, Optional.empty(), Optional.empty()));
 		System.err.println(String.format(
 				"Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
 
@@ -147,8 +147,8 @@ public class ChromeDevToolsInjectedScriptTest {
 	public void scriptOnNewDocumentTest2() {
 		// Arrange
 		script = "window.was_here=true;";
-		identifier = chromeDevTools
-				.send(Page.addScriptToEvaluateOnNewDocument(script, Optional.empty()));
+		identifier = chromeDevTools.send(Page.addScriptToEvaluateOnNewDocument(
+				script, Optional.empty(), Optional.empty()));
 		System.err.println(String.format(
 				"Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
 
@@ -168,8 +168,8 @@ public class ChromeDevToolsInjectedScriptTest {
 	public void scriptOnNewDocumentTest() {
 		// Arrange
 		script = "Object.defineProperty(navigator, 'webdriver', { get: () => undefined });";
-		identifier = chromeDevTools
-				.send(Page.addScriptToEvaluateOnNewDocument(script, Optional.empty()));
+		identifier = chromeDevTools.send(Page.addScriptToEvaluateOnNewDocument(
+				script, Optional.empty(), Optional.empty()));
 		System.err.println(String.format(
 				"Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
 
