@@ -43,7 +43,8 @@ import org.openqa.selenium.devtools.v92.page.Page;
 import org.openqa.selenium.devtools.v92.page.model.ScriptIdentifier;
 import org.openqa.selenium.devtools.v92.performance.Performance;
 import org.openqa.selenium.devtools.v92.performance.model.Metric;
-import org.openqa.selenium.devtools.v92.target.model.SessionID;
+// import org.openqa.selenium.devtools.v92.target.model.SessionID;
+import org.openqa.selenium.devtools.idealized.target.model.SessionID;
 import org.openqa.selenium.devtools.v92.page.model.FrameTree;
 import org.openqa.selenium.devtools.v92.dom.model.RGBA;
 
@@ -147,8 +148,6 @@ public class ChromeDevToolsTest {
 				.println("Successfully captured console log messge: " + consoleMessage);
 	}
 
-	@Ignore
-	// TODO: Debug failing with 4.0.0-rc-1 worked with 4.0.0-beta-4
 	@Test
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
 	public void broserGetWindowBoundsTest() {
@@ -168,8 +167,7 @@ public class ChromeDevToolsTest {
 			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
 			chromeDevTools.createSessionIfThereIsNotOne();
 			@SuppressWarnings("unused")
-			org.openqa.selenium.devtools.idealized.target.model.SessionID id = chromeDevTools
-					.getCdpSession();
+			SessionID id = chromeDevTools.getCdpSession();
 		} catch (TimeoutException e) {
 			System.err.println("Exception (ignored): " + e.toString());
 			bounds = null;
@@ -188,10 +186,17 @@ public class ChromeDevToolsTest {
 		});
 		driver.get("https://apache.org");
 		if (bounds != null) {
-			System.err.println(String.format(
-					"Method Browser.getWindowBounds(%d) result: top: %d, left: %d, width: %d, height: %d",
-					Long.parseLong(windowId.toString()), bounds.getLeft(),
-					bounds.getTop(), bounds.getWidth(), bounds.getHeight()));
+			System.err.print(String.format("Method Browser.getWindowBounds(%d): ",
+					Long.parseLong(windowId.toString())));
+			if (bounds.getTop().isPresent()) {
+				System.err
+						.println(String.format("top: %d, left: %d, width: %d, height: %d",
+								bounds.getTop().get(), bounds.getLeft().get(),
+								bounds.getWidth().get(), bounds.getHeight().get()));
+
+			} else {
+				System.err.println("undefined");
+			}
 		} else {
 			System.err.println("Method Browser.getWindowBounds failed");
 		}

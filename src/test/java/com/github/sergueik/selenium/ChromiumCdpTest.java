@@ -318,8 +318,18 @@ public class ChromiumCdpTest {
 	 * 	user-agent-result = passed
 	 */
 
-	@Ignore
-	// TODO: Debug failing with 4.0.0-rc-1 worked with 4.0.0-beta-4
+	/*
+	 *  headless mode:
+	 *  permissions-result = failed
+	 * 	chrome-result = failed
+	 *  languages-result = passed
+	 * 	webdriver-result = passed
+	 * 	plugins-length-result = failed
+	 * 	user-agent-result = passed
+	 */
+	// NOTE: works fine alone, but not because of "Overlay.enable" only availavle
+	// in tip-of-tree protocol
+	// https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#method-enable
 	// https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#type-RGBA
 	// https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#method-highlightNode
 	// https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#type-HighlightConfig
@@ -371,7 +381,8 @@ public class ChromiumCdpTest {
 			data2.put("g", 0);
 			data2.put("b", 128);
 			data.put("borderColor", data2);
-
+			command = "Overlay.enable";
+			result = driver.executeCdpCommand(command, new HashMap<>());
 			// Highlights DOM node with given id
 			command = "DOM.highlightNode";
 			params.clear();

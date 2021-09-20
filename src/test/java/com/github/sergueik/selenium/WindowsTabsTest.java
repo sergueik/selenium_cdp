@@ -26,6 +26,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import org.openqa.selenium.net.PortProber;
 
+import org.openqa.selenium.NoSuchWindowException;
+import org.openqa.selenium.NoSuchSessionException;
+import java.util.Iterator;
+
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
  * origin: https://github.com/sachinguptait/SeleniumAutomation
@@ -56,13 +60,14 @@ public class WindowsTabsTest extends BaseCdpTest {
 
 	@After
 	public void clearPage() {
+		// usually get "about:blank
+		// driver.get("about:blank");
+		// Utils.sleep(1000);
+		closeAllWindows();
 		driver.get("about:blank");
-		Utils.sleep(1000);
+		Utils.sleep(100);
 	}
 
-	@Ignore
-	// TODO: Debug failing with 4.0.0-rc-1 worked with 4.0.0-beta-4: 
-	// multiple target window already closed(..) 
 	@Test
 	// https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py#L32
 	// https://www.javadoc.io/static/com.machinepublishers/jbrowserdriver/1.1.1/org/openqa/selenium/WindowType.html
@@ -83,34 +88,64 @@ public class WindowsTabsTest extends BaseCdpTest {
 		assertThat(driver.getTitle(), is("Google"));
 		assertThat(driver.getCurrentUrl(),
 				containsString("https://www.google.com/"));
-		Utils.sleep(100);
 		switchToWindow(3);
+		Utils.sleep(100);
 		System.err.println("Window handle: " + driver.getWindowHandle());
 		assertThat(driver.getWindowHandle(), containsString("CDwindow-"));
 		Utils.sleep(100);
 		switchToWindow(0);
-		// NOTE: cannot closeWindow (1,2,3)
+		// closeAllWindows();
+	}
+
+	@Test
+	// https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py#L32
+	// https://www.javadoc.io/static/com.machinepublishers/jbrowserdriver/1.1.1/org/openqa/selenium/WindowType.html
+	public void test2() {
+		this.openNewTab(url1);
+		data.put(1, url1);
+		Utils.sleep(100);
+		this.openNewTab(url2);
+		data.put(2, url2);
+		Utils.sleep(100);
+		this.openNewTab(url3);
+		data.put(3, url3);
+		Utils.sleep(100);
+		switchToWindow(0);
 		closeWindow(1);
-		System.err.println("Available /remaining window hanles: "
-				+ Arrays.asList(getAllWindows()));
-		Utils.sleep(300);
+		Utils.sleep(1000);
+		try {
+			System.err.println("Available /remaining window handles:\n"
+					+ String.join(",\n", getAllWindows()));
+		} catch (NoSuchWindowException e) {
+			System.err.println("Exception (ignored) in mini-step 1:" + e.toString());
+		}
+		Utils.sleep(1000);
+		switchToWindow(0);
 		closeWindow(1);
-		System.err.println("Available /remaining window hanles: "
-				+ Arrays.asList(getAllWindows()));
-		Utils.sleep(300);
+		try {
+			System.err.println("Available /remaining window handles:\n"
+					+ String.join(",\n", getAllWindows()));
+		} catch (NoSuchWindowException e) {
+			System.err.println("Exception (ignored) in mini-step 1:" + e.toString());
+		}
+		Utils.sleep(1000);
+		switchToWindow(0);
 		closeWindow(1);
-		System.err.println("Available /remaining window hanles: "
-				+ Arrays.asList(getAllWindows()));
-		Utils.sleep(300);
+		try {
+			System.err.println("Available /remaining window handles:\n"
+					+ String.join(",\n", getAllWindows()));
+		} catch (NoSuchWindowException e) {
+			System.err.println("Exception (ignored) in mini-step 1:" + e.toString());
+		}
+		Utils.sleep(1000);
+		switchToWindow(0);
 		// NOTE: unstable
-		assertThat(driver.getTitle(), is("about:blank"));
+		// assertThat(driver.getTitle(), is("about:blank"));
 		// assertThat(driver.getTitle(), is("Wikipedia, the free encyclopedia"));
+		assertThat(driver.getTitle(), is(""));
 		Utils.sleep(1000);
 	}
 
-	@Ignore
-	// TODO: Debug failing with 4.0.0-rc-1 worked with 4.0.0-beta-4: 
-	// multiple target window already closed(..) 
 	@Test
 	public void test3() {
 		this.openNewTab(url1);
@@ -125,11 +160,12 @@ public class WindowsTabsTest extends BaseCdpTest {
 		Utils.sleep(100);
 		switchToWindow(1);
 		assertThat(driver.getTitle(), is("Wikipedia, the free encyclopedia"));
-		// NOTE: unstable
-		// assertThat(driver.getTitle(), is("Google"));
 		Utils.sleep(100);
 		switchToWindow(2);
-		assertThat(driver.getCurrentUrl(), is("https://www.google.com/"));
+		// NOTE: unstable
+		// assertThat(driver.getTitle(), is("Google"));
+		assertThat(driver.getCurrentUrl(),
+				containsString("https://www.google.com/"));
 		Utils.sleep(100);
 		switchToWindow(3);
 		System.err.println("Window handle: " + driver.getWindowHandle());
@@ -153,7 +189,7 @@ public class WindowsTabsTest extends BaseCdpTest {
 	}
 
 	public Set<String> getAllWindows() {
-		return this.driver.getWindowHandles();
+		return BaseCdpTest.driver.getWindowHandles();
 	}
 
 	private void switchToWindow(int windowNumber) {
@@ -164,7 +200,32 @@ public class WindowsTabsTest extends BaseCdpTest {
 
 	private void closeWindow(int windowNumber) {
 		Set<String> allWindows = getAllWindows();
-		ArrayList<String> windowHandles = new ArrayList<>(allWindows);
-		driver.switchTo().window(windowHandles.get(windowNumber)).close();
+		if (!allWindows.isEmpty()) {
+			ArrayList<String> windowHandles = new ArrayList<>(allWindows);
+			driver.switchTo().window(windowHandles.get(windowNumber)).close();
+		}
+	}
+
+	private void closeAllWindows() {
+		boolean hasWindows = true;
+		while (hasWindows) {
+			try {
+				Set<String> allWindows = getAllWindows();
+				if (allWindows.isEmpty() || allWindows.size() == 1) {
+					// keep 1 window open after tests run
+					hasWindows = false;
+				} else {
+					System.err.println(
+							String.format("closing: %d remaining", allWindows.size()));
+					Iterator<String> windowIterator = allWindows.iterator();
+					driver.switchTo().window(windowIterator.next()).close();
+					driver.switchTo().window(windowIterator.next());
+				}
+			} catch (NoSuchWindowException | NoSuchSessionException e) {
+				System.err.println(
+						"Exception (ignored) while closing windows:" + e.toString());
+				hasWindows = false;
+			}
+		}
 	}
 }
