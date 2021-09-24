@@ -1,6 +1,9 @@
 package com.github.sergueik.selenium;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -29,6 +32,7 @@ import org.openqa.selenium.net.PortProber;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.NoSuchSessionException;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
@@ -97,6 +101,7 @@ public class WindowsTabsTest extends BaseCdpTest {
 		// closeAllWindows();
 	}
 
+	
 	@Test
 	// https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py#L32
 	// https://www.javadoc.io/static/com.machinepublishers/jbrowserdriver/1.1.1/org/openqa/selenium/WindowType.html
@@ -110,6 +115,7 @@ public class WindowsTabsTest extends BaseCdpTest {
 		this.openNewTab(url3);
 		data.put(3, url3);
 		Utils.sleep(100);
+
 		switchToWindow(0);
 		closeWindow(1);
 		Utils.sleep(1000);
@@ -146,6 +152,7 @@ public class WindowsTabsTest extends BaseCdpTest {
 		Utils.sleep(1000);
 	}
 
+	
 	@Test
 	public void test3() {
 		this.openNewTab(url1);
@@ -178,6 +185,48 @@ public class WindowsTabsTest extends BaseCdpTest {
 		// assertThat(driver.getTitle(), is("Wikipedia, the free encyclopedia"));
 		Utils.sleep(1000);
 	}
+
+	@Test
+	// https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py#L32
+	// https://www.javadoc.io/static/com.machinepublishers/jbrowserdriver/1.1.1/org/openqa/selenium/WindowType.html
+	public void test4() {
+		this.openNewTab(url1);
+		this.openNewTab(url2);
+		this.openNewTab(url3);
+		Utils.sleep(100);
+		List<String> targetIds = new ArrayList<>();
+		Map<String, Object> result = BaseCdpTest.driver
+				.executeCdpCommand("Target.getTargets", new HashMap<>());
+		assertThat(result, notNullValue());
+		assertThat(result, hasKey("targetInfos"));
+		System.err.println("Target.getTargets:");
+
+		List<Object> targetInfos = (List<Object>) Arrays
+				.asList(result.get("targetInfos")).get(0);
+		assertThat(targetInfos, notNullValue());
+		targetInfos.stream().forEach(o -> {
+			Map<String, Object> data = (Map<String, Object>) o;
+			assertThat(data, notNullValue());
+			assertThat(data, hasKey("targetId"));
+			assertThat(data.get("targetId"), notNullValue());
+			assertThat(data, hasKey("type"));
+			assertThat(data, hasKey("url"));
+
+			System.err.println("targetInfo:");
+
+			for (String k : data.keySet()) {
+				System.err.println(k + ": " + data.get(k).toString());
+
+			}
+			if (data.get("type").equals("page"))
+				targetIds.add(data.get("targetId").toString());
+		});
+		System.err.println("targetIds: " + targetIds);
+		assertThat(targetIds.size(), greaterThan(2));
+		// at least 3 tabs
+
+	}
+
 
 	// utilities
 	private void openNewTab(String url) {
