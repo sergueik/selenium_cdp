@@ -101,7 +101,6 @@ public class WindowsTabsTest extends BaseCdpTest {
 		// closeAllWindows();
 	}
 
-	
 	@Test
 	// https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py#L32
 	// https://www.javadoc.io/static/com.machinepublishers/jbrowserdriver/1.1.1/org/openqa/selenium/WindowType.html
@@ -152,7 +151,6 @@ public class WindowsTabsTest extends BaseCdpTest {
 		Utils.sleep(1000);
 	}
 
-	
 	@Test
 	public void test3() {
 		this.openNewTab(url1);
@@ -191,12 +189,17 @@ public class WindowsTabsTest extends BaseCdpTest {
 	// https://www.javadoc.io/static/com.machinepublishers/jbrowserdriver/1.1.1/org/openqa/selenium/WindowType.html
 	public void test4() {
 		this.openNewTab(url1);
+		System.err.println("WindowHandle: " + BaseCdpTest.driver.getWindowHandle());
 		this.openNewTab(url2);
+		System.err.println("WindowHandle: " + BaseCdpTest.driver.getWindowHandle());
 		this.openNewTab(url3);
+		System.err.println("WindowHandle: " + BaseCdpTest.driver.getWindowHandle());
 		Utils.sleep(100);
 		List<String> targetIds = new ArrayList<>();
 		Map<String, Object> result = BaseCdpTest.driver
 				.executeCdpCommand("Target.getTargets", new HashMap<>());
+		// format:
+		// CDwindow-F71A995BF9B0D0386CB08DD1488CED15
 		assertThat(result, notNullValue());
 		assertThat(result, hasKey("targetInfos"));
 		System.err.println("Target.getTargets:");
@@ -220,13 +223,13 @@ public class WindowsTabsTest extends BaseCdpTest {
 			}
 			if (data.get("type").equals("page"))
 				targetIds.add(data.get("targetId").toString());
+			// format: F71A995BF9B0D0386CB08DD1488CED15
 		});
 		System.err.println("targetIds: " + targetIds);
 		assertThat(targetIds.size(), greaterThan(2));
 		// at least 3 tabs
 
 	}
-
 
 	// utilities
 	private void openNewTab(String url) {
@@ -242,16 +245,16 @@ public class WindowsTabsTest extends BaseCdpTest {
 	}
 
 	private void switchToWindow(int windowNumber) {
-		Set<String> allWindows = getAllWindows();
-		ArrayList<String> windowHandles = new ArrayList<>(allWindows);
+		// not caching window handles
+		ArrayList<String> windowHandles = new ArrayList<>(getAllWindows());
 		driver.switchTo().window(windowHandles.get(windowNumber));
 	}
 
 	private void closeWindow(int windowNumber) {
 		Set<String> allWindows = getAllWindows();
 		if (!allWindows.isEmpty()) {
-			ArrayList<String> windowHandles = new ArrayList<>(allWindows);
-			driver.switchTo().window(windowHandles.get(windowNumber)).close();
+			switchToWindow(windowNumber);
+			driver.close();
 		}
 	}
 
