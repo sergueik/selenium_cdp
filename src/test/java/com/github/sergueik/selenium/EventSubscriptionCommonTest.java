@@ -18,6 +18,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
+import org.openqa.selenium.devtools.HasDevTools;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -84,7 +85,13 @@ public class EventSubscriptionCommonTest {
 		// Selenium Driver version sensitive code: 3.13.0 vs. 3.8.0 and older
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 		// wait.pollingEvery(pollingInterval, TimeUnit.MILLISECONDS);
-		chromeDevTools = driver.getDevTools();
+
+		chromeDevTools = ((HasDevTools) driver).getDevTools();
+		// compiles but fails in runtime
+		// Method
+		// org/openqa/selenium/chrome/ChromeDriver.getDevTools()Lorg/openqa/selenium/devtools/DevTools;
+		// is abstract
+
 		// register to alert events
 		/*	
 			chromeDevTools.addListener(new Event("Page.javascriptDialogClosed",

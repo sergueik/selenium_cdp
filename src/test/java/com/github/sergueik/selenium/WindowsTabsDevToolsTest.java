@@ -10,19 +10,19 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v92.dom.DOM;
-import org.openqa.selenium.devtools.v92.dom.model.BackendNodeId;
-import org.openqa.selenium.devtools.v92.dom.model.NodeId;
-import org.openqa.selenium.devtools.v92.dom.model.RGBA;
-import org.openqa.selenium.devtools.v92.overlay.Overlay;
-import org.openqa.selenium.devtools.v92.page.Page;
-import org.openqa.selenium.devtools.v92.page.model.FrameId;
+import org.openqa.selenium.devtools.v93.dom.DOM;
+import org.openqa.selenium.devtools.v93.dom.model.BackendNodeId;
+import org.openqa.selenium.devtools.v93.dom.model.NodeId;
+import org.openqa.selenium.devtools.v93.dom.model.RGBA;
+import org.openqa.selenium.devtools.v93.overlay.Overlay;
+import org.openqa.selenium.devtools.v93.page.Page;
+import org.openqa.selenium.devtools.v93.page.model.FrameId;
 // NOTE letter case in the class name 
-import org.openqa.selenium.devtools.v92.target.model.TargetID;
-import org.openqa.selenium.devtools.v92.target.model.TargetInfo;
-import org.openqa.selenium.devtools.v92.target.Target;
-import org.openqa.selenium.devtools.v92.target.model.SessionID;
-import org.openqa.selenium.devtools.v92.page.model.FrameTree;
+import org.openqa.selenium.devtools.v93.target.model.TargetID;
+import org.openqa.selenium.devtools.v93.target.model.TargetInfo;
+import org.openqa.selenium.devtools.v93.target.Target;
+import org.openqa.selenium.devtools.v93.target.model.SessionID;
+import org.openqa.selenium.devtools.v93.page.model.FrameTree;
 
 public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 

@@ -28,17 +28,19 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v92.browser.Browser;
-import org.openqa.selenium.devtools.v92.browser.Browser.GetWindowForTargetResponse;
-import org.openqa.selenium.devtools.v92.browser.model.Bounds;
-import org.openqa.selenium.devtools.v92.browser.model.WindowID;
-import org.openqa.selenium.devtools.v92.log.Log;
-import org.openqa.selenium.devtools.v92.network.Network;
-import org.openqa.selenium.devtools.v92.network.model.Headers;
-import org.openqa.selenium.devtools.v92.network.model.RequestId;
-import org.openqa.selenium.devtools.v92.performance.Performance;
-import org.openqa.selenium.devtools.v92.performance.model.Metric;
-import org.openqa.selenium.devtools.v92.target.model.SessionID;
+import org.openqa.selenium.devtools.HasDevTools;
+
+import org.openqa.selenium.devtools.v93.browser.Browser;
+import org.openqa.selenium.devtools.v93.browser.Browser.GetWindowForTargetResponse;
+import org.openqa.selenium.devtools.v93.browser.model.Bounds;
+import org.openqa.selenium.devtools.v93.browser.model.WindowID;
+import org.openqa.selenium.devtools.v93.log.Log;
+import org.openqa.selenium.devtools.v93.network.Network;
+import org.openqa.selenium.devtools.v93.network.model.Headers;
+import org.openqa.selenium.devtools.v93.network.model.RequestId;
+import org.openqa.selenium.devtools.v93.performance.Performance;
+import org.openqa.selenium.devtools.v93.performance.model.Metric;
+import org.openqa.selenium.devtools.v93.target.model.SessionID;
 
 import org.openqa.selenium.TimeoutException;
 
@@ -95,7 +97,12 @@ public class NetworkDevToolsTest {
 			driver = new ChromeDriver();
 		}
 		Utils.setDriver(driver);
-		chromeDevTools = driver.getDevTools();
+		chromeDevTools = ((HasDevTools) driver).getDevTools();
+		// compiles but fails in runtime
+		// Method
+		// org/openqa/selenium/chrome/ChromeDriver.getDevTools()Lorg/openqa/selenium/devtools/DevTools;
+		// is abstract
+
 		chromeDevTools.createSession();
 	}
 

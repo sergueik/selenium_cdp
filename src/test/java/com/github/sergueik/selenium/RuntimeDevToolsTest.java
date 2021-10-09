@@ -17,11 +17,12 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v92.runtime.Runtime;
-import org.openqa.selenium.devtools.v92.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.v92.runtime.model.ExecutionContextId;
-import org.openqa.selenium.devtools.v92.runtime.model.RemoteObject;
-import org.openqa.selenium.devtools.v92.runtime.model.TimeDelta;
+import org.openqa.selenium.devtools.HasDevTools;
+import org.openqa.selenium.devtools.v93.runtime.Runtime;
+import org.openqa.selenium.devtools.v93.runtime.Runtime.EvaluateResponse;
+import org.openqa.selenium.devtools.v93.runtime.model.ExecutionContextId;
+import org.openqa.selenium.devtools.v93.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.v93.runtime.model.TimeDelta;
 import org.openqa.selenium.json.JsonException;
 
 /**
@@ -68,7 +69,8 @@ public class RuntimeDevToolsTest {
 			driver = new ChromeDriver();
 		}
 		Utils.setDriver(driver);
-		chromeDevTools = driver.getDevTools();
+		chromeDevTools = ((HasDevTools) driver).getDevTools();
+		// compiles but fails in runtime
 		chromeDevTools.createSession();
 	}
 
@@ -116,7 +118,8 @@ public class RuntimeDevToolsTest {
 			System.err.println(String.format("test 1 Result type: %s Value: %s",
 					result.getType(), result.getValue()));
 		} catch (JsonException e) {
-			System.err.println("Exception in test 1 reading result (ignored): " + e.toString());
+			System.err.println(
+					"Exception in test 1 reading result (ignored): " + e.toString());
 		}
 
 	}
@@ -135,9 +138,11 @@ public class RuntimeDevToolsTest {
 							Optional.empty(), Optional.empty(), Optional.empty()));
 
 			Object result = response.getResult();
-			System.err.println(String.format("test 2 Result raw %s:", result.toString()));
+			System.err
+					.println(String.format("test 2 Result raw %s:", result.toString()));
 		} catch (JsonException e) {
-			System.err.println("Exception in test 2 reading result (ignored): " + e.toString());
+			System.err.println(
+					"Exception in test 2 reading result (ignored): " + e.toString());
 		}
 	}
 
@@ -155,16 +160,17 @@ public class RuntimeDevToolsTest {
 							Optional.empty(), Optional.empty(), Optional.empty(),
 							Optional.empty(), Optional.empty(), Optional.empty()));
 			assertThat(response, notNullValue());
-			System.err
-					.println(String.format("test 3 Response type is %s", response.getClass()));
+			System.err.println(
+					String.format("test 3 Response type is %s", response.getClass()));
 		} catch (JsonException e) {
-			System.err.println("Exception in test 3 reading result (ignored): " + e.toString());
+			System.err.println(
+					"Exception in test 3 reading result (ignored): " + e.toString());
 		} catch (DevToolsException e) {
 			// Caused by: org.openqa.selenium.json.JsonException: Unable to create
 			// instance of class
 			// org.openqa.selenium.devtools.runtime.model.RemoteObject
-			System.err
-					.println("Exception in test 3 generating result (ignored): " + e.toString());
+			System.err.println(
+					"Exception in test 3 generating result (ignored): " + e.toString());
 			throw e;
 		}
 

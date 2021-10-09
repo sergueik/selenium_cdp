@@ -15,6 +15,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
+import org.openqa.selenium.devtools.HasDevTools;
 
 /**
  * Base class for selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -57,7 +58,13 @@ public class BaseDevToolsTest {
 			driver = new ChromeDriver();
 		}
 		Utils.setDriver(driver);
-		chromeDevTools = driver.getDevTools();
+
+		chromeDevTools = ((HasDevTools) driver).getDevTools();
+		// compiles but fails in runtime
+		// Method
+		// org/openqa/selenium/chrome/ChromeDriver.getDevTools()Lorg/openqa/selenium/devtools/DevTools;
+		// is abstract
+
 		chromeDevTools.createSession();
 	}
 

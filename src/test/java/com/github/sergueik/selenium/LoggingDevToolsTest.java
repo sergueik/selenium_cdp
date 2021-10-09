@@ -18,8 +18,10 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v92.log.Log;
-import org.openqa.selenium.devtools.v92.page.Page;
+import org.openqa.selenium.devtools.HasDevTools;
+
+import org.openqa.selenium.devtools.v93.log.Log;
+import org.openqa.selenium.devtools.v93.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -64,7 +66,13 @@ public class LoggingDevToolsTest {
 			driver = new ChromeDriver();
 		}
 		Utils.setDriver(driver);
-		chromeDevTools = driver.getDevTools();
+
+		chromeDevTools = ((HasDevTools) driver).getDevTools();
+		// compiles but fails in runtime
+		// Method
+		// org/openqa/selenium/chrome/ChromeDriver.getDevTools()Lorg/openqa/selenium/devtools/DevTools;
+		// is abstract
+
 		chromeDevTools.createSession();
 	}
 
