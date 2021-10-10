@@ -467,6 +467,7 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
   * [Puppeteer Documentation](https://devdocs.io/puppeteer/)
   * [difference between WebDriver and DevTool protocol](https://stackoverflow.com/questions/50939116/what-is-the-difference-between-webdriver-and-devtool-protocol/50942942#50942942) explained
   * [using Chrome DevTools Protocol](https://github.com/aslushnikov/getting-started-with-cdp)
+  * overview of [DevTools access offered by Selenium 4](https://applitools.com/blog/selenium-4-chrome-devtools/)
 
 ### License
 This project is licensed under the terms of the MIT license.

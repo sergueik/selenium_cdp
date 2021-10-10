@@ -98,10 +98,6 @@ public class NetworkDevToolsTest {
 		}
 		Utils.setDriver(driver);
 		chromeDevTools = ((HasDevTools) driver).getDevTools();
-		// compiles but fails in runtime
-		// Method
-		// org/openqa/selenium/chrome/ChromeDriver.getDevTools()Lorg/openqa/selenium/devtools/DevTools;
-		// is abstract
 
 		chromeDevTools.createSession();
 	}

@@ -70,7 +70,7 @@ public class ChromeDevToolsTest {
 
 	private static boolean runHeadless = false;
 	private static String osName = Utils.getOSName();
-	private static ChromiumDriver driver;
+	private static ChromeDriver driver;
 	private static DevTools chromeDevTools;
 
 	private static String baseURL = "about:blank";
@@ -105,10 +105,7 @@ public class ChromeDevToolsTest {
 		}
 		Utils.setDriver(driver);
 		chromeDevTools = ((HasDevTools) driver).getDevTools();
-		// compiles but fails in runtime
-		// Method
-		// org/openqa/selenium/chrome/ChromeDriver.getDevTools()Lorg/openqa/selenium/devtools/DevTools;
-		// is abstract
+		// https://www.baeldung.com/java-static-default-methods#:~:text=Why%20Default%20Methods%20in%20Interfaces,and%20they%20provide%20an%20implementation
 		chromeDevTools.createSession();
 	}
 
