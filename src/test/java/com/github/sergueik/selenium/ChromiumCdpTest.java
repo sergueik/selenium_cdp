@@ -1165,39 +1165,6 @@ public class ChromiumCdpTest {
 	}
 
 	// @Ignore
-	@Test
-	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getVersion
-	public void getBrowserVersionTest() {
-		command = "Browser.getVersion";
-		try {
-			// Act
-			result = driver.executeCdpCommand(command, new HashMap<String, Object>());
-			// Assert
-			assertThat(result, notNullValue());
-			System.err.println("Command " + command + " result: " + result);
-			/*
-			 * typical response { jsVersion = 7.8.279.23, product = Chrome/78.0.3904.108,
-			 * protocolVersion = 1.3, revision = @4b26898a39ee037623a72fcfb77279fce0e7d648,
-			 * userAgent = Mozilla/5.0 (Windows NT6.3; Win64; x64) AppleWebKit/537.36
-			 * (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36 }
-			 */
-			for (String field : Arrays.asList(new String[] { "protocolVersion",
-					"product", "revision", "userAgent", "jsVersion" })) {
-				assertThat(result, hasKey(field));
-			}
-		} catch (JsonSyntaxException e) {
-			System.err.println("JSON Syntax exception in " + command + " (ignored): "
-					+ e.toString());
-		} catch (WebDriverException e) {
-			System.err.println("Web Driver exception in " + command + " (ignored): "
-					+ Utils.processExceptionMessage(e.getMessage()));
-		} catch (Exception e) {
-			System.err.println("Exception in " + command + "  " + e.toString());
-			throw (new RuntimeException(e));
-		}
-	}
-
-	// @Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-setWindowBounds
 	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#type-Bounds
