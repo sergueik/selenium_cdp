@@ -38,6 +38,7 @@ public class BaseCdpTest {
 	protected static String baseURL = "about:blank";
 	protected static boolean debug = false;
 
+	
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 
