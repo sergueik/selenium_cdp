@@ -46,6 +46,7 @@ import java.time.Duration;
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * https://chromedevtools.github.io/devtools-protocol/1-3/Runtime/#method-evaluate
+ * https://chromedevtools.github.io/devtools-protocol/tot/Page/#event-javascriptDialogOpening
  * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
@@ -63,11 +64,15 @@ public class WindowPromptDevToolsTest extends EventSubscriptionCommonTest {
 
 		// register to dialog events
 		chromeDevTools.addListener(Page.javascriptDialogOpening(),
-				o -> System.err
-						.println(String.format("Page has dialog %s of type %s opening",
-								o.getMessage(), o.getType())));
-		chromeDevTools.addListener(Page.javascriptDialogClosed(), o -> System.err
-				.println("Chrome DevTools gets User input:" + o.getUserInput()));
+				event -> System.err.println(
+						String.format("Dialog of type: %s opening with message: %s",
+								event.getType(), event.getMessage())));
+		chromeDevTools.addListener(Page.javascriptDialogClosed(), event -> {
+			assertThat(event.getUserInput(), notNullValue());
+			assertThat(event.getUserInput(), is(text));
+			System.err.println("Dialog user input: " + event.getUserInput());
+		});
+
 		driver.get(baseURL);
 	}
 

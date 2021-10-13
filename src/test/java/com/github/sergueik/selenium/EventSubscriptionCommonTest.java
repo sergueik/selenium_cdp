@@ -87,22 +87,12 @@ public class EventSubscriptionCommonTest {
 		// wait.pollingEvery(pollingInterval, TimeUnit.MILLISECONDS);
 
 		chromeDevTools = ((HasDevTools) driver).getDevTools();
-		// compiles but fails in runtime
+		// compiles but fails in runtime when version of selenium-java and
+		// selenium-devtools are different
+		// error is:
 		// Method
 		// org/openqa/selenium/chrome/ChromeDriver.getDevTools()Lorg/openqa/selenium/devtools/DevTools;
 		// is abstract
-
-		// register to alert events
-		/*	
-			chromeDevTools.addListener(new Event("Page.javascriptDialogClosed",
-					JavascriptDialogClosed.class), new Consumer<Object>() {
-						@Override
-						public void accept(Object o) {
-							// do something
-						}
-					});
-					*/
-
 	}
 
 	@AfterClass
