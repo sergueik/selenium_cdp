@@ -62,6 +62,8 @@ public class BaseDevToolsTest {
 		chromeDevTools = ((HasDevTools) driver).getDevTools();
 
 		chromeDevTools.createSession();
+		// TODO: switch to
+		// chromeDevTools.createSessionIfThereIsNotOne();
 	}
 
 	@BeforeClass
