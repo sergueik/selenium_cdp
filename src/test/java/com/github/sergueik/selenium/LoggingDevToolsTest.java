@@ -4,33 +4,35 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Date;
 import java.util.Optional;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-
 import org.openqa.selenium.devtools.v93.log.Log;
 import org.openqa.selenium.devtools.v93.page.Page;
+import org.openqa.selenium.devtools.v93.runtime.model.Timestamp;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
- * https://chromedevtools.github.io/devtools-protocol/tot/Console#method-enable
+
  * https://chromedevtools.github.io/devtools-protocol/tot/Log#method-enable
+ * https://chromedevtools.github.io/devtools-protocol/tot/Log/#event-entryAdded
+ * https://chromedevtools.github.io/devtools-protocol/1-3/Page/#method-navigate
  * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
+@SuppressWarnings("deprecation")
 public class LoggingDevToolsTest {
 
 	private static boolean runHeadless = false;
@@ -72,21 +74,15 @@ public class LoggingDevToolsTest {
 		chromeDevTools.createSession();
 	}
 
-	@SuppressWarnings("deprecation")
-	@BeforeClass
-	public static void beforeClass() throws Exception {
+	@Before
+	public void beforeTest() throws Exception {
 		// enable Console
 		chromeDevTools.send(Log.enable());
-		// add event listener to show in host console the browser console message
-		chromeDevTools.addListener(Log.entryAdded(), o -> {
-			assertThat(o.getText(), notNullValue());
-			assertThat(o.getLineNumber(), notNullValue());
-			assertThat(o.getTimestamp(), notNullValue());
-			assertThat(o.getSource(), notNullValue());
+	}
 
-		});
-		chromeDevTools.addListener(Log.entryAdded(), System.err::println);
-		driver.get(baseURL);
+	@After
+	public void afterTest() throws Exception {
+		chromeDevTools.send(Log.disable());
 	}
 
 	@AfterClass
@@ -96,9 +92,31 @@ public class LoggingDevToolsTest {
 		}
 	}
 
-	// https://chromedevtools.github.io/devtools-protocol/1-3/Page/#method-navigate
 	@Test
 	public void test1() {
+		// add event listener to show in host console the browser console message
+		chromeDevTools.addListener(Log.entryAdded(), event -> {
+			assertThat(event.getText(), notNullValue());
+			assertThat(event.getLineNumber(), notNullValue());
+			assertThat(event.getTimestamp(), notNullValue());
+			assertThat(event.getSource(), notNullValue());
+
+		});
+		// bad exmaple: would print:
+		// org.openqa.selenium.devtools.v93.log.model.LogEntry@5e77d702
+		// chromeDevTools.addListener(Log.entryAdded(), System.err::println);
+
+		chromeDevTools.addListener(Log.entryAdded(),
+				entry -> System.err.println(String.format(
+						"time stamp: %s line number: %s url: \"%s\" text: %s",
+						// formatted in unparsable "1.634098233101593E12"
+						// intended to new Date(Long.parseUnsignedLong(...))
+						entry.getTimestamp(),
+						(entry.getLineNumber().isPresent() ? entry.getLineNumber().get()
+								: ""),
+						(entry.getUrl().isPresent() ? entry.getUrl().get() : ""),
+						entry.getText())));
+		driver.get(baseURL);
 		chromeDevTools.send(Page.navigate(baseURL, Optional.empty(),
 				Optional.empty(), Optional.empty(), Optional.empty()));
 	}

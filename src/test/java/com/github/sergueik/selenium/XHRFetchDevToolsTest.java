@@ -94,9 +94,12 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 							+ event.getRequestId().toString() + "\tURL: "
 							+ (event.getRequest().getUrlFragment().isPresent()
 									? event.getRequest().getUrlFragment().get() : "none")
-							+ "\theaders: "
+							+ "\trequest headers: " + event.getRequest().getHeaders()
+							+ "\response status: " + event.getResponseStatusCode().get()
+							+ "\tresponse headers: "
 							+ (event.getResponseHeaders().isPresent() ? headers : "none")
 							+ "\tresource type: " + event.getResourceType());
+					// always empty
 					event.getRequest().getPostData().ifPresent((data) -> {
 						System.err.println("Post Data:\n" + data + "\n");
 					});
@@ -110,7 +113,7 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 					} catch (Exception e) {
 						System.err.println("Exception (ignored): " + e.toString());
 					}
-						chromeDevTools.send(
+					chromeDevTools.send(
 							Fetch.continueRequest(event.getRequestId(), Optional.empty(),
 									Optional.empty(), Optional.empty(), Optional.empty()));
 				} catch (DevToolsException e) {
@@ -120,17 +123,12 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 					// org.openqa.selenium.devtools.DevToolsException:
 					// {"id":6,"error":{"code":-32602,"message":"Invalid
 					// InterceptionId."},"sessionId":"4515310FC6FFDECA0705C54441EFD84B"}
-					// org.openqa.selenium.WebDriverException
-					// Caused by: org.openqa.selenium.WebDriverException:
-					// {"id":6,"error":{"code":-32602,"message":"Invalid
-					// InterceptionId."},"sessionId":"4515310FC6FFDECA0705C54441EFD84B"}
 				}
 			});
 			// Act
-			// hover the links
+			// hover the links in the main wikipedia document
 			driver.get(url);
 			Utils.sleep(1000);
-			// #mw-content-text > div.mw-parser-output > p:nth-child(6)
 			List<WebElement> elements = driver.findElement(By.id("mw-content-text"))
 					.findElements(By.tagName("a"));
 			actions = new Actions(driver);
