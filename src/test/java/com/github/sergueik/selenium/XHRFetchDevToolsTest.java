@@ -5,9 +5,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -23,6 +26,8 @@ import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.json.Json;
 import org.openqa.selenium.json.JsonInput;
+
+import com.google.gson.Gson;
 
 import org.openqa.selenium.devtools.v93.fetch.Fetch;
 import org.openqa.selenium.devtools.v93.fetch.Fetch.GetResponseBodyResponse;
@@ -78,6 +83,7 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 	@Test
 	public void test() {
 		// Arrange
+		final Gson gson = new Gson();
 		try {
 			chromeDevTools.addListener(Fetch.requestPaused(), event -> {
 				try {
@@ -107,11 +113,16 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 					Fetch.GetResponseBodyResponse response = chromeDevTools
 							.send(Fetch.getResponseBody(event.getRequestId()));
 					try {
-						String decodedBody = new String(
+						String body = new String(
 								Base64.decodeBase64(response.getBody().getBytes("UTF8")));
-						System.err.println("response body:\n" + decodedBody + "\n");
-					} catch (Exception e) {
+						System.err.println("response body:\n" + body);
+						@SuppressWarnings("unchecked")
+						Map<String, Object> payload = (Map<String, Object>) gson
+								.fromJson(body, Map.class);
+						System.err.println("response extract:\n" + payload.get("extract"));
+					} catch (UnsupportedEncodingException e) {
 						System.err.println("Exception (ignored): " + e.toString());
+
 					}
 					chromeDevTools.send(
 							Fetch.continueRequest(event.getRequestId(), Optional.empty(),

@@ -1,28 +1,18 @@
 package com.github.sergueik.selenium;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v93.dom.DOM;
-import org.openqa.selenium.devtools.v93.dom.model.BackendNodeId;
-import org.openqa.selenium.devtools.v93.dom.model.NodeId;
-import org.openqa.selenium.devtools.v93.dom.model.RGBA;
-import org.openqa.selenium.devtools.v93.overlay.Overlay;
-import org.openqa.selenium.devtools.v93.page.Page;
-import org.openqa.selenium.devtools.v93.page.model.FrameId;
+
 // NOTE letter case in the class name 
-import org.openqa.selenium.devtools.v93.target.model.TargetID;
-import org.openqa.selenium.devtools.v93.target.model.TargetInfo;
 import org.openqa.selenium.devtools.v93.target.Target;
 import org.openqa.selenium.devtools.v93.target.model.SessionID;
-import org.openqa.selenium.devtools.v93.page.model.FrameTree;
+import org.openqa.selenium.devtools.v93.target.model.TargetID;
+import org.openqa.selenium.devtools.v93.target.model.TargetInfo;
 
 public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 

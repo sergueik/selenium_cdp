@@ -29,6 +29,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -46,7 +47,7 @@ import com.google.gson.JsonSyntaxException;
  */
 // https://www.logicalincrements.com/articles/resolution
 
-public class ChromiumWindowSizeTest {
+public class WindowSizeCdpTest {
 
 	private static final int customWidth = 1366;
 	private static final int customHeight = 768;
@@ -172,7 +173,7 @@ public class ChromiumWindowSizeTest {
 	}
 
 	// @Ignore
-	@Test(expected = org.openqa.selenium.WebDriverException.class)
+	@Test(expected = WebDriverException.class)
 	public void resizeBrowserWindowTest() {
 
 		driver.get(Utils.getPageContent(imagePage));
