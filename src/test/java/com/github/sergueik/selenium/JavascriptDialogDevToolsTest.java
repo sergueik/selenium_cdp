@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import org.openqa.selenium.devtools.v93.page.Page;
+import org.openqa.selenium.devtools.v94.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

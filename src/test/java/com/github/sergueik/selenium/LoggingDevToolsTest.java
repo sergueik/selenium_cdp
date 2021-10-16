@@ -18,9 +18,9 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v93.log.Log;
-import org.openqa.selenium.devtools.v93.page.Page;
-import org.openqa.selenium.devtools.v93.runtime.model.Timestamp;
+import org.openqa.selenium.devtools.v94.log.Log;
+import org.openqa.selenium.devtools.v94.page.Page;
+import org.openqa.selenium.devtools.v94.runtime.model.Timestamp;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -103,7 +103,7 @@ public class LoggingDevToolsTest {
 
 		});
 		// bad exmaple: would print:
-		// org.openqa.selenium.devtools.v93.log.model.LogEntry@5e77d702
+		// org.openqa.selenium.devtools.v94.log.model.LogEntry@5e77d702
 		// chromeDevTools.addListener(Log.entryAdded(), System.err::println);
 
 		chromeDevTools.addListener(Log.entryAdded(),
