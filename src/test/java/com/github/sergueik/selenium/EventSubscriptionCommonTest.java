@@ -109,6 +109,8 @@ public class EventSubscriptionCommonTest {
 			// System.err.println("page: " + driver.getPageSource());
 		}
 		for (WebElement element : elements) {
+			// TODO: org.openqa.selenium.StaleElementReferenceException
+			// probably not navigating across frames
 			if (!element.getAttribute("style").matches(".*display: none;.*")) {
 				name = element.getAttribute("name");
 				if (debug)
@@ -124,6 +126,7 @@ public class EventSubscriptionCommonTest {
 
 		// Act
 		WebDriver iframe = driver.switchTo().frame(frame);
+
 		sleep(1000);
 		WebElement element = iframe.findElement(By.tagName("button"));
 		assertThat(element, notNullValue());
