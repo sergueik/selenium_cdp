@@ -19,6 +19,7 @@ import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
 import org.openqa.selenium.devtools.v94.log.Log;
+import org.openqa.selenium.devtools.v94.log.model.LogEntry;
 import org.openqa.selenium.devtools.v94.page.Page;
 import org.openqa.selenium.devtools.v94.runtime.model.Timestamp;
 
@@ -82,6 +83,7 @@ public class LoggingDevToolsTest {
 
 	@After
 	public void afterTest() throws Exception {
+		chromeDevTools.clearListeners();
 		chromeDevTools.send(Log.disable());
 	}
 

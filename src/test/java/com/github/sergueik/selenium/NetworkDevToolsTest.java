@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -42,7 +43,7 @@ import org.apache.commons.codec.binary.Base64;
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setCacheDisabled
  * https://chromedevtools.github.io/devtools-protocol/tot/Console#method-enable
  * https://chromedevtools.github.io/devtools-protocol/tot/Log#method-enable
- *  
+ * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -62,21 +63,15 @@ public class NetworkDevToolsTest {
 	@BeforeClass
 	public static void setUp() throws Exception {
 
-		if (System.getenv().containsKey("HEADLESS")
-				&& System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
+		if (System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
 			runHeadless = true;
 		}
 		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOSName().equals("windows"))
-				&& !(System.getenv().containsKey("DISPLAY"))) {
+		if (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY"))) {
 			runHeadless = true;
 		}
-		System
-				.setProperty("webdriver.chrome.driver",
-						Paths.get(System.getProperty("user.home"))
-								.resolve("Downloads").resolve(osName.equals("windows")
-										? "chromedriver.exe" : "chromedriver")
-								.toAbsolutePath().toString());
+		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
+				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
 
 		if (runHeadless) {
 			ChromeOptions options = new ChromeOptions();
@@ -103,13 +98,17 @@ public class NetworkDevToolsTest {
 		}
 	}
 
+	@After
+	public void after() {
+		chromeDevTools.clearListeners();
+	}
+
 	@Before
 	public void before() throws Exception {
 		// enable Network
 		// chromeDevTools.send(
 		// Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
-		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
-				Optional.empty()));
+		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(), Optional.empty()));
 	}
 
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setExtraHTTPHeaders
@@ -124,22 +123,21 @@ public class NetworkDevToolsTest {
 		headers = new HashMap<>();
 		headers.put("customHeaderName", "customHeaderValue");
 		/*
-		headers.put("customHeaderName",
-				this.getClass().getName() + " addCustomHeadersTest");
-				*/
+		 * headers.put("customHeaderName", this.getClass().getName() +
+		 * " addCustomHeadersTest");
+		 */
 		chromeDevTools.send(Network.setExtraHTTPHeaders(new Headers(headers)));
 		// add event listener to log that requests are sending with the custom
 		// header
 		// The assertion is failing often
 		/*
+		 * chromeDevTools.addListener(Network.requestWillBeSent(), o ->
+		 * assertThat(o.getRequest().getHeaders().get("customHeaderName"),
+		 * is("customHeaderValue")));
+		 */
 		chromeDevTools.addListener(Network.requestWillBeSent(),
-				o -> assertThat(o.getRequest().getHeaders().get("customHeaderName"),
-						is("customHeaderValue")));
-						*/
-		chromeDevTools.addListener(Network.requestWillBeSent(),
-				o -> System.err.println(String.format(
-						"request will be sent with extra header %s=%s", "customHeaderName",
-						o.getRequest().getHeaders().get("customHeaderName"))));
+				o -> System.err.println(String.format("request will be sent with extra header %s=%s",
+						"customHeaderName", o.getRequest().getHeaders().get("customHeaderName"))));
 		// to test with a dummy server fire on locally and inspect the headers
 		// server-side
 		// driver.get("http://127.0.0.1:8080/demo/Demo");
@@ -152,9 +150,8 @@ public class NetworkDevToolsTest {
 		chromeDevTools.addListener(Network.dataReceived(), event -> {
 			// https://github.com/SeleniumHQ/selenium/blob/master/common/devtools/chromium/v93/browser_protocol.pdl#L5618
 			if (cnt++ < 10)
-				System.err
-						.println(String.format("Network request %s data received at %s",
-								event.getRequestId(), event.getTimestamp()));
+				System.err.println(String.format("Network request %s data received at %s", event.getRequestId(),
+						event.getTimestamp()));
 		});
 		chromeDevTools.send(Network.setCacheDisabled(true));
 		driver.get(url);
@@ -166,9 +163,8 @@ public class NetworkDevToolsTest {
 		chromeDevTools.addListener(Network.responseReceived(), event -> {
 			// https://github.com/SeleniumHQ/selenium/blob/trunk/common/devtools/chromium/v93/browser_protocol.pdl#L5763
 			if (cnt++ < 10)
-				System.err
-						.println(String.format("Network request %s response status: %s",
-								event.getRequestId(), event.getResponse().getStatus()));
+				System.err.println(String.format("Network request %s response status: %s", event.getRequestId(),
+						event.getResponse().getStatus()));
 			try {
 				Network.GetResponseBodyResponse response = chromeDevTools
 						.send(Network.getResponseBody(event.getRequestId()));
@@ -180,12 +176,10 @@ public class NetworkDevToolsTest {
 						System.err.println("Exception (ignored): " + e.toString());
 					}
 				}
-				System.err.println("response body:\n"
-						+ (body.length() > 100 ? body.substring(0, 100) + "..." : body));
+				System.err.println("response body:\n" + (body.length() > 100 ? body.substring(0, 100) + "..." : body));
 
 			} catch (DevToolsException e) {
-				System.err.println("Web Driver exception (ignored): "
-						+ Utils.processExceptionMessage(e.getMessage()));
+				System.err.println("Web Driver exception (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 			}
 		});
 		chromeDevTools.send(Network.setCacheDisabled(true));

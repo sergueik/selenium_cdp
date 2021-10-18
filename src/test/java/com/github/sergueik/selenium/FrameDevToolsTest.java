@@ -2,17 +2,21 @@ package com.github.sergueik.selenium;
 
 import java.util.Optional;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.devtools.v94.fetch.Fetch;
 import org.openqa.selenium.devtools.v94.page.Page;
 import org.openqa.selenium.devtools.v94.page.model.Frame;
 import org.openqa.selenium.devtools.v94.page.model.FrameNavigated;
+import org.openqa.selenium.devtools.v94.page.model.JavascriptDialogOpening;
+import org.openqa.selenium.devtools.v94.page.model.FrameAttached;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
- *	 https://chromedevtools.github.io/devtools-protocol/1-2/Page/#event-frameAttached
- *	 https://chromedevtools.github.io/devtools-protocol/1-2/Page/#event-frameNavigated
+ * https://chromedevtools.github.io/devtools-protocol/1-2/Page/#event-frameAttached
+ * https://chromedevtools.github.io/devtools-protocol/1-2/Page/#event-frameNavigated
  * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
@@ -28,14 +32,19 @@ public class FrameDevToolsTest extends EventSubscriptionCommonTest {
 		chromeDevTools.send(Page.enable());
 
 		// register to frame events
-		chromeDevTools.addListener(Page.frameAttached(), o -> {
+		chromeDevTools.addListener(Page.frameAttached(), (FrameAttached event) -> {
 			if (cnt++ < maxcnt)
-				System.err.println(
-						String.format("Page has frame %s attached: ", o.getFrameId()));
+				System.err.println(String.format("Page has frame %s attached: ", event.getFrameId()));
 		});
-		chromeDevTools.addListener(Page.frameNavigated(), o -> System.err.println(
-				String.format("Page has frame %s navigated: ", o.getFrame().getId())));
+		chromeDevTools.addListener(Page.frameNavigated(), (FrameNavigated event) -> System.err
+				.println(String.format("Page has frame %s navigated: ", event.getFrame().getId())));
 		driver.get(baseURL);
+	}
+
+	@After
+	public void afterTest() throws Exception {
+		chromeDevTools.clearListeners();
+		chromeDevTools.send(Page.disable());
 	}
 
 	// @Ignore

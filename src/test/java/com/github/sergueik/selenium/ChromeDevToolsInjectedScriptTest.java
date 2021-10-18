@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -52,21 +53,15 @@ public class ChromeDevToolsInjectedScriptTest {
 	@BeforeClass
 	public static void setUp() throws Exception {
 
-		if (System.getenv().containsKey("HEADLESS")
-				&& System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
+		if (System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
 			runHeadless = true;
 		}
 		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOSName().equals("windows"))
-				&& !(System.getenv().containsKey("DISPLAY"))) {
+		if (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY"))) {
 			runHeadless = true;
 		}
-		System
-				.setProperty("webdriver.chrome.driver",
-						Paths.get(System.getProperty("user.home"))
-								.resolve("Downloads").resolve(osName.equals("windows")
-										? "chromedriver.exe" : "chromedriver")
-								.toAbsolutePath().toString());
+		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
+				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
 
 		if (runHeadless) {
 			ChromeOptions options = new ChromeOptions();
@@ -82,20 +77,6 @@ public class ChromeDevToolsInjectedScriptTest {
 		chromeDevTools.createSession();
 	}
 
-	@BeforeClass
-	// https://chromedevtools.github.io/devtools-protocol/tot/Console#method-enable
-	// https://chromedevtools.github.io/devtools-protocol/tot/Log#method-enable
-	public static void beforeClass() throws Exception {
-		// NOTE:
-		// the github location of package org.openqa.selenium.devtools.console
-		// is uncertain
-		// enable Console
-		// chromeDevTools.send(Log.enable());
-		// add event listener to show in host console the browser console message
-		// chromeDevTools.addListener(Log.entryAdded(), System.err::println);
-		driver.get(baseURL);
-	}
-
 	@AfterClass
 	public static void tearDown() {
 		if (driver != null) {
@@ -109,10 +90,9 @@ public class ChromeDevToolsInjectedScriptTest {
 	public void scriptToEvaluateOnNewDocumentTest() {
 		// Arrange
 		script = "window.was_here='true';";
-		identifier = chromeDevTools.send(Page.addScriptToEvaluateOnNewDocument(
-				script, Optional.empty(), Optional.empty()));
-		System.err.println(String.format(
-				"Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
+		identifier = chromeDevTools
+				.send(Page.addScriptToEvaluateOnNewDocument(script, Optional.empty(), Optional.empty()));
+		System.err.println(String.format("Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
 
 		// chromeDevTools.send(Debugger.getScriptSource((ScriptId) response));
 		// Cannot cast from ScriptIdentifier to ScriptId
@@ -132,8 +112,7 @@ public class ChromeDevToolsInjectedScriptTest {
 		// Arrange
 		String script = "window.was_here=true;";
 		identifier = chromeDevTools.send(Page.addScriptToEvaluateOnLoad(script));
-		System.err.println(String.format(
-				"Method Page.addScriptToEvaluateOnLoad result: %s", identifier));
+		System.err.println(String.format("Method Page.addScriptToEvaluateOnLoad result: %s", identifier));
 		driver.get(baseURL);
 		driver.navigate().refresh();
 		Utils.sleep(100);
@@ -150,10 +129,9 @@ public class ChromeDevToolsInjectedScriptTest {
 	public void scriptOnNewDocumentTest2() {
 		// Arrange
 		script = "window.was_here=true;";
-		identifier = chromeDevTools.send(Page.addScriptToEvaluateOnNewDocument(
-				script, Optional.empty(), Optional.empty()));
-		System.err.println(String.format(
-				"Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
+		identifier = chromeDevTools
+				.send(Page.addScriptToEvaluateOnNewDocument(script, Optional.empty(), Optional.empty()));
+		System.err.println(String.format("Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
 
 		driver.get(baseURL);
 		Utils.sleep(100);
@@ -171,10 +149,9 @@ public class ChromeDevToolsInjectedScriptTest {
 	public void scriptOnNewDocumentTest() {
 		// Arrange
 		script = "Object.defineProperty(navigator, 'webdriver', { get: () => undefined });";
-		identifier = chromeDevTools.send(Page.addScriptToEvaluateOnNewDocument(
-				script, Optional.empty(), Optional.empty()));
-		System.err.println(String.format(
-				"Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
+		identifier = chromeDevTools
+				.send(Page.addScriptToEvaluateOnNewDocument(script, Optional.empty(), Optional.empty()));
+		System.err.println(String.format("Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
 
 		// chromeDevTools.send(Debugger.getScriptSource((ScriptId) response));
 		// Cannot cast from ScriptIdentifier to ScriptId

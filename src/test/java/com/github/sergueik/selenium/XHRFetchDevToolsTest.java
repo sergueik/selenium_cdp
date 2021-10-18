@@ -78,6 +78,7 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 
 	@After
 	public void afterTest() throws Exception {
+		chromeDevTools.clearListeners();
 		chromeDevTools.send(Fetch.disable());
 	}
 

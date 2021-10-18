@@ -8,12 +8,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import org.openqa.selenium.devtools.v94.page.Page;
+import org.openqa.selenium.devtools.v94.page.model.JavascriptDialogClosed;
+import org.openqa.selenium.devtools.v94.page.model.JavascriptDialogOpening;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -36,25 +39,33 @@ public class JavascriptDialogDevToolsTest extends EventSubscriptionCommonTest {
 
 	}
 
+	@After
+	public void after() {
+		driver.switchTo().defaultContent();
+		chromeDevTools.clearListeners();
+		driver.get("about:blank");
+	}
+
 	@Test
 	public void promptTest() {
+		// Arrange
 		// register to dialog events
 		chromeDevTools.addListener(Page.javascriptDialogOpening(),
-				event -> System.err.println(
-						String.format("Dialog of type: %s opening with message: %s",
-								event.getType(), event.getMessage())));
-		chromeDevTools.addListener(Page.javascriptDialogClosed(), event -> {
+				(JavascriptDialogOpening event) -> System.err.println(String
+						.format("Dialog of type: %s opening with message: %s", event.getType(), event.getMessage())));
+		chromeDevTools.addListener(Page.javascriptDialogClosed(), (JavascriptDialogClosed event) -> {
 			assertThat(event.getUserInput(), notNullValue());
 			assertThat(event.getUserInput(), is(text));
 			System.err.println("Dialog user input: " + event.getUserInput());
 		});
-
-		driver.get(baseURL);
 		// assert that dialog was accepted
 		chromeDevTools.addListener(Page.javascriptDialogClosed(),
-				o -> assertThat(o.getResult(), is(true)));
-		// Arrange
+				(JavascriptDialogClosed event) -> assertThat(event.getResult(), is(true)));
+
+		driver.get("https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_prompt");
+
 		element = findButton();
+		// Act
 		element.click();
 		sleep(100);
 		alert = wait.until(ExpectedConditions.alertIsPresent());
@@ -70,5 +81,4 @@ public class JavascriptDialogDevToolsTest extends EventSubscriptionCommonTest {
 		alert.accept();
 
 	}
-
 }
