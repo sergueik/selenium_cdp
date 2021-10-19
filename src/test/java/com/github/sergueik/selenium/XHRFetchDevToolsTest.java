@@ -87,57 +87,65 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 		// Arrange
 		final Gson gson = new Gson();
 		try {
-			chromeDevTools.addListener(Fetch.requestPaused(), event -> {
-				try {
+			chromeDevTools.addListener(Fetch.requestPaused(),
+					(RequestPaused event) -> {
+						try {
 
-					List<HeaderEntry> headerEntries = event.getResponseHeaders()
-							.isPresent() ? event.getResponseHeaders().get()
-									: new ArrayList<>();
+							List<HeaderEntry> headerEntries = event.getResponseHeaders()
+									.isPresent() ? event.getResponseHeaders().get()
+											: new ArrayList<>();
 
-					List<String> headers = headerEntries.stream().map(entry -> String
-							.format("%s: %s", entry.getName(), entry.getValue()))
-							.collect(Collectors.toList());
+							List<String> headers = headerEntries
+									.stream().map(entry -> String.format("%s: %s",
+											entry.getName(), entry.getValue()))
+									.collect(Collectors.toList());
 
-					System.err.println("in Fetch.requestPaused listener. id:"
-							+ event.getRequestId().toString() + "\tURL: "
-							+ (event.getRequest().getUrlFragment().isPresent()
-									? event.getRequest().getUrlFragment().get() : "none")
-							+ "\trequest headers: " + event.getRequest().getHeaders()
-							+ "\response status: " + event.getResponseStatusCode().get()
-							+ "\tresponse headers: "
-							+ (event.getResponseHeaders().isPresent() ? headers : "none")
-							+ "\tresource type: " + event.getResourceType());
-					// always empty
-					event.getRequest().getPostData().ifPresent((data) -> {
-						System.err.println("Post Data:\n" + data + "\n");
+							System.err.println("in Fetch.requestPaused listener. id:"
+									+ event.getRequestId().toString() + "\tURL: "
+									+ (event.getRequest().getUrlFragment().isPresent()
+											? event.getRequest().getUrlFragment().get() : "none")
+									+ "\trequest headers: " + event.getRequest().getHeaders()
+									+ "\response status: " + event.getResponseStatusCode().get()
+									+ "\tresponse headers: "
+									+ (event.getResponseHeaders().isPresent() ? headers : "none")
+									+ "\tresource type: " + event.getResourceType());
+							// always empty
+							event.getRequest().getPostData().ifPresent((data) -> {
+								System.err.println("Post Data:\n" + data + "\n");
+							});
+
+							Fetch.GetResponseBodyResponse response = chromeDevTools
+									.send(Fetch.getResponseBody(event.getRequestId()));
+							String body = null;
+							if (response.getBase64Encoded()) {
+								try {
+									body = new String(
+											Base64.decodeBase64(response.getBody().getBytes("UTF8")));
+								} catch (UnsupportedEncodingException e) {
+									System.err.println("Exception (ignored): " + e.toString());
+								}
+							} else {
+								body = response.getBody();
+							}
+							System.err.println("response body:\n" + body);
+							@SuppressWarnings("unchecked")
+							Map<String, Object> payload = (Map<String, Object>) gson
+									.fromJson(body, Map.class);
+							System.err
+									.println("response extract:\n" + payload.get("extract"));
+							// this command is returning void
+							chromeDevTools.send(Fetch.continueRequest(event.getRequestId(),
+									Optional.empty(), Optional.empty(), Optional.empty(),
+									Optional.empty(), Optional.empty()));
+						} catch (DevToolsException e) {
+							System.err.println("Web Driver exception (ignored): "
+									+ Utils.processExceptionMessage(e.getMessage()));
+
+							// org.openqa.selenium.devtools.DevToolsException:
+							// {"id":6,"error":{"code":-32602,"message":"Invalid
+							// InterceptionId."},"sessionId":"4515310FC6FFDECA0705C54441EFD84B"}
+						}
 					});
-
-					Fetch.GetResponseBodyResponse response = chromeDevTools
-							.send(Fetch.getResponseBody(event.getRequestId()));
-					try {
-						String body = new String(
-								Base64.decodeBase64(response.getBody().getBytes("UTF8")));
-						System.err.println("response body:\n" + body);
-						@SuppressWarnings("unchecked")
-						Map<String, Object> payload = (Map<String, Object>) gson
-								.fromJson(body, Map.class);
-						System.err.println("response extract:\n" + payload.get("extract"));
-					} catch (UnsupportedEncodingException e) {
-						System.err.println("Exception (ignored): " + e.toString());
-
-					}
-					chromeDevTools.send(Fetch.continueRequest(event.getRequestId(),
-							Optional.empty(), Optional.empty(), Optional.empty(),
-							Optional.empty(), Optional.empty()));
-				} catch (DevToolsException e) {
-					System.err.println("Web Driver exception (ignored): "
-							+ Utils.processExceptionMessage(e.getMessage()));
-
-					// org.openqa.selenium.devtools.DevToolsException:
-					// {"id":6,"error":{"code":-32602,"message":"Invalid
-					// InterceptionId."},"sessionId":"4515310FC6FFDECA0705C54441EFD84B"}
-				}
-			});
 			// Act
 			// hover the links in the main wikipedia document
 			driver.get(url);

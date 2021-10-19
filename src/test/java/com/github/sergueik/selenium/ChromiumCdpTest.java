@@ -409,6 +409,9 @@ public class ChromiumCdpTest {
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
 					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (UnsupportedOperationException e) {
+			System.err.println("UnsupportedOperation exception in " + command
+					+ " (ignored): " + e.getMessage());
 		} catch (Exception e) {
 			System.err.println("Exception in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
