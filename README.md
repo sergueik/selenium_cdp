@@ -393,6 +393,31 @@ collapsing multiple command calls together will lead to somewhat bloated test me
 
 
 ```
+### Async Code Execution by XHR Fetch  events
+
+![xhr_test_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/xhr_test_capture.png)
+the test is opening Wikipedia page and hovers over the links. Prior to doing that a call back is set up
+```
+chromeDevTools = ((HasDevTools) driver).getDevTools();
+List<RequestPattern> reqPattern = new ArrayList<>();
+reqPattern.add(new RequestPattern(Optional.of("*"), Optional.of(ResourceType.XHR), Optional.of(RequestStage.RESPONSE)));
+chromeDevTools.send(Fetch.enable(Optional.of(reqPattern), Optional.of(false)));
+```
+```java
+chromeDevTools.addListener(Fetch.requestPaused(),
+    (RequestPaused event) -> {
+      event.getResponseHeaders().get().stream().map(entry -> String.format("%s: %s",
+              entry.getName(), entry.getValue()))
+          .collect(Collectors.toList());
+      Fetch.GetResponseBodyResponse response = chromeDevTools
+            .send(Fetch.getResponseBody(event.getRequestId()));
+        String body = new String(
+                Base64.decodeBase64(response.getBody().getBytes("UTF8")));
+      }
+    });
+```
+This allows capture the Ajax requestresponse, which is base64 encoded JSON with multiple details, processed by browser
+![xhr_logged_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/xhr_logged_capture.png)
 
 ### Relative Locators
 
