@@ -27,17 +27,19 @@ public class FrameDevToolsTest extends EventSubscriptionCommonTest {
 	private final static String baseURL = "https://www.w3schools.com/html/tryit.asp?filename=tryhtml_iframe_target";
 
 	@Before
-	public void befores() throws Exception {
+	public void before() throws Exception {
 		chromeDevTools.createSession();
 		chromeDevTools.send(Page.enable());
 
 		// register to frame events
 		chromeDevTools.addListener(Page.frameAttached(), (FrameAttached event) -> {
 			if (cnt++ < maxcnt)
-				System.err.println(String.format("Page has frame %s attached: ", event.getFrameId()));
+				System.err.println(
+						String.format("Page has frame %s attached: ", event.getFrameId()));
 		});
-		chromeDevTools.addListener(Page.frameNavigated(), (FrameNavigated event) -> System.err
-				.println(String.format("Page has frame %s navigated: ", event.getFrame().getId())));
+		chromeDevTools.addListener(Page.frameNavigated(),
+				(FrameNavigated event) -> System.err.println(String.format(
+						"Page has frame %s navigated: ", event.getFrame().getId())));
 		driver.get(baseURL);
 	}
 

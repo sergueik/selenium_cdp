@@ -14,13 +14,47 @@ __cdp__ commands - an entirely different set of API communicated to the Chrome b
   * `getAttributes`
   * `addCustomHeaders`
 
+- the available API list continues to grow
 overlap with classic Selenium in Classic Javascript
-and there are few specific ones.The project also exercised other new Selenium 4 API e.g. [relative nearby locators](https://dzone.com/articles/how-selenium-4-relative-locator-can-change-the-way) whidh did not apear powerful enough yet.
+and there are few specific ones. The project also exercised other new Selenium 4 API e.g. [relative nearby locators](https://dzone.com/articles/how-selenium-4-relative-locator-can-change-the-way) whidh did not apear powerful enough yet.
 
 For accessing the __Chrome Devtools API__ with Selenium driver __3.x__ see [cdp_webdriver](https://github.com/sergueik/cdp_webdriver) project
 
 
 ### Examples
+
+#### Async Code Execution by XHR Fetch  events
+
+![xhr_test_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/xhr_test_capture.png)
+the test is opening Wikipedia page and hovers over the links:
+```java
+driver.findElement(By.id("mw-content-text")).findElements(By.tagName("a")).stream().forEach(element -> {
+  new Actions(driver).moveToElement(element).build().perform(); }
+}
+```
+
+At the beginning of the test, the `Fetch` API is enabled
+```
+chromeDevTools = ((HasDevTools) driver).getDevTools();
+List<RequestPattern> reqPattern = new ArrayList<>();
+reqPattern.add(new RequestPattern(Optional.of("*"), Optional.of(ResourceType.XHR), Optional.of(RequestStage.RESPONSE)));
+chromeDevTools.send(Fetch.enable(Optional.of(reqPattern), Optional.of(false)));
+```
+and call back is set up:
+```java
+chromeDevTools.addListener(Fetch.requestPaused(),
+    (RequestPaused event) -> {
+      event.getResponseHeaders().get().stream().map(entry -> String.format("%s: %s",
+              entry.getName(), entry.getValue())).collect(Collectors.toList());
+      Fetch.GetResponseBodyResponse response = chromeDevTools.send(Fetch.getResponseBody(event.getRequestId()));
+        String body = new String(Base64.decodeBase64(response.getBody().getBytes("UTF8")));
+	System.err.println("response body:\n" + body);
+      }
+});
+```
+This allows capture the Ajax request response, which is the base64 encoded JSON with multiple details, processed by browser
+![xhr_logged_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/xhr_logged_capture.png)
+
 
 #### Override User Agent
 
@@ -393,32 +427,6 @@ collapsing multiple command calls together will lead to somewhat bloated test me
 
 
 ```
-### Async Code Execution by XHR Fetch  events
-
-![xhr_test_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/xhr_test_capture.png)
-the test is opening Wikipedia page and hovers over the links. Prior to doing that a call back is set up
-```
-chromeDevTools = ((HasDevTools) driver).getDevTools();
-List<RequestPattern> reqPattern = new ArrayList<>();
-reqPattern.add(new RequestPattern(Optional.of("*"), Optional.of(ResourceType.XHR), Optional.of(RequestStage.RESPONSE)));
-chromeDevTools.send(Fetch.enable(Optional.of(reqPattern), Optional.of(false)));
-```
-```java
-chromeDevTools.addListener(Fetch.requestPaused(),
-    (RequestPaused event) -> {
-      event.getResponseHeaders().get().stream().map(entry -> String.format("%s: %s",
-              entry.getName(), entry.getValue()))
-          .collect(Collectors.toList());
-      Fetch.GetResponseBodyResponse response = chromeDevTools
-            .send(Fetch.getResponseBody(event.getRequestId()));
-        String body = new String(
-                Base64.decodeBase64(response.getBody().getBytes("UTF8")));
-      }
-    });
-```
-This allows capture the Ajax requestresponse, which is base64 encoded JSON with multiple details, processed by browser
-![xhr_logged_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/xhr_logged_capture.png)
-
 ### Relative Locators
 
 

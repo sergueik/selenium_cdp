@@ -82,6 +82,7 @@ public class BaseDevToolsTest {
 
 	@AfterClass
 	public static void tearDown() {
+		chromeDevTools.close();
 		if (driver != null) {
 			driver.quit();
 		}
