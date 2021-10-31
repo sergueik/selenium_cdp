@@ -14,9 +14,8 @@ __cdp__ commands - an entirely different set of API communicated to the Chrome b
   * `getAttributes`
   * `addCustomHeaders`
 
-- the available API list continues to grow
 overlap with classic Selenium in Classic Javascript
-and there are few specific ones. The project also exercised other new Selenium 4 API e.g. [relative nearby locators](https://dzone.com/articles/how-selenium-4-relative-locator-can-change-the-way) whidh did not apear powerful enough yet.
+and there are few specific ones.The project also exercised other new Selenium 4 API e.g. [relative nearby locators](https://dzone.com/articles/how-selenium-4-relative-locator-can-change-the-way) whidh did not apear powerful enough yet.
 
 For accessing the __Chrome Devtools API__ with Selenium driver __3.x__ see [cdp_webdriver](https://github.com/sergueik/cdp_webdriver) project
 
@@ -52,7 +51,7 @@ chromeDevTools.addListener(Fetch.requestPaused(),
       }
 });
 ```
-This allows capture the Ajax request response, which is the base64 encoded JSON with multiple details, processed by browser
+This allows capture the Ajax requestresponse, which is base64 encoded JSON with multiple details, processed by browser
 ![xhr_logged_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/xhr_logged_capture.png)
 
 

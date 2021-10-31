@@ -8,13 +8,18 @@ import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.openqa.selenium.devtools.v94.network.Network;
 import org.openqa.selenium.devtools.v94.network.model.BlockedReason;
+import org.openqa.selenium.devtools.v94.network.model.InterceptionStage;
 import org.openqa.selenium.devtools.v94.network.model.LoadingFailed;
 import org.openqa.selenium.devtools.v94.network.model.ResourceType;
 import org.openqa.selenium.devtools.v94.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v94.page.Page;
+import org.openqa.selenium.devtools.v94.network.model.RequestIntercepted;
+import org.openqa.selenium.devtools.v94.network.model.RequestPattern;
 import org.openqa.selenium.devtools.v94.network.model.RequestWillBeSent;
-
+import static org.openqa.selenium.devtools.v94.network.Network.continueInterceptedRequest;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -23,6 +28,8 @@ import com.google.common.collect.ImmutableList;
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-loadingFailed
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-requestWillBeSent
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-responseReceived
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-continueInterceptedRequest
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-RequestPattern
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -32,6 +39,7 @@ public class FilterUrlTest extends BaseDevToolsTest {
 	public void before() throws Exception {
 		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
 				Optional.empty()));
+		baseURL = "http://arngren.net";
 	}
 
 	// see also:
@@ -73,12 +81,37 @@ public class FilterUrlTest extends BaseDevToolsTest {
 				}); // Act
 		// see also:
 		// https://weblium.com/blog/21-bad-website-examples-of-2021/
-		driver.get("http://arngren.net");
+		driver.get(baseURL);
 
+	}
+
+	// see also:
+	// https://github.com/adiohana/selenium-chrome-devtools-examples/blob/master/src/test/java/ChromeDevToolsTest.java#L81
+	@SuppressWarnings("deprecation")
+	@Test
+	public void test2() {
+
+		chromeDevTools.addListener(Network.requestIntercepted(),
+				(RequestIntercepted event) -> chromeDevTools
+						.send(Network.continueInterceptedRequest(event.getInterceptionId(),
+								Optional.empty(), Optional.empty(), Optional.empty(),
+								Optional.empty(), Optional.empty(), Optional.empty(),
+								Optional.empty())));
+
+		// set request interception only for css requests
+		RequestPattern requestPattern = new RequestPattern(Optional.of("*.gif"),
+				Optional.of(ResourceType.IMAGE),
+				Optional.of(InterceptionStage.HEADERSRECEIVED));
+		chromeDevTools
+				.send(Network.setRequestInterception(ImmutableList.of(requestPattern)));
+		chromeDevTools.send(Page.navigate(baseURL, Optional.empty(),
+				Optional.empty(), Optional.empty(), Optional.empty()));
 	}
 
 	@After
 	public void after() {
+		Utils.sleep(1000);
+		chromeDevTools.send(Network.setBlockedURLs(null));
 		chromeDevTools.send(Network.disable());
 		chromeDevTools.clearListeners();
 	}
