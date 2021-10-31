@@ -1,4 +1,7 @@
 package com.github.sergueik.selenium;
+/**
+ * Copyright 2021 Serguei Kouzmine
+ */
 
 import java.util.Optional;
 

@@ -29,6 +29,7 @@ import org.openqa.selenium.devtools.v94.network.Network.GetResponseBodyResponse;
 import org.openqa.selenium.devtools.v94.network.model.Response;
 import org.openqa.selenium.devtools.v94.network.Network;
 import org.openqa.selenium.devtools.v94.network.model.Headers;
+import org.openqa.selenium.devtools.v94.network.model.RequestId;
 import org.openqa.selenium.devtools.v94.network.model.DataReceived;
 import org.openqa.selenium.devtools.v94.network.model.ResponseReceived;
 
@@ -63,15 +64,21 @@ public class NetworkDevToolsTest {
 	@BeforeClass
 	public static void setUp() throws Exception {
 
-		if (System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
+		if (System.getenv().containsKey("HEADLESS")
+				&& System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
 			runHeadless = true;
 		}
 		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY"))) {
+		if (!(Utils.getOSName().equals("windows"))
+				&& !(System.getenv().containsKey("DISPLAY"))) {
 			runHeadless = true;
 		}
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+		System
+				.setProperty("webdriver.chrome.driver",
+						Paths.get(System.getProperty("user.home"))
+								.resolve("Downloads").resolve(osName.equals("windows")
+										? "chromedriver.exe" : "chromedriver")
+								.toAbsolutePath().toString());
 
 		if (runHeadless) {
 			ChromeOptions options = new ChromeOptions();
@@ -105,10 +112,8 @@ public class NetworkDevToolsTest {
 
 	@Before
 	public void before() throws Exception {
-		// enable Network
-		// chromeDevTools.send(
-		// Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
-		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(), Optional.empty()));
+		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
+				Optional.empty()));
 	}
 
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setExtraHTTPHeaders
@@ -136,8 +141,9 @@ public class NetworkDevToolsTest {
 		 * is("customHeaderValue")));
 		 */
 		chromeDevTools.addListener(Network.requestWillBeSent(),
-				o -> System.err.println(String.format("request will be sent with extra header %s=%s",
-						"customHeaderName", o.getRequest().getHeaders().get("customHeaderName"))));
+				o -> System.err.println(String.format(
+						"request will be sent with extra header %s=%s", "customHeaderName",
+						o.getRequest().getHeaders().get("customHeaderName"))));
 		// to test with a dummy server fire on locally and inspect the headers
 		// server-side
 		// driver.get("http://127.0.0.1:8080/demo/Demo");
@@ -147,41 +153,51 @@ public class NetworkDevToolsTest {
 
 	@Test
 	public void test2() {
-		chromeDevTools.addListener(Network.dataReceived(), event -> {
+		chromeDevTools.addListener(Network.dataReceived(), (DataReceived event) -> {
 			// https://github.com/SeleniumHQ/selenium/blob/master/common/devtools/chromium/v93/browser_protocol.pdl#L5618
 			if (cnt++ < 10)
-				System.err.println(String.format("Network request %s data received at %s", event.getRequestId(),
-						event.getTimestamp()));
+				System.err
+						.println(String.format("Network request %s data received at %s",
+								event.getRequestId(), event.getTimestamp()));
 		});
 		chromeDevTools.send(Network.setCacheDisabled(true));
 		driver.get(url);
 
 	}
 
+	// https://github.com/SeleniumHQ/selenium/blob/trunk/common/devtools/chromium/v93/browser_protocol.pdl#L5763
 	@Test
 	public void test3() {
-		chromeDevTools.addListener(Network.responseReceived(), event -> {
-			// https://github.com/SeleniumHQ/selenium/blob/trunk/common/devtools/chromium/v93/browser_protocol.pdl#L5763
-			if (cnt++ < 10)
-				System.err.println(String.format("Network request %s response status: %s", event.getRequestId(),
-						event.getResponse().getStatus()));
-			try {
-				Network.GetResponseBodyResponse response = chromeDevTools
-						.send(Network.getResponseBody(event.getRequestId()));
-				String body = response.getBody();
-				if (response.getBase64Encoded()) {
+		final RequestId[] requestIdCaptures = new RequestId[1];
+		chromeDevTools.addListener(Network.responseReceived(),
+				(ResponseReceived event) -> {
+					// collect request id for some purpose
+					// see also
+					// https://github.com/SrinivasanTarget/selenium4CDPsamples/blob/master/src/test/java/DevToolsTest.java#L86
+					requestIdCaptures[0] = event.getRequestId();
+					if (cnt++ < 10)
+						System.err
+								.println(String.format("Network request %s response status: %s",
+										event.getRequestId(), event.getResponse().getStatus()));
 					try {
-						body = new String(Base64.decodeBase64(body.getBytes("UTF8")));
-					} catch (UnsupportedEncodingException e) {
-						System.err.println("Exception (ignored): " + e.toString());
-					}
-				}
-				System.err.println("response body:\n" + (body.length() > 100 ? body.substring(0, 100) + "..." : body));
+						Network.GetResponseBodyResponse response = chromeDevTools
+								.send(Network.getResponseBody(event.getRequestId()));
+						String body = response.getBody();
+						if (response.getBase64Encoded()) {
+							try {
+								body = new String(Base64.decodeBase64(body.getBytes("UTF8")));
+							} catch (UnsupportedEncodingException e) {
+								System.err.println("Exception (ignored): " + e.toString());
+							}
+						}
+						System.err.println("response body:\n" + (body.length() > 100
+								? body.substring(0, 100) + "..." : body));
 
-			} catch (DevToolsException e) {
-				System.err.println("Web Driver exception (ignored): " + Utils.processExceptionMessage(e.getMessage()));
-			}
-		});
+					} catch (DevToolsException e) {
+						System.err.println("Web Driver exception (ignored): "
+								+ Utils.processExceptionMessage(e.getMessage()));
+					}
+				});
 		chromeDevTools.send(Network.setCacheDisabled(true));
 		driver.get(url);
 

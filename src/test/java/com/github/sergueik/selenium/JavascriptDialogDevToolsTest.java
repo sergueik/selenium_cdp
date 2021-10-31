@@ -28,7 +28,6 @@ import org.openqa.selenium.devtools.v94.page.model.JavascriptDialogOpening;
 
 public class JavascriptDialogDevToolsTest extends EventSubscriptionCommonTest {
 	private final String text = "Lorem ipsum";
-	private final static String baseURL = "https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_prompt";
 	// NOTE: fragile
 	// org.openqa.selenium.NoAlertPresentException
 
@@ -51,18 +50,22 @@ public class JavascriptDialogDevToolsTest extends EventSubscriptionCommonTest {
 		// Arrange
 		// register to dialog events
 		chromeDevTools.addListener(Page.javascriptDialogOpening(),
-				(JavascriptDialogOpening event) -> System.err.println(String
-						.format("Dialog of type: %s opening with message: %s", event.getType(), event.getMessage())));
-		chromeDevTools.addListener(Page.javascriptDialogClosed(), (JavascriptDialogClosed event) -> {
-			assertThat(event.getUserInput(), notNullValue());
-			assertThat(event.getUserInput(), is(text));
-			System.err.println("Dialog user input: " + event.getUserInput());
-		});
+				(JavascriptDialogOpening event) -> System.err.println(
+						String.format("Dialog of type: %s opening with message: %s",
+								event.getType(), event.getMessage())));
+		chromeDevTools.addListener(Page.javascriptDialogClosed(),
+				(JavascriptDialogClosed event) -> {
+					assertThat(event.getUserInput(), notNullValue());
+					assertThat(event.getUserInput(), is(text));
+					System.err.println("Dialog user input: " + event.getUserInput());
+				});
 		// assert that dialog was accepted
 		chromeDevTools.addListener(Page.javascriptDialogClosed(),
-				(JavascriptDialogClosed event) -> assertThat(event.getResult(), is(true)));
+				(JavascriptDialogClosed event) -> assertThat(event.getResult(),
+						is(true)));
 
-		driver.get("https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_prompt");
+		driver.get(
+				"https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_prompt");
 
 		element = findButton();
 		// Act
