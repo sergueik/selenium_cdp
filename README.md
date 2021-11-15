@@ -501,6 +501,7 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
   * [using Chrome DevTools Protocol](https://github.com/aslushnikov/getting-started-with-cdp)
   * overview of [DevTools access offered by Selenium 4](https://applitools.com/blog/selenium-4-chrome-devtools/)
   * [Libraries.io](https://libraries.io/maven/org.seleniumhq.selenium:selenium-devtools-v93) - monitors over 2 million open source libraries/packages from 36 package managers
+ * [collection of Selenium 4 CDP-specific tests](https://github.com/rookieInTraining)
 
 ### License
 This project is licensed under the terms of the MIT license.

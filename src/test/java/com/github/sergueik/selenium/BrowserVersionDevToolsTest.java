@@ -1,8 +1,14 @@
 package com.github.sergueik.selenium;
 
+import java.util.Map;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.notNullValue;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.devtools.Command;
+import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.json.Json;
 import org.openqa.selenium.json.JsonInput;
 import org.openqa.selenium.devtools.v94.browser.Browser;
@@ -12,8 +18,8 @@ import com.google.common.collect.ImmutableMap;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
- * see:
- * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getVersion
+ * see: https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-
+ * getVersion
  *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
@@ -26,6 +32,7 @@ public class BrowserVersionDevToolsTest extends BaseDevToolsTest {
 	public void test1() {
 		// Act
 		GetVersionResponse response = chromeDevTools.send(Browser.getVersion());
+		assertThat(response, notNullValue());
 		response.getUserAgent();
 		System.err.println("Browser Version : " + response.getProduct() + "\t" + "Browser User Agent : "
 				+ response.getUserAgent() + "\t" + "Browser Protocol Version : " + response.getProtocolVersion() + "\t"
@@ -39,6 +46,7 @@ public class BrowserVersionDevToolsTest extends BaseDevToolsTest {
 		response = chromeDevTools.send(new Command<GetVersionResponse>("Browser.getVersion", ImmutableMap.of(),
 				o -> o.read(GetVersionResponse.class)));
 
+		assertThat(response, notNullValue());
 		System.err.println("Browser Version : " + response.getProduct() + "\t" + "Browser User Agent : "
 				+ response.getUserAgent() + "\t" + "Browser Protocol Version : " + response.getProtocolVersion() + "\t"
 				+ "Browser JS Version : " + response.getJsVersion());
@@ -55,6 +63,7 @@ public class BrowserVersionDevToolsTest extends BaseDevToolsTest {
 						return ((GetVersionResponse) o.read(GetVersionResponse.class));
 					}));
 
+			assertThat(response, notNullValue());
 			System.err.println("Browser Version : " + response.getProduct() + "\t" + "Browser User Agent : "
 					+ response.getUserAgent() + "\t" + "Browser Protocol Version : " + response.getProtocolVersion()
 					+ "\t" + "Browser JS Version : " + response.getJsVersion());
@@ -64,6 +73,18 @@ public class BrowserVersionDevToolsTest extends BaseDevToolsTest {
 			System.err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
 		}
+	}
+
+	@Ignore
+	@Test
+	public void test4() {
+
+		// Act
+		// NOTE: there is no "org.openqa.selenium.devtools.v94.browser.Version"
+		// class
+		response = chromeDevTools.send(new Command<GetVersionResponse>("Browser.getVersion", ImmutableMap.of(),
+				ConverterFunctions.map("getVersionResponse", GetVersionResponse.class)));
+		assertThat(response, notNullValue());
 	}
 
 }
