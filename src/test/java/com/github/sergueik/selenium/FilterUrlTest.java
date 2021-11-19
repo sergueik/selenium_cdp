@@ -3,6 +3,8 @@ package com.github.sergueik.selenium;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.After;
@@ -111,7 +113,7 @@ public class FilterUrlTest extends BaseDevToolsTest {
 	@After
 	public void after() {
 		Utils.sleep(1000);
-		chromeDevTools.send(Network.setBlockedURLs(null));
+		chromeDevTools.send(Network.setBlockedURLs(new ArrayList<String>()));
 		chromeDevTools.send(Network.disable());
 		chromeDevTools.clearListeners();
 	}

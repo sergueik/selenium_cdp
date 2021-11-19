@@ -73,7 +73,7 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 
 		reqPattern.add(xhrReqPattern);
 		chromeDevTools
-				.send(Fetch.enable(Optional.of(reqPattern), Optional.of(false)));
+		.send(Fetch.enable(Optional.of(reqPattern), Optional.of(false)));
 	}
 
 	@After
@@ -153,7 +153,7 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 			List<WebElement> elements = driver.findElement(By.id("mw-content-text"))
 					.findElements(By.tagName("a"));
 			actions = new Actions(driver);
-			elements.stream().limit(count).forEach(element -> {
+			elements.stream().limit(count).forEach((WebElement element) -> {
 				actions.moveToElement(element).build().perform();
 				Utils.sleep(1000);
 			});

@@ -199,6 +199,43 @@ for some calls (but not specifically for `Page.printToPDF`) yet anoher alternavi
 response = chromeDevTools.send(new Command<PrintToPDFResponse>("Page.printToPDF", ImmutableMap.of("landscape", landscape), ConverterFunctions.map("data", PrintToPDFResponse.class)));
 
 ```
+#### Filter URL
+![xhr_logged_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/filtering-on_capture.jpg)
+Bandwidth improving filtering of certain mask URLs
+```java
+chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(), Optional.empty()));
+chromeDevTools.send(Network.setBlockedURLs(ImmutableList.of("*.css", "*.png", "*.jpg", "*.gif", "*favicon.ico")));
+driver.get("http://arngren.net");
+```
+
+one can also log the `*.css`, `*.jpg` `*.png` and  `*.ico` blocking in action:
+```java
+// verify that 
+chromeDevTools.addListener(Network.loadingFailed(),
+	(LoadingFailed event) -> {
+		ResourceType resourceType = event.getType();
+		if (resourceType.equals(ResourceType.STYLESHEET)
+				|| resourceType.equals(ResourceType.IMAGE)
+				|| resourceType.equals(ResourceType.OTHER)) {
+			Optional<BlockedReason> blockedReason = event.getBlockedReason();
+			assertThat(blockedReason.isPresent(), is(true));
+			assertThat(blockedReason.get(), is(BlockedReason.INSPECTOR));
+		}
+	System.err.println("Blocked event: " + event.getType());
+});
+
+
+```
+finally one can disable filtering:
+```java
+// set request interception only for css requests
+RequestPattern requestPattern = new RequestPattern(Optional.of("*.gif"), Optional.of(ResourceType.IMAGE), Optional.of(InterceptionStage.HEADERSRECEIVED));
+chromeDevTools.send(Network.setRequestInterception(ImmutableList.of(requestPattern)));
+chromeDevTools.send(Page.navigate(baseURL, Optional.empty(),Optional.empty(), Optional.empty(), Optional.empty()));
+```
+![xhr_logged_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/filtering-off_capture.jpg)
+
+
 #### Override User Agent
 
 One can __call__ cdp protocol to invoke [setUserAgentOverride](https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setUserAgentOverride) method and dynmically modify the `user-agent` header during the test:
@@ -652,5 +689,4 @@ This project is licensed under the terms of the MIT license.
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
 

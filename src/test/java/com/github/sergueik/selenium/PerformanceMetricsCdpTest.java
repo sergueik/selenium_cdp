@@ -83,7 +83,7 @@ public class PerformanceMetricsCdpTest extends BaseCdpTest {
 						metricData.get("value")));
 				metricKeys.add((Object) metricData.get("name"));
 			}
-			assertThat("Checking example array and direct arguments", metricKeys,
+			assertThat("Checking performance metrics", metricKeys,
 					containsInAnyOrder((Object[]) standardKeys));
 
 			// Act
