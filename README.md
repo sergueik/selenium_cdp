@@ -102,7 +102,7 @@ chromeDevTools.send(Fetch.continueRequest(
 
 - the arguments to the Java adapter method match the Javascript `Fetch.continueResponse` [parameter definition](https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse):
 
-``text
+```text
 requestId
 RequestId
 An id the client received in requestPaused event.
