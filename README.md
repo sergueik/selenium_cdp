@@ -134,7 +134,8 @@ public void beforeTest() throws Exception {
 	event.getText())));
 }
 ```
-one can also confirm the logging to happen:
+The properties of the event are taken from `Log entry` object [specification](https://chromedevtools.github.io/devtools-protocol/tot/Log/#event-entryAdded)
+One can also confirm the logging event to have expected properties, e.g. message:
 
 ```java
 
@@ -142,8 +143,7 @@ one can also confirm the logging to happen:
 public void test() {
 	final String consoleMessage = "Lorem ipsum";
 	chromeDevTools.addListener(Log.entryAdded(),
-		(LogEntry event) -> assertThat(event.getText(),
-		containsString(consoleMessage)));
+		(LogEntry event) -> assertThat(event.getText(), containsString(consoleMessage)));
 	if (driver instanceof JavascriptExecutor) {
 		JavascriptExecutor executor = JavascriptExecutor.class.cast(driver);		
 		executor.executeScript("console.log(arguments[0]);", consoleMessage);
@@ -277,11 +277,31 @@ The example shows alternative API to collect the cookies available to page Javas
   assertThat(ImageIO.read(new ByteArrayInputStream(image)).getWidth(), greaterThan(0));
   (new FileOutputStream("temp.png")).write(image);
 ```
-
-Note: some CDP API notably `Page.printToPDF` are not curently implemented:
-```sh
-unhandled inspector error: {"code":-32000,"message":"PrintToPDF is not implemented"}(..)
+#### Capture Element Screenshot
+implements the clipping to viewport functioality
+```java
+command = "Page.captureScreenshot";
+params = new HashMap<String, Object>();
+Map<String, Object> viewport = new HashMap<>();
+System.err.println("Specified viewport: " + String
+    .format("x=%d, y=%d, width=%d, height=%d", x, y, width, height));
+viewport.put("x", (double) x);
+viewport.put("y", (double) y);
+viewport.put("width", (double) width);
+viewport.put("height", (double) height);
+viewport.put("scale", scale);
+params.put("clip", viewport);
+result = driver.executeCdpCommand(command, params);
+dataString = (String) result.get("data");
+assertThat(dataString, notNullValue());
+Base64 base64 = new Base64();
+byte[] image = base64.decode(dataString);
+String screenshotFileName = String.format("card%02d.png", cnt);
+FileOutputStream fileOutputStream = new FileOutputStream( screenshotFileName);
+fileOutputStream.write(image);
+fileOutputStream.close();
 ```
+
 ### Custom Headers
 
 This can be done both at the wrapper methods
