@@ -12,37 +12,50 @@ __cdp__ commands - an entirely different set of API communicated to the Chrome b
   * `querySelectorAll
   * `querySelector`
   * `getAttributes`
-  * `addCustomHeaders`
 
 overlap with classic Selenium in Classic Javascript
-and there are few specific ones.The project also exercised other new Selenium 4 API e.g. [relative nearby locators](https://dzone.com/articles/how-selenium-4-relative-locator-can-change-the-way) whidh did not apear powerful enough yet.
+and there are few specific ones:
+  * `addCustomHeaders`
+
+The project also exercised other new Selenium 4 API e.g. [relative nearby locators](https://dzone.com/articles/how-selenium-4-relative-locator-can-change-the-way) whidh did not apear powerful enough yet.
 
 For accessing the __Chrome Devtools API__ with Selenium driver __3.x__ see [cdp_webdriver](https://github.com/sergueik/cdp_webdriver) project
 
 
 ### Examples
 
-#### Async Code Execution by XHR Fetch  events
+#### Async Code Execution by XHR Fetch events in the Browser
 
 ![xhr_test_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/xhr_test_capture.png)
-the test is opening Wikipedia page and hovers over the links:
+
+This test is opening Wikipedia page and hovers over few links using "classic" Selenium `Actions` class:
 ```java
-driver.findElement(By.id("mw-content-text")).findElements(By.tagName("a")).stream().forEach(element -> {
-  new Actions(driver).moveToElement(element).build().perform(); }
+driver.findElement(By.id("mw-content-text")).findElements(By.tagName("a")).stream().forEach( (WebElement element ) -> {
+    new Actions(driver).moveToElement(element).build().perform();
+  }
 }
 ```
+To emphacise that the lambda operates "classic" object,the `WebElement` type was entered explicitly.
 
-At the beginning of the test, the `Fetch` API is enabled
+In the `@Before` -annotated method in the test class, the `Fetch` API is enabled
+for all requests
 ```
+@Before
+public void beforeTest() throws Exception {
 chromeDevTools = ((HasDevTools) driver).getDevTools();
+
 List<RequestPattern> reqPattern = new ArrayList<>();
 reqPattern.add(new RequestPattern(Optional.of("*"), Optional.of(ResourceType.XHR), Optional.of(RequestStage.RESPONSE)));
 chromeDevTools.send(Fetch.enable(Optional.of(reqPattern), Optional.of(false)));
 ```
-and call back is set up:
+(If necessary one can limit to subset of reuests via match pattern).
+Then in the test method callback is set up:
+
 ```java
-chromeDevTools.addListener(Fetch.requestPaused(),
-    (RequestPaused event) -> {
+@Test
+public void test() {
+	chromeDevTools.addListener(Fetch.requestPaused(),
+		(RequestPaused event) -> {
       event.getResponseHeaders().get().stream().map(entry -> String.format("%s: %s",
               entry.getName(), entry.getValue())).collect(Collectors.toList());
       Fetch.GetResponseBodyResponse response = chromeDevTools.send(Fetch.getResponseBody(event.getRequestId()));
@@ -50,11 +63,142 @@ chromeDevTools.addListener(Fetch.requestPaused(),
 	System.err.println("response body:\n" + body);
       }
 });
+// he mouse hover actions to follow
 ```
-This allows capture the Ajax requestresponse, which is base64 encoded JSON with multiple details, processed by browser
+This allows capture every Ajax request response headers, 
+```java
+List<HeaderEntry> headerEntries = event.getResponseHeaders().isPresent() ? event.getResponseHeaders().get() : new ArrayList<>();
+List<String> headers = headerEntries.stream().map(entry -> String.format("%s: %s", entry.getName(), entry.getValue())) .collect(Collectors.toList());
+```
+along with response status
+```java
+event.getResponseStatusCode().get()
+```
+and body which is usually a base64 encoded JSON with multiple details, processed by browser
 ![xhr_logged_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/xhr_logged_capture.png)
+```java
+Fetch.GetResponseBodyResponse response = chromeDevTools.send(Fetch.getResponseBody(event.getRequestId()));
+String body = null;
+if (response.getBase64Encoded()) {
+	try {
+		body = new String( Base64.decodeBase64(response.getBody().getBytes("UTF8")));
+	} catch (UnsupportedEncodingException e) {
+		System.err.println("Exception (ignored): " + e.toString());
+	}
+} else {
+	body = response.getBody();
+}
+```
+finally the test continues default processing  of the request:
+```java
+chromeDevTools.send(Fetch.continueRequest(
+	event.getRequestId(),
+	Optional.empty(),
+	Optional.empty(), 
+	Optional.empty(), 
+	Optional.empty(), 
+	Optional.empty()));
+```
+
+- the arguments to the Java adapter method match the Javascript `Fetch.continueResponse` [parameter definition](https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse):
+
+``text
+requestId
+RequestId
+An id the client received in requestPaused event.
+responseCode
+integer
+An HTTP response code. If absent, original response code will be used.
+responsePhrase
+string
+A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
+responseHeaders
+array[ HeaderEntry ]
+Response headers. If absent, original response headers will be used.
+binaryResponseHeaders
+string
+Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can't be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
+```
+#### Access Browser Console Logs
+Browser console logs may accessed asynchronuosly in asimilar fashion:
+```java
+@Before
+public void beforeTest() throws Exception {
+	chromeDevTools.send(Log.enable());
+	chromeDevTools.addListener(Log.entryAdded(),
+		(LogEntry event) -> System.err.println(
+			String.format( "time stamp: %s line number: %s url: \"%s\" text: %s",
+	formatTimestamp(event.getTimestamp()),
+	(event.getLineNumber().isPresent() ? event.getLineNumber().get() : ""),
+	(event.getUrl().isPresent() ? event.getUrl().get() : ""),
+	event.getText())));
+}
+```
+one can also confirm the logging to happen:
+
+```java
+
+@Test
+public void test() {
+	final String consoleMessage = "Lorem ipsum";
+	chromeDevTools.addListener(Log.entryAdded(),
+		(LogEntry event) -> assertThat(event.getText(),
+		containsString(consoleMessage)));
+	if (driver instanceof JavascriptExecutor) {
+		JavascriptExecutor executor = JavascriptExecutor.class.cast(driver);		
+		executor.executeScript("console.log(arguments[0]);", consoleMessage);
+	}
+}
+```
+#### Print to PDF
+
+This API uses CDP command:
+```java
+public void test1() {
+	PrintToPDFResponse response;
+	boolean landscape = false;
+	boolean displayHeaderFooter = false;
+	boolean printBackground = false;
+	Page.PrintToPDFTransferMode transferMode = Page.PrintToPDFTransferMode.RETURNASBASE64;
+	int scale = 1;
+
+	// Act
+	response = chromeDevTools.send(Page.printToPDF(
+	Optional.of(landscape), 
+	Optional.of(displayHeaderFooter),
+	Optional.of(printBackground), 
+	Optional.of(scale), 
+	Optional.empty(), 
+	Optional.empty(), 
+	Optional.empty(),
+	Optional.empty(), 
+	Optional.empty(), 
+	Optional.empty(), 
+	Optional.empty(), 
+	Optional.empty(),
+	Optional.empty(),
+	Optional.empty(), 
+	Optional.empty(), 
+	Optional.of(transferMode)));
+	assertThat(response, notNullValue());
+	String body = new String(Base64.decodeBase64(response.getData().getBytes("UTF8")));
+	assertThat(body, notNullValue());
+	String magic = body.substring(0, 9);
+	assertThat(magic, containsString("%PDF"));
+```
+the browser needs to run headless mode for the call to succeed
+the alternative call signature is
+```java
+response = chromeDevTools.send(new Command<PrintToPDFResponse>("Page.printToPDF", ImmutableMap.of("landscape", landscape), o -> o.read(PrintToPDFResponse.class)));
+assertThat(response, notNullValue());
 
 
+```
+for some calls (but not specifically for `Page.printToPDF`) yet anoher alternavie signature via static method exists
+```
+response = chromeDevTools.send(new Command<PrintToPDFResponse>("Page.printToPDF", ImmutableMap.of("landscape", landscape), ConverterFunctions.map("data", PrintToPDFResponse.class)));
+
+```
 #### Override User Agent
 
 One can __call__ cdp protocol to invoke [setUserAgentOverride](https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setUserAgentOverride) method and dynmically modify the `user-agent` header during the test:
@@ -508,4 +652,5 @@ This project is licensed under the terms of the MIT license.
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
