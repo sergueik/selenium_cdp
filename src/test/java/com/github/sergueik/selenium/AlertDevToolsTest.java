@@ -15,9 +15,9 @@ import org.junit.Test;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import org.openqa.selenium.devtools.v94.page.Page;
-import org.openqa.selenium.devtools.v94.page.model.JavascriptDialogClosed;
-import org.openqa.selenium.devtools.v94.page.model.JavascriptDialogOpening;
+import org.openqa.selenium.devtools.v96.page.Page;
+import org.openqa.selenium.devtools.v96.page.model.JavascriptDialogClosed;
+import org.openqa.selenium.devtools.v96.page.model.JavascriptDialogOpening;
 
 /**
  * 
@@ -71,7 +71,7 @@ public class AlertDevToolsTest extends EventSubscriptionCommonTest {
 		alert = driver.switchTo().alert();
 		// Assert alert displayed
 		assertThat(alert, notNullValue());
-		// https://github.com/SeleniumHQ/selenium/blob/trunk/common/devtools/chromium/v94/browser_protocol.pdl#L7715
+		// https://github.com/SeleniumHQ/selenium/blob/trunk/common/devtools/chromium/v96/browser_protocol.pdl#L7715
 		if (debug)
 			System.err.println("Selenium accepting alert.");
 		alert.accept();

@@ -21,8 +21,8 @@ import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v94.page.Page;
-import org.openqa.selenium.devtools.v94.page.Page.PrintToPDFResponse;
+import org.openqa.selenium.devtools.v96.page.Page;
+import org.openqa.selenium.devtools.v96.page.Page.PrintToPDFResponse;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -153,7 +153,7 @@ public class PrintToPDFTest {
 
 	@Ignore
 	// Unable to create instance of class
-	// org.openqa.selenium.devtools.v94.page.Page$PrintToPDFResponse
+	// org.openqa.selenium.devtools.v96.page.Page$PrintToPDFResponse
 	@Test
 	public void test4() {
 		// Act

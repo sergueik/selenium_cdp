@@ -12,9 +12,9 @@ import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v94.page.Page;
-import org.openqa.selenium.devtools.v94.performance.Performance;
-import org.openqa.selenium.devtools.v94.performance.model.Metric;
+import org.openqa.selenium.devtools.v96.page.Page;
+import org.openqa.selenium.devtools.v96.performance.Performance;
+import org.openqa.selenium.devtools.v96.performance.model.Metric;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

@@ -29,13 +29,13 @@ import org.openqa.selenium.json.JsonInput;
 
 import com.google.gson.Gson;
 
-import org.openqa.selenium.devtools.v94.fetch.Fetch;
-import org.openqa.selenium.devtools.v94.fetch.Fetch.GetResponseBodyResponse;
-import org.openqa.selenium.devtools.v94.fetch.model.HeaderEntry;
-import org.openqa.selenium.devtools.v94.fetch.model.RequestPattern;
-import org.openqa.selenium.devtools.v94.fetch.model.RequestStage;
-import org.openqa.selenium.devtools.v94.fetch.model.RequestPaused;
-import org.openqa.selenium.devtools.v94.network.model.ResourceType;
+import org.openqa.selenium.devtools.v96.fetch.Fetch;
+import org.openqa.selenium.devtools.v96.fetch.Fetch.GetResponseBodyResponse;
+import org.openqa.selenium.devtools.v96.fetch.model.HeaderEntry;
+import org.openqa.selenium.devtools.v96.fetch.model.RequestPattern;
+import org.openqa.selenium.devtools.v96.fetch.model.RequestStage;
+import org.openqa.selenium.devtools.v96.fetch.model.RequestPaused;
+import org.openqa.selenium.devtools.v96.network.model.ResourceType;
 
 import org.apache.commons.codec.binary.Base64;
 

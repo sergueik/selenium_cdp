@@ -9,10 +9,10 @@ import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
 
 // NOTE letter case in the class name 
-import org.openqa.selenium.devtools.v94.target.Target;
-import org.openqa.selenium.devtools.v94.target.model.SessionID;
-import org.openqa.selenium.devtools.v94.target.model.TargetID;
-import org.openqa.selenium.devtools.v94.target.model.TargetInfo;
+import org.openqa.selenium.devtools.v96.target.Target;
+import org.openqa.selenium.devtools.v96.target.model.SessionID;
+import org.openqa.selenium.devtools.v96.target.model.TargetID;
+import org.openqa.selenium.devtools.v96.target.model.TargetInfo;
 
 public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 
