@@ -1,33 +1,20 @@
 package com.github.sergueik.selenium;
 
 import static java.lang.System.err;
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
-
 import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
-
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import java.time.Duration;
-import java.time.Year;
-import java.time.Month;
-import java.time.MonthDay;
-import java.time.LocalDate;
-
-import javax.imageio.ImageIO;
-
 import java.nio.file.Paths;
-
-import java.util.Optional;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,45 +22,29 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidArgumentException;
-import org.openqa.selenium.InvalidSelectorException;
+import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.UnhandledAlertException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
-
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.devtools.v96.network.Network;
-
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.github.sergueik.selenium.Utils;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
@@ -1403,105 +1374,6 @@ public class ChromiumCdpTest {
 		} catch (Exception e) {
 			System.err.println("Exception in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
-		}
-	}
-
-	// @Ignore
-	@Test
-	// based on:
-	// https://qna.habr.com/q/732307
-	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
-	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
-	// https://chromedevtools.github.io/devtools-protocol/tot/Page#type-Viewport
-	public void capturElementScreenshotTest() {
-
-		// basic logo example
-		// baseURL = "https://www.google.com/";
-		// String xpath = "//img[@id = 'hplogo'][@alt='Google']";
-
-		// schedule of classes for today
-		LocalDate localDate = LocalDate.now();
-		Year year = Year.from(localDate);
-		Month month = Month.from(localDate);
-		MonthDay monthDay = MonthDay.now();
-		baseURL = String.format(
-				"http://almetpt.ru/%s/site/schedulegroups/0/1/%s-%02d-%02d",
-				year.toString(), year.toString(), month.getValue(),
-				monthDay.getDayOfMonth());
-		baseURL = "http://almetpt.ru/2020/site/schedulegroups/0/1/2020-03-02";
-		String xpath = "//div[@class=\"card-columns\"]//div[contains(@class, \"card\")]"
-				+ "[div[contains(@class, \"card-header\")]]";
-		driver.get(baseURL);
-		result = null;
-		dataString = null;
-		// not assigning the value returned
-		wait.until(ExpectedConditions.visibilityOfElementLocated(
-				By.xpath("//div[@class=\"card-columns\"]")));
-		List<WebElement> elements = driver.findElements(By.xpath(xpath));
-		int cnt = 0;
-		int maxCnt = 10;
-		cards: for (WebElement element : elements) {
-			if (null == element
-					.findElement(By.xpath("div[contains(@class, \"card-body\")]"))) {
-				continue;
-			}
-			cnt++;
-			if (cnt >= maxCnt) {
-				break cards;
-			}
-			Utils.highlight(element);
-			int x = element.getLocation().getX();
-			int y = element.getLocation().getY();
-			int width = element.getSize().getWidth();
-			int height = element.getSize().getHeight();
-			int scale = 1;
-
-			command = "Page.captureScreenshot";
-			params = new HashMap<String, Object>();
-			Map<String, Object> viewport = new HashMap<>();
-			System.err.println("Specified viewport: " + String
-					.format("x=%d, y=%d, width=%d, height=%d", x, y, width, height));
-			viewport.put("x", (double) x);
-			viewport.put("y", (double) y);
-			viewport.put("width", (double) width);
-			viewport.put("height", (double) height);
-			viewport.put("scale", scale);
-			params.put("clip", viewport);
-			try {
-				// Act
-				result = driver.executeCdpCommand(command, params);
-				// Assert
-				assertThat(result, notNullValue());
-				assertThat(result, hasKey("data"));
-				dataString = (String) result.get("data");
-				assertThat(dataString, notNullValue());
-			} catch (WebDriverException e) {
-				System.err.println("Web Driver exception in " + command + " (ignored): "
-						+ Utils.processExceptionMessage(e.getMessage()));
-			} catch (Exception e) {
-				System.err.println("Exception in " + command + "  " + e.toString());
-				throw (new RuntimeException(e));
-			}
-
-			Base64 base64 = new Base64();
-			byte[] image = base64.decode(dataString);
-			try {
-				BufferedImage o = ImageIO.read(new ByteArrayInputStream(image));
-				assertThat(o.getWidth(), greaterThan(0));
-				assertThat(o.getHeight(), greaterThan(0));
-			} catch (IOException e) {
-				System.err
-						.println("Exception loading image (	ignored): " + e.toString());
-			}
-			String screenshotFileName = String.format("card%02d.png", cnt);
-			try {
-				FileOutputStream fileOutputStream = new FileOutputStream(
-						screenshotFileName);
-				fileOutputStream.write(image);
-				fileOutputStream.close();
-			} catch (IOException e) {
-				System.err.println("Exception saving image (ignored): " + e.toString());
-			}
 		}
 	}
 

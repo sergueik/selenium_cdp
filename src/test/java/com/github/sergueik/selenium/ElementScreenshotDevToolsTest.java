@@ -3,7 +3,6 @@ package com.github.sergueik.selenium;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasKey;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -14,9 +13,9 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.MonthDay;
 import java.time.Year;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
@@ -24,8 +23,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.devtools.v96.page.Page;
+import org.openqa.selenium.devtools.v96.page.model.Viewport;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -36,16 +36,18 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-public class ElementScreenshotCdpTest extends BaseCdpTest {
-	private static String command = null;
-	private static Map<String, Object> result = new HashMap<>();
-	private static Map<String, Object> params = new HashMap<>();
+public class ElementScreenshotDevToolsTest extends BaseDevToolsTest {
+
+	private static List<WebElement> elements = new ArrayList<>();
 	private static String dataString = null;
 	public static Long nodeId = (long) -1;
 	public static String isolationId = null;
+	private static WebDriverWait wait;
+	private static int flexibleWait = 60;
+	private static int pollingInterval = 500;
+	private static Viewport viewport;
 	private final String xpath = "//div[@class=\"card-columns\"]//div[contains(@class, \"card\")]"
 			+ "[div[contains(@class, \"card-header\")]]";
-	private static Map<String, Object> viewport = new HashMap<>();
 	private static Base64 base64 = new Base64();
 	private static byte[] image;
 
@@ -67,19 +69,20 @@ public class ElementScreenshotCdpTest extends BaseCdpTest {
 	}
 
 	@Test
-	// based on:
-	// https://qna.habr.com/q/732307
-	// schedule of classes for today
-	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#type-Viewport
+	// see also:
+	// https://qna.habr.com/q/732307
+	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
+	// see also
+	// https://stackoverflow.com/questions/1197172/how-can-i-take-a-screenshot-image-of-a-website-using-python
 	public void test1() {
-		result = null;
+
 		dataString = null;
 		// not assigning the value returned
 		wait.until(ExpectedConditions.visibilityOfElementLocated(
 				By.xpath("//div[@class=\"card-columns\"]")));
-		List<WebElement> elements = driver.findElements(By.xpath(xpath));
+		elements = driver.findElements(By.xpath(xpath));
 		int cnt = 0;
 		int maxCnt = 10;
 		cards: for (WebElement element : elements) {
@@ -97,35 +100,21 @@ public class ElementScreenshotCdpTest extends BaseCdpTest {
 			int width = element.getSize().getWidth();
 			int height = element.getSize().getHeight();
 			int scale = 1;
-			// TODO: devtools variant
-			// aee also
-			// https://stackoverflow.com/questions/1197172/how-can-i-take-a-screenshot-image-of-a-website-using-python
-			command = "Page.captureScreenshot";
-			params = new HashMap<String, Object>();
-			viewport = new HashMap<>();
-			System.err.println("Specified viewport: " + String
-					.format("x=%d, y=%d, width=%d, height=%d", x, y, width, height));
-			viewport.put("x", (double) x);
-			viewport.put("y", (double) y);
-			viewport.put("width", (double) width);
-			viewport.put("height", (double) height);
-			viewport.put("scale", scale);
-			params.put("clip", viewport);
-			try {
-				// Act
-				result = driver.executeCdpCommand(command, params);
-				// Assert
-				assertThat(result, notNullValue());
-				assertThat(result, hasKey("data"));
-				dataString = (String) result.get("data");
-				assertThat(dataString, notNullValue());
-			} catch (WebDriverException e) {
-				System.err.println("Web Driver exception in " + command + " (ignored): "
-						+ Utils.processExceptionMessage(e.getMessage()));
-			} catch (Exception e) {
-				System.err.println("Exception in " + command + "  " + e.toString());
-				throw (new RuntimeException(e));
-			}
+			viewport = new Viewport(x, y, width, height, scale);
+			dataString = chromeDevTools.send(
+					// @formatter:off
+					Page.captureScreenshot(
+							Optional.of(Page.CaptureScreenshotFormat.JPEG), 
+							Optional.of(100),
+							Optional.of(viewport), 
+							Optional.of(true), 
+							Optional.of(true)
+					)
+					// @formatter:off
+			);
+			
+			assertThat(dataString, notNullValue());
+
 
 			image = base64.decode(dataString);
 			try {
@@ -136,7 +125,7 @@ public class ElementScreenshotCdpTest extends BaseCdpTest {
 				System.err
 						.println("Exception loading image (	ignored): " + e.toString());
 			}
-			String screenshotFileName = String.format("card_cdp_%02d.png", cnt);
+			String screenshotFileName = String.format("card_devtools_%02d.png", cnt);
 			try {
 				FileOutputStream fileOutputStream = new FileOutputStream(
 						screenshotFileName);
