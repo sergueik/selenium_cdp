@@ -14,8 +14,16 @@ __cdp__ commands - an entirely different set of API communicated to the Chrome b
   * `getAttributes`
 
 overlap with classic Selenium in Classic Javascript
-and there are few specific ones:
+and there are few specific ones like:
   * `addCustomHeaders`
+  * `getFrameTree`
+  * `setGeolocationOverride`
+  * `setDownloadBehavior`
+
+to name a few, and various event listeners
+
+This functionality is named in official Selenium Developer Documentation as [BiDirectional functionality](https://www.selenium.dev/documentation/webdriver/bidirectional/)
+and [BiDi API](https://www.selenium.dev/documentation/webdriver/bidirectional/bidi_api/)
 
 The project also exercised other new Selenium 4 API e.g. [relative nearby locators](https://dzone.com/articles/how-selenium-4-relative-locator-can-change-the-way) whidh did not apear powerful enough yet.
 
