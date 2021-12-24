@@ -713,6 +713,12 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
  * [collection of Selenium 4 CDP-specific tests](https://github.com/rookieInTraining)
  * https://medium.com/codex/selenium4-a-peek-into-chrome-devtools-92bca6de55e0
 ### License
+  * BiDirectional WebDriver Protocol w3c [s[ec](https://w3c.github.io/webdriver-bidi/)
+  * BiDi - The future of cross-browser automation [blog](https://developer.chrome.com/blog/webdriver-bidi/)
+  * BiDirectional functionality [official documentation](https://www.selenium.dev/documentation/webdriver/bidirectional/)
+  * list of bidi APIs [examples](https://www.selenium.dev/documentation/webdriver/bidirectional/bidi_api)
+
+
 This project is licensed under the terms of the MIT license.
 
 ### Author
