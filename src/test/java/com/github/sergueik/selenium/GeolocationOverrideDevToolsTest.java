@@ -1,4 +1,7 @@
 package com.github.sergueik.selenium;
+/**
+ * Copyright 2021,2022 Serguei Kouzmine
+ */
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -13,7 +16,10 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
+
+import org.junit.Ignore;
 import org.junit.Test;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.v96.emulation.Emulation;
@@ -41,17 +47,17 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 	private static Double longitude = -122.084057;
 	private static long accuracy = 100;
 
+	@Ignore
 	@Test
-	public void test() {
+	public void test1() {
 		// Act
-		chromeDevTools.send(Emulation.setGeolocationOverride(Optional.of(latitude),
-				Optional.of(longitude), Optional.of(accuracy)));
-
+		setLocation();
 		baseURL = "https://www.google.com/maps";
 		driver.get(baseURL);
 		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
-
+		locator = By
+				.cssSelector("div[class *='widget-mylocation-button-icon-common']");
 		element = wait
 				.until(ExpectedConditions.visibilityOfElementLocated(locator));
 		element.click();
@@ -86,5 +92,33 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 		}
 	}
 
-}
+	// @Ignore
+	@Test
+	public void test3() {
+		// Act
+		setLocation();
+		baseURL = "https://www.iplocation.net";
+		driver.get(baseURL);
+		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
+		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 
+		locator = By
+				.xpath("//table[@class= 'iptable']//*[contains(th, 'IP Location')]");
+		element = wait
+				.until(ExpectedConditions.visibilityOfElementLocated(locator));
+		System.err.println(element.getText());
+	}
+
+	private void setLocation() {
+		chromeDevTools.send(Emulation.setGeolocationOverride(Optional.of(latitude),
+				Optional.of(longitude), Optional.of(accuracy)));
+
+	}
+
+	@Test
+	public void test4() {
+		// Act
+		System.err.print("test 4 check");
+		// this will disappear fromthe log
+	}
+}

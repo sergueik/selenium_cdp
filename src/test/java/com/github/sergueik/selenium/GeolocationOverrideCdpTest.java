@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2022 Serguei Kouzmine
  */
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -14,14 +14,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
+
+import org.junit.Ignore;
 import org.junit.Test;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.devtools.v96.emulation.Emulation;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.google.gson.JsonSyntaxException;
@@ -46,7 +51,7 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 	private static Double longitude = -122.084057;
 	private static long accuracy = 100;
 
-	// @Ignore
+	@Ignore
 	@Test
 	// based on:
 	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setGeolocationOverride
@@ -57,19 +62,11 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setDeviceMetricsOverride
 	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
 	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-clearDeviceMetricsOverride
+	public void test1() {
 
-	public void test() {
-
-		params.put("latitude", latitude);
-		params.put("longitude", longitude);
-		params.put("accuracy", accuracy);
 		// Arrange
-		command = "Emulation.setGeolocationOverride";
-		// Act
+		setLocation();
 		try {
-			result = driver.executeCdpCommand(command, params);
-			assertThat(result, notNullValue());
-			System.err.println("Response from " + command + ": " + result);
 			// Act
 
 			baseURL = "https://www.google.com/maps";
@@ -118,5 +115,38 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 		}
 		// Assert
 	}
-}
 
+	// @Ignore
+	@Test
+	public void test2() {
+		setLocation();
+		baseURL = "https://www.iplocation.net";
+		driver.get(baseURL);
+		locator = By
+				.xpath("//table[@class= 'iptable']//*[contains(th, 'IP Location')]");
+		element = wait
+				.until(ExpectedConditions.visibilityOfElementLocated(locator));
+		System.err.println(element.getText());
+	}
+
+	private void setLocation() {
+		params.put("latitude", latitude);
+		params.put("longitude", longitude);
+		params.put("accuracy", accuracy);
+		// Arrange
+		command = "Emulation.setGeolocationOverride";
+		// Act
+		try {
+			result = driver.executeCdpCommand(command, params);
+			assertThat(result, notNullValue());
+			System.err.println("Response from " + command + ": " + result);
+			// Act
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception in " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			System.err.println("Exception in " + command + "  " + e.toString());
+			throw (new RuntimeException(e));
+		}
+	}
+}

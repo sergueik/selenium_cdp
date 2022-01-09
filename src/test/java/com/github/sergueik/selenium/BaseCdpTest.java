@@ -32,7 +32,7 @@ public class BaseCdpTest {
 	protected static WebDriverWait wait;
 	protected static boolean runHeadless = false;
 
-	protected static int flexibleWait = 60;
+	protected static int flexibleWait = 10;
 	protected static int pollingInterval = 500;
 
 	protected static String baseURL = "about:blank";
