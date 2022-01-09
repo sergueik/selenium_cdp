@@ -3,6 +3,7 @@ package com.github.sergueik.selenium;
  * Copyright 2021,2022 Serguei Kouzmine
  */
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 
@@ -37,7 +38,7 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 
 	private static WebElement element = null;
 	private static WebDriverWait wait;
-	private static int flexibleWait = 60;
+	private static int flexibleWait = 10;
 	private static int pollingInterval = 500;
 
 	private static By locator = By
@@ -92,7 +93,7 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 		}
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	public void test3() {
 		// Act
@@ -109,16 +110,34 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 		System.err.println(element.getText());
 	}
 
+	// @Ignore
+	@Test
+	public void test4() {
+		// Act
+		setLocation();
+		baseURL = "https://mycurrentlocation.net";
+		driver.get(baseURL);
+		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
+		wait.pollingEvery(Duration.ofMillis(pollingInterval));
+
+		locator = By.cssSelector(".location-intro");
+		element = wait
+				.until(ExpectedConditions.visibilityOfElementLocated(locator));
+		assertThat(element.getText(), containsString("Mountain View"));
+		System.err.println(element.getText());
+	}
+
+	@Test
+	public void test5() {
+		// Act
+		// this line will disappear from the log, at least on Windows host
+		System.err.print("test 5 check");
+	}
+
 	private void setLocation() {
 		chromeDevTools.send(Emulation.setGeolocationOverride(Optional.of(latitude),
 				Optional.of(longitude), Optional.of(accuracy)));
 
 	}
 
-	@Test
-	public void test4() {
-		// Act
-		System.err.print("test 4 check");
-		// this will disappear fromthe log
-	}
 }

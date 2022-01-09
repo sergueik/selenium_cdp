@@ -3,6 +3,7 @@ package com.github.sergueik.selenium;
 /**
  * Copyright 2021,2022 Serguei Kouzmine
  */
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -116,7 +117,7 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 		// Assert
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	public void test2() {
 		setLocation();
@@ -126,6 +127,18 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 				.xpath("//table[@class= 'iptable']//*[contains(th, 'IP Location')]");
 		element = wait
 				.until(ExpectedConditions.visibilityOfElementLocated(locator));
+		System.err.println(element.getText());
+	}
+
+	@Test
+	public void test3() {
+		setLocation();
+		baseURL = "https://mycurrentlocation.net";
+		driver.get(baseURL);
+		locator = By.cssSelector(".location-intro");
+		element = wait
+				.until(ExpectedConditions.visibilityOfElementLocated(locator));
+		assertThat(element.getText(), containsString("Mountain View"));
 		System.err.println(element.getText());
 	}
 
@@ -149,4 +162,5 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 			throw (new RuntimeException(e));
 		}
 	}
+
 }
