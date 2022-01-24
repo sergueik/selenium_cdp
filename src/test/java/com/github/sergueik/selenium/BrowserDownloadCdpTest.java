@@ -29,44 +29,56 @@ public class BrowserDownloadCdpTest extends BaseCdpTest {
 	// including "application/pdf"
 	private final static String url = "https://scholar.harvard.edu/files/torman_personal/files/samplepptx.pptx";
 	private final static String filename = url.replaceAll("^.*/", "");
-	private static String downloadPath = Paths.get(System.getProperty("user.home")).resolve("Downloads")
-			.toAbsolutePath().toString();
+	private static String downloadPath = getTempDownloadDir();
+
 	private static String command = "Browser.setDownloadBehavior";
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> params = new HashMap<>();
 
 	@Before
 	public void beforeTest() throws Exception {
-		new File(Paths.get(downloadPath).resolve(filename).toAbsolutePath().toString()).delete();
+		// Arrange
+		params = new HashMap<>();
+		params.put("behavior", "allow");
+		// NOTE: the "allowAndName" will randomly name the downloaded file
+		params.put("downloadPath", downloadPath);
+
+		params.put("eventsEnabled", true);
+
+		result = driver.executeCdpCommand(command, params);
+
+		// NOTE: the return value of "Browser.setDownloadBehavior" is not described
+		// in
+		// the spec
+		assertThat(result, notNullValue());
+
+		new File(
+				Paths.get(downloadPath).resolve(filename).toAbsolutePath().toString())
+						.delete();
 	}
 
 	@After
 	public void clearPage() {
+		// Arrange
+		params = new HashMap<>();
+		params.put("behavior", "default");
+		result = driver.executeCdpCommand(command, params);
+		assertThat(result, notNullValue());
 		driver.get("about:blank");
 	}
 
 	@Test
 	public void test1() {
 		try {
-			// Arrange
-			params = new HashMap<>();
-			params.put("behavior", "allow");
-			// NOTE: the "allowAndName" will randomly name the downloaded file
-			params.put("downloadPath", downloadPath);
-
-			params.put("eventsEnabled", true);
-
-			result = driver.executeCdpCommand(command, params);
-
-			// NOTE: the return value of "Browser.setDownloadBehavior" is not described in
-			// the spec
-			assertThat(result, notNullValue());
-
 			// Act
 			driver.get(url);
 			Utils.sleep(3000);
-			assertThat(new File(Paths.get(downloadPath).resolve(filename).toAbsolutePath().toString()).exists(),
+			assertThat(new File(
+					Paths.get(downloadPath).resolve(filename).toAbsolutePath().toString())
+							.exists(),
 					is(true));
+			System.err.println(String.format("Verified downloaded file: %s in %s",
+					filename, downloadPath));
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
 					+ Utils.processExceptionMessage(e.getMessage()));
@@ -75,4 +87,16 @@ public class BrowserDownloadCdpTest extends BaseCdpTest {
 			throw (new RuntimeException(e));
 		}
 	}
+
+	// http://www.java2s.com/example/java-utility-method/temp-directory-get/gettempdir-466ee.html
+	public static String getTempDownloadDir() {
+		String tmpdir = System.getProperty("java.io.tmpdir");
+		return (tmpdir != null && new File(tmpdir).exists()) ? tmpdir
+				: Paths.get(System.getProperty("user.home")).resolve("Downloads")
+						.toAbsolutePath().toString();
+	}
+
+	// TODO: shadow DOM test
+	// https://stackoverflow.com/questions/57780426/selenium-headless-chrome-how-to-query-status-of-downloads
+
 }
