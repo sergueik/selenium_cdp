@@ -1,10 +1,13 @@
 package com.github.sergueik.selenium;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
-import org.junit.Ignore;
+// import org.junit.Ignore;
 import org.junit.Test;
 
 import org.openqa.selenium.devtools.DevToolsException;
@@ -14,6 +17,7 @@ import org.openqa.selenium.devtools.v97.dom.model.NodeId;
 import org.openqa.selenium.devtools.v97.dom.model.RGBA;
 import org.openqa.selenium.devtools.v97.overlay.Overlay;
 import org.openqa.selenium.devtools.v97.page.Page;
+import org.openqa.selenium.devtools.v97.page.model.Frame;
 import org.openqa.selenium.devtools.v97.page.model.FrameId;
 import org.openqa.selenium.devtools.v97.page.model.FrameTree;
 
@@ -34,8 +38,9 @@ import org.openqa.selenium.devtools.v97.page.model.FrameTree;
 
 public class FramesDevToolsTest extends BaseDevToolsTest {
 
-	private FrameTree response = null;
+	private FrameTree frameTree = null;
 	private FrameId frameId = null;
+	private Frame frame = null;
 	private RGBA color = null;
 	private String html = null;
 	Optional<List<FrameTree>> frames = null;
@@ -48,15 +53,34 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 	public void before() throws Exception {
 	}
 
-	// @Ignore
 	@Test
 	public void test1() {
+		// Arrange
+		baseURL = "https://cloud.google.com/products/calculator";
+		driver.get(baseURL);
+
+		frameTree = chromeDevTools.send(Page.getFrameTree());
+		assertThat(frameTree, notNullValue());
+		if (frameTree != null) {
+			// Act
+			frame = frameTree.getFrame();
+			System.err.println(
+					String.format("id: %s" + "\t" + "url: %s" + "\t" + "mime-type: %s",
+							frame.getId(), frame.getUrl(), frame.getMimeType()));
+		} else {
+			System.err.println("No Frames found on " + baseURL);
+		}
+	}
+
+	// @Ignore
+	@Test
+	public void test2() {
 		// Act
 		// Arrange
 		baseURL = "https://cloud.google.com/products/calculator";
 		driver.get(baseURL);
-		response = chromeDevTools.send(Page.getFrameTree());
-		frames = response.getChildFrames();
+		frameTree = chromeDevTools.send(Page.getFrameTree());
+		frames = frameTree.getChildFrames();
 		if (frames.isPresent()) {
 			frames.get().stream().map(o -> o.getFrame())
 					.map(frame -> String.format("Frame %s id: %s url: %s",
@@ -91,8 +115,9 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 	}
 
 	// @Ignore
+	@SuppressWarnings("deprecation")
 	@Test
-	public void test2() {
+	public void test3() {
 		// Act
 		baseURL = "https://www.javatpoint.com/oprweb/test.jsp?filename=htmliframes";
 		driver.get(baseURL);
