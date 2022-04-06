@@ -38,6 +38,7 @@ public class EventSubscriptionCommonTest {
 	protected static DevTools chromeDevTools;
 	protected static WebDriverWait wait;
 	public final static int flexibleWait = 60; // too long
+	public final static Duration duration = Duration.ofSeconds(flexibleWait);;
 	public final static int implicitWait = 1;
 	public final static int pollingInterval = 500;
 	private final static long highlightInterval = 100;
@@ -76,7 +77,8 @@ public class EventSubscriptionCommonTest {
 		}
 		Utils.setDriver(driver);
 		// Declare a wait time
-		wait = new WebDriverWait(driver, flexibleWait);
+
+		wait = new WebDriverWait(driver, duration);
 
 		// NOTE: constructor WebDriverWait(WebDriver, Duration) is undefined
 		// with Selenium 3.x ?
@@ -149,7 +151,7 @@ public class EventSubscriptionCommonTest {
 			String color) {
 		// err.println("Color: " + color);
 		if (wait == null) {
-			wait = new WebDriverWait(driver, flexibleWait);
+			wait = new WebDriverWait(driver, duration);
 		}
 		// Selenium Driver version sensitive code: 3.13.0 vs. 3.8.0 and older
 		// https://stackoverflow.com/questions/49687699/how-to-remove-deprecation-warning-on-timeout-and-polling-in-selenium-java-client
