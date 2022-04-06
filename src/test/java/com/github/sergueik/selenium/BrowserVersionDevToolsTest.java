@@ -11,8 +11,8 @@ import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.json.Json;
 import org.openqa.selenium.json.JsonInput;
-import org.openqa.selenium.devtools.v97.browser.Browser;
-import org.openqa.selenium.devtools.v97.browser.Browser.GetVersionResponse;
+import org.openqa.selenium.devtools.v99.browser.Browser;
+import org.openqa.selenium.devtools.v99.browser.Browser.GetVersionResponse;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -80,7 +80,7 @@ public class BrowserVersionDevToolsTest extends BaseDevToolsTest {
 	public void test4() {
 
 		// Act
-		// NOTE: there is no "org.openqa.selenium.devtools.v97.browser.Version"
+		// NOTE: there is no "org.openqa.selenium.devtools.v99.browser.Version"
 		// class
 		response = chromeDevTools.send(new Command<GetVersionResponse>("Browser.getVersion", ImmutableMap.of(),
 				ConverterFunctions.map("getVersionResponse", GetVersionResponse.class)));

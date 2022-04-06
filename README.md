@@ -310,6 +310,10 @@ fileOutputStream.write(image);
 fileOutputStream.close();
 ```
 
+Note: some CDP API notably `Page.printToPDF` are not curently implemented:
+```sh
+unhandled inspector error: {"code":-32000,"message":"PrintToPDF is not implemented"}(..)
+```
 ### Custom Headers
 
 This can be done both at the wrapper methods
