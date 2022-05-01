@@ -11,15 +11,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v99.dom.DOM;
-import org.openqa.selenium.devtools.v99.dom.model.BackendNodeId;
-import org.openqa.selenium.devtools.v99.dom.model.NodeId;
-import org.openqa.selenium.devtools.v99.dom.model.RGBA;
-import org.openqa.selenium.devtools.v99.overlay.Overlay;
-import org.openqa.selenium.devtools.v99.page.Page;
-import org.openqa.selenium.devtools.v99.page.model.Frame;
-import org.openqa.selenium.devtools.v99.page.model.FrameId;
-import org.openqa.selenium.devtools.v99.page.model.FrameTree;
+import org.openqa.selenium.devtools.v100.dom.DOM;
+import org.openqa.selenium.devtools.v100.dom.model.BackendNodeId;
+import org.openqa.selenium.devtools.v100.dom.model.NodeId;
+import org.openqa.selenium.devtools.v100.dom.model.RGBA;
+import org.openqa.selenium.devtools.v100.overlay.Overlay;
+import org.openqa.selenium.devtools.v100.page.Page;
+import org.openqa.selenium.devtools.v100.page.model.Frame;
+import org.openqa.selenium.devtools.v100.page.model.FrameId;
+import org.openqa.selenium.devtools.v100.page.model.FrameTree;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -122,7 +122,10 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 		baseURL = "https://www.javatpoint.com/oprweb/test.jsp?filename=htmliframes";
 		driver.get(baseURL);
 		frames = chromeDevTools.send(Page.getFrameTree()).getChildFrames();
-		chromeDevTools.send(DOM.enable());
+		// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-enable
+		chromeDevTools
+				.send(DOM.enable(Optional.of(DOM.EnableIncludeWhitespace.NONE)));
+
 		chromeDevTools.send(Overlay.enable());
 		frames.get().stream().map(o -> o.getFrame()).forEach(frame -> {
 			try {
@@ -139,4 +142,3 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 		});
 	}
 }
-

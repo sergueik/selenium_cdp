@@ -18,11 +18,11 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v99.css.CSS;
-import org.openqa.selenium.devtools.v99.dom.DOM;
-import org.openqa.selenium.devtools.v99.dom.model.Rect;
-import org.openqa.selenium.devtools.v99.emulation.Emulation;
-import org.openqa.selenium.devtools.v99.page.Page;
+import org.openqa.selenium.devtools.v100.css.CSS;
+import org.openqa.selenium.devtools.v100.dom.DOM;
+import org.openqa.selenium.devtools.v100.dom.model.Rect;
+import org.openqa.selenium.devtools.v100.emulation.Emulation;
+import org.openqa.selenium.devtools.v100.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -141,7 +141,9 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 				)
 				// @formatter:on
 		);
-		chromeDevTools.send(DOM.enable());
+		// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-enable
+		chromeDevTools
+				.send(DOM.enable(Optional.of(DOM.EnableIncludeWhitespace.NONE)));
 		chromeDevTools.send(CSS.enable());
 		String dataString = chromeDevTools.send(
 				// @formatter:off
