@@ -55,10 +55,6 @@ public class BrowserDownloadDevToolsTest extends BaseDevToolsTest {
 						Optional.empty(), Optional.empty(), Optional.of(false)));
 	}
 
-	// see also:
-	// https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-cancelDownload
-	// Browser.cancelDownload
-
 	@Test
 	public void test1() {
 		// Arrange
@@ -158,6 +154,51 @@ public class BrowserDownloadDevToolsTest extends BaseDevToolsTest {
 			throw (new RuntimeException(e));
 		}
 	}
+
+	// see also:
+	// https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-cancelDownload
+	// Browser.cancelDownload
+
+	@Test
+	public void test4() {
+		List<DownloadProgress.State> states = new ArrayList<>();
+		// Arrange
+		chromeDevTools.send(
+				Browser.setDownloadBehavior(Browser.SetDownloadBehaviorBehavior.ALLOW,
+						Optional.empty(), Optional.of(downloadPath), Optional.of(true)));
+
+		// Act
+		try {
+			chromeDevTools.addListener(Browser.downloadWillBegin(), o -> {
+				System.err.println("in Browser.downloadWillBegin listener. url: "
+						+ o.getUrl() + "\tfilename: " + o.getSuggestedFilename());
+			});
+			chromeDevTools.addListener(Browser.downloadProgress(), o -> {
+				DownloadProgress.State state = o.getState();
+				System.err.println(
+						"in Browser.downloadProgress listener. state: " + state.toString());
+				states.add(state);
+				System.err.println("Cancel download: " + o.getGuid());
+
+				chromeDevTools
+						.send(Browser.cancelDownload(o.getGuid(), Optional.empty()));
+
+			});
+			driver.get(url);
+			Utils.sleep(3000);
+			assertThat(states.indexOf(DownloadProgress.State.COMPLETED), is(-1));
+			assertThat(states.indexOf(DownloadProgress.State.CANCELED),
+					greaterThan(-1));
+
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			System.err.println("Exception: " + e.toString());
+			throw (new RuntimeException(e));
+		}
+	}
+
 	// TODO: shadow DOM test
 	// https://stackoverflow.com/questions/57780426/selenium-headless-chrome-how-to-query-status-of-downloads
 
