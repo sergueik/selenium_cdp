@@ -34,7 +34,7 @@ import org.openqa.selenium.WebDriverException;
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-public class BrowserHistogramTest extends BaseCdpTest {
+public class BrowserHistogramCDPTest extends BaseCdpTest {
 
 	private final static String url = "https://en.wikipedia.org/wiki/Main_Page";
 
@@ -45,12 +45,14 @@ public class BrowserHistogramTest extends BaseCdpTest {
 	@Test
 	public void test1() {
 		// Arrange
-		command = "Browser.getHistograms";
 		driver.get(url);
+		// Act
+		command = "Browser.getHistograms";
 		params = new HashMap<>();
 		params.put("query", "");
 		params.put("delta", false);
 		result = driver.executeCdpCommand(command, params);
+		// Assert
 		assertThat(result, notNullValue());
 		assertThat(result instanceof Map<?, ?>, is(true));
 		assertThat(result.containsKey("histograms"), is(true));
@@ -62,7 +64,8 @@ public class BrowserHistogramTest extends BaseCdpTest {
 		assertThat(result2 instanceof List<?>, is(true));
 		// System.err.println(result2);
 		// ...
-		// {buckets=[{count=9, high=2, low=1}], count=9, name=API.StorageAccess.AllowedRequests2, sum=9}
+		// {buckets=[{count=9, high=2, low=1}], count=9,
+		// name=API.StorageAccess.AllowedRequests2, sum=9}
 		Object result3 = ((List<Object>) result2).get(0);
 		assertThat(result3 instanceof Map<?, ?>, is(true));
 		assertThat(((Map<?, ?>) result3).containsKey("buckets"), is(true));
@@ -75,29 +78,30 @@ public class BrowserHistogramTest extends BaseCdpTest {
 
 		String name = (String) ((Map<?, ?>) result3).get("name");
 
+		// Act
 		command = "Browser.getHistogram";
-		driver.get(url);
 		params = new HashMap<>();
 		params.put("name", name);
 		params.put("delta", false);
 		result = driver.executeCdpCommand(command, params);
+		// Assert
 		assertThat(result, notNullValue());
 		assertThat(result instanceof Map<?, ?>, is(true));
 		assertThat(((Map<?, ?>) result).containsKey("histogram"), is(true));
 		// System.err.println(result);
 		// {
-		//   histogram={
-		//     buckets=[
-		//        {
-		//         count=12, 
-		//         high=2, 
-		//         low=1
-		//        }], 
-		//     count=12,
-		//     name=API.StorageAccess.AllowedRequests2, 
-		//     sum=12
-	  // 	 }
-    // }
+		// histogram={
+		// buckets=[
+		// {
+		// count=12,
+		// high=2,
+		// low=1
+		// }],
+		// count=12,
+		// name=API.StorageAccess.AllowedRequests2,
+		// sum=12
+		// }
+		// }
 
 		result2 = result.get("histogram");
 		assertThat(result2 instanceof Map<?, ?>, is(true));
