@@ -17,10 +17,10 @@ import org.openqa.selenium.devtools.v100.browser.model.Histogram;
 
 /**
  * 
- * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
+ * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
  * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getHistograms
- * 
- * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getHistogram
+z* @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
 public class BrowserHistogramDevToolsTest extends BaseDevToolsTest {

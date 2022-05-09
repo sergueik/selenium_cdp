@@ -28,9 +28,9 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
 
 /**
- * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
+ * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
  * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getHistograms
- * 
+ * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getHistogram
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 

@@ -17,8 +17,8 @@ import org.openqa.selenium.devtools.v100.browser.model.Histogram;
 
 /**
  * 
- * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
- * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getHistograms
+ * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
+ * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getBrowserCommandLine
  * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
@@ -27,12 +27,9 @@ public class BrowserCommandLineDevToolsTest extends BaseDevToolsTest {
 
 	private final static String url = "about:blank";
 	private static List<String> results;
-	private static String result;
 
 	@Test
 	public void test() {
-		// Arrange
-		driver.get(url);
 		// Act
 		results = chromeDevTools.send(Browser.getBrowserCommandLine());
 		// Assert

@@ -18,7 +18,7 @@ import org.junit.Test;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
- * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getHistograms
+ * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getBrowserCommandLine
  * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
@@ -32,9 +32,7 @@ public class BrowserCommandLineCDPTest extends BaseCdpTest {
 	private static List<String> results;
 
 	@Test
-	public void test1() {
-		// Arrange
-		driver.get(url);
+	public void test() {
 		// Act
 		result = driver.executeCdpCommand(command, new HashMap<>());
 		// Assert
