@@ -8,23 +8,14 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.WebDriverException;
-
-import com.google.gson.Gson;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -44,6 +35,14 @@ public class PageNavigationHistoryCDPTest extends BaseCdpTest {
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> params = new HashMap<>();
 
+	@Before
+	public void before() {
+		// Arrange
+		for (String url : urls)
+			driver.get(url);
+
+	}
+
 	@After
 	public void after() {
 		// Arrange
@@ -55,9 +54,6 @@ public class PageNavigationHistoryCDPTest extends BaseCdpTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
-		// Arrange
-		for (String url : urls)
-			driver.get(url);
 		// Act
 		result = driver.executeCdpCommand(command, new HashMap<>());
 		System.err.println(result);
