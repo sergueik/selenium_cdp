@@ -11,15 +11,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v100.dom.DOM;
-import org.openqa.selenium.devtools.v100.dom.model.BackendNodeId;
-import org.openqa.selenium.devtools.v100.dom.model.NodeId;
-import org.openqa.selenium.devtools.v100.dom.model.RGBA;
-import org.openqa.selenium.devtools.v100.overlay.Overlay;
-import org.openqa.selenium.devtools.v100.page.Page;
-import org.openqa.selenium.devtools.v100.page.model.Frame;
-import org.openqa.selenium.devtools.v100.page.model.FrameId;
-import org.openqa.selenium.devtools.v100.page.model.FrameTree;
+import org.openqa.selenium.devtools.v101.dom.DOM;
+import org.openqa.selenium.devtools.v101.dom.model.BackendNodeId;
+import org.openqa.selenium.devtools.v101.dom.model.NodeId;
+import org.openqa.selenium.devtools.v101.dom.model.RGBA;
+import org.openqa.selenium.devtools.v101.overlay.Overlay;
+import org.openqa.selenium.devtools.v101.page.Page;
+import org.openqa.selenium.devtools.v101.page.model.Frame;
+import org.openqa.selenium.devtools.v101.page.model.FrameId;
+import org.openqa.selenium.devtools.v101.page.model.FrameTree;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

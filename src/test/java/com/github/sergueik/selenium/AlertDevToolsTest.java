@@ -15,9 +15,9 @@ import org.junit.Test;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import org.openqa.selenium.devtools.v100.page.Page;
-import org.openqa.selenium.devtools.v100.page.model.JavascriptDialogClosed;
-import org.openqa.selenium.devtools.v100.page.model.JavascriptDialogOpening;
+import org.openqa.selenium.devtools.v101.page.Page;
+import org.openqa.selenium.devtools.v101.page.model.JavascriptDialogClosed;
+import org.openqa.selenium.devtools.v101.page.model.JavascriptDialogOpening;
 
 /**
  * 
