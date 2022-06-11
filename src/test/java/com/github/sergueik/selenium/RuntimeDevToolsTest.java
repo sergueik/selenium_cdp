@@ -95,7 +95,7 @@ public class RuntimeDevToolsTest {
 			expression = "var y = 123; y;";
 
 			EvaluateResponse response = chromeDevTools
-					.send(Runtime.evaluate(expression, Optional.of(""), // objectGroup
+					.send(Runtime.evaluate(expression, Optional.ofNullable(null), // objectGroup
 							Optional.of(false), // includeCommandLineAPI
 							Optional.of(false), // silent
 							Optional.of(new ExecutionContextId(100)), // contextId
@@ -108,7 +108,7 @@ public class RuntimeDevToolsTest {
 							Optional.of(false), // disableBreaks
 							Optional.of(false), // replMode
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP
-							Optional.of("") // uniqueContextId
+							Optional.ofNullable(null) // uniqueContextId
 			));
 			// org.openqa.selenium.devtools.DevToolsException:
 			// {"id":6,"error":{"code":-32602,"message":"Invalid
@@ -198,7 +198,7 @@ public class RuntimeDevToolsTest {
 			expression = "var y = 123; y;";
 
 			EvaluateResponse response = chromeDevTools
-					.send(Runtime.evaluate(expression, Optional.of(""), // objectGroup
+					.send(Runtime.evaluate(expression, Optional.ofNullable(null), // objectGroup
 							Optional.of(false), // includeCommandLineAPI
 							Optional.of(false), // silent
 							Optional.of(new ExecutionContextId(0)), // contextId
@@ -228,7 +228,7 @@ public class RuntimeDevToolsTest {
 			expression = "var y = 123; y;";
 
 			EvaluateResponse response = chromeDevTools
-					.send(Runtime.evaluate(expression, Optional.of(""), // objectGroup
+					.send(Runtime.evaluate(expression, Optional.ofNullable(null), // objectGroup
 							Optional.of(false), // includeCommandLineAPI
 							Optional.of(false), // silent
 							Optional.of(new ExecutionContextId(0)), // contextId,
