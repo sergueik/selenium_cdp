@@ -720,7 +720,8 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
   * BiDi - The future of cross-browser automation [blog](https://developer.chrome.com/blog/webdriver-bidi/)
   * BiDirectional functionality [official documentation](https://www.selenium.dev/documentation/webdriver/bidirectional/)
   * list of bidi APIs [examples](https://www.selenium.dev/documentation/webdriver/bidirectional/bidi_api)
-
+  * [guide To Java 8 Optional](https://www.baeldung.com/java-optional)
+  * [translation of the guide To Java 8 Optional](https://habr.com/ru/post/658457/)(in Russian)
 
 ### License
 This project is licensed under the terms of the MIT license.
