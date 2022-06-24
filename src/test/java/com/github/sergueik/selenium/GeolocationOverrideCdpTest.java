@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v102.emulation.Emulation;
+import org.openqa.selenium.devtools.v103.emulation.Emulation;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.google.gson.JsonSyntaxException;

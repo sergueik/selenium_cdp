@@ -1,4 +1,7 @@
 package com.github.sergueik.selenium;
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,13 +24,17 @@ import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v102.page.Page;
-import org.openqa.selenium.devtools.v102.page.Page.PrintToPDFResponse;
+import org.openqa.selenium.devtools.v103.page.Page;
+import org.openqa.selenium.devtools.v103.page.Page.PrintToPDFResponse;
 
 import org.apache.commons.codec.binary.Base64;
 
 import com.google.common.collect.ImmutableMap;
 
+/**
+ * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
+ * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-printToPDF
+ */
 public class PrintToPDFTest {
 
 	private static String magic = null;
@@ -48,15 +55,21 @@ public class PrintToPDFTest {
 	@BeforeClass
 	public static void setUp() throws Exception {
 
-		if (System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
+		if (System.getenv().containsKey("HEADLESS")
+				&& System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
 			runHeadless = true;
 		}
 		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY"))) {
+		if (!(Utils.getOSName().equals("windows"))
+				&& !(System.getenv().containsKey("DISPLAY"))) {
 			runHeadless = true;
 		}
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+		System
+				.setProperty("webdriver.chrome.driver",
+						Paths.get(System.getProperty("user.home"))
+								.resolve("Downloads").resolve(osName.equals("windows")
+										? "chromedriver.exe" : "chromedriver")
+								.toAbsolutePath().toString());
 
 		if (runHeadless) {
 			ChromeOptions options = new ChromeOptions();
@@ -92,16 +105,26 @@ public class PrintToPDFTest {
 		driver.get(baseURL);
 	}
 
+	//
 	@Test
 	public void test1() {
+		//
+		transferMode = Page.PrintToPDFTransferMode.RETURNASBASE64;
 		// Act
-		response = chromeDevTools.send(Page.printToPDF(Optional.of(landscape), Optional.of(displayHeaderFooter),
-				Optional.of(printBackground), Optional.of(scale), Optional.empty(), Optional.empty(), Optional.empty(),
-				Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-				Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(transferMode)));
+		response = chromeDevTools.send(Page.printToPDF(Optional.of(landscape),
+				Optional.of(displayHeaderFooter), Optional.of(printBackground),
+				Optional.of(scale), Optional.empty(/* paperWidth */),
+				Optional.empty(/* paperHeight */), Optional.empty(/* marginTop	*/),
+				Optional.empty(/* marginBottom */), Optional.empty(/* marginLeft */),
+				Optional.empty(/* marginRight */), Optional.empty(/* pageRanges */),
+				Optional.empty(/* headerTemplate */),
+				Optional.empty(/* footerTemplate */),
+				Optional.of(true /* preferCSSPageSize */), Optional.of(
+						transferMode /* Allowed Values: ReturnAsBase64, ReturnAsStream */ )));
 		assertThat(response, notNullValue());
 		try {
-			body = new String(Base64.decodeBase64(response.getData().getBytes("UTF8")));
+			body = new String(
+					Base64.decodeBase64(response.getData().getBytes("UTF8")));
 			assertThat(body, notNullValue());
 			magic = body.substring(0, 9);
 			assertThat(magic, containsString("%PDF"));
@@ -124,7 +147,6 @@ public class PrintToPDFTest {
 	 * ImmutableMap.of("marginBottom", null), ImmutableMap.of("marginLeft",
 	 * null), ImmutableMap.of("marginRight", null),
 	 * ImmutableMap.of("pageRanges", null),
-	 * ImmutableMap.of("ignoreInvalidPageRanges", true),
 	 * ImmutableMap.of("headerTemplate", null),
 	 * ImmutableMap.of("footerTemplate", null),
 	 * ImmutableMap.of("preferCSSPageSize", 0), ImmutableMap.of("transferMode",
@@ -135,12 +157,14 @@ public class PrintToPDFTest {
 	@Test
 	public void test2() {
 		// Act
-		response = chromeDevTools.send(new Command<PrintToPDFResponse>("Page.printToPDF",
-				ImmutableMap.of("landscape", landscape), o -> o.read(PrintToPDFResponse.class)));
+		response = chromeDevTools.send(new Command<PrintToPDFResponse>(
+				"Page.printToPDF", ImmutableMap.of("landscape", landscape),
+				o -> o.read(PrintToPDFResponse.class)));
 		assertThat(response, notNullValue());
 
 		try {
-			body = new String(Base64.decodeBase64(response.getData().getBytes("UTF8")));
+			body = new String(
+					Base64.decodeBase64(response.getData().getBytes("UTF8")));
 			assertThat(body, notNullValue());
 			magic = body.substring(0, 9);
 			assertThat(magic, containsString("%PDF"));
@@ -153,12 +177,13 @@ public class PrintToPDFTest {
 
 	@Ignore
 	// Unable to create instance of class
-	// org.openqa.selenium.devtools.v102.page.Page$PrintToPDFResponse
+	// org.openqa.selenium.devtools.v103.page.Page$PrintToPDFResponse
 	@Test
 	public void test4() {
 		// Act
-		response = chromeDevTools.send(new Command<PrintToPDFResponse>("Page.printToPDF",
-				ImmutableMap.of("landscape", landscape), ConverterFunctions.map("data", PrintToPDFResponse.class)));
+		response = chromeDevTools.send(new Command<PrintToPDFResponse>(
+				"Page.printToPDF", ImmutableMap.of("landscape", landscape),
+				ConverterFunctions.map("data", PrintToPDFResponse.class)));
 		assertThat(response, notNullValue());
 
 	}

@@ -18,11 +18,11 @@ import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v102.runtime.Runtime;
-import org.openqa.selenium.devtools.v102.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.v102.runtime.model.ExecutionContextId;
-import org.openqa.selenium.devtools.v102.runtime.model.RemoteObject;
-import org.openqa.selenium.devtools.v102.runtime.model.TimeDelta;
+import org.openqa.selenium.devtools.v103.runtime.Runtime;
+import org.openqa.selenium.devtools.v103.runtime.Runtime.EvaluateResponse;
+import org.openqa.selenium.devtools.v103.runtime.model.ExecutionContextId;
+import org.openqa.selenium.devtools.v103.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.v103.runtime.model.TimeDelta;
 import org.openqa.selenium.json.JsonException;
 
 /**
