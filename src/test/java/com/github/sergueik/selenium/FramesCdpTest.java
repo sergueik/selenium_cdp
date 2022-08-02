@@ -1,4 +1,7 @@
 package com.github.sergueik.selenium;
+/**
+ * Copyright 2021,2022 Serguei Kouzmine
+ */
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,6 +67,7 @@ public class FramesCdpTest extends BaseCdpTest {
 			result = driver.executeCdpCommand(command, new HashMap<>());
 			if (debug)
 				System.err.println("Page.getFrameTree result: " + result);
+			assertThat(result, hasKey("frameTree"));
 			frameTree = (Map<String, Object>) result.get("frameTree");
 			assertThat(frameTree, notNullValue());
 			System.err
@@ -108,7 +112,6 @@ public class FramesCdpTest extends BaseCdpTest {
 				html = (String) result.get("outerHTML");
 				assertThat(html, notNullValue());
 				System.err.println("Frame owner outer HTML: " + html);
-
 			}
 			for (Object childFrame : data3) {
 				data = (Map<String, Object>) childFrame;
@@ -265,4 +268,3 @@ public class FramesCdpTest extends BaseCdpTest {
 		}
 	}
 }
-

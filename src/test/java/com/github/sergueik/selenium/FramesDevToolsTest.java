@@ -1,5 +1,10 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2021,2022 Serguei Kouzmine
+ */
+
+
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
