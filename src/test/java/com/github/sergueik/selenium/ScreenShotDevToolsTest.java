@@ -1,5 +1,8 @@
 package com.github.sergueik.selenium;
 
+/* Copyright 2020,2022 Serguei Kouzmine */
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
@@ -28,6 +32,10 @@ import org.openqa.selenium.devtools.v103.page.Page;
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * see also:
  * https://github.com/rookieInTraining/selenium-cdp-examples/blob/main/src/test/java/com/rookieintraining/cdp/examples/Pages.java
+ * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-getLayoutMetrics
+ * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setDeviceMetricsOverride
+ * https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
+ * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-clearDeviceMetricsOverride
  *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
@@ -36,7 +44,7 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 	private static Page.GetLayoutMetricsResponse layoutMetrics;
 	private static Rect rect;
 	private int width, height;
-	private double deviceScaleFactor = 0.85;
+	private double[] deviceScaleFactors = { 0.85, 0.5, 0.35, 0.25 };
 	private String screenshotFileName = "temp.jpg";
 	private Base64 base64 = new Base64();
 
@@ -47,18 +55,17 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 	}
 
 	@Test
-	// https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-getLayoutMetrics
-	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setDeviceMetricsOverride
-	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
-	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-clearDeviceMetricsOverride
 	public void test1() {
-		screenshotFileName = "test1.jpg";
-		layoutMetrics = chromeDevTools.send(Page.getLayoutMetrics());
-		rect = layoutMetrics.getContentSize();
-		width = rect.getWidth().intValue();
-		height = rect.getHeight().intValue();
-		System.err.println(String.format("Content size: %dx%d", width, height));
-		chromeDevTools.send(
+		for (int cnt = 0; cnt != deviceScaleFactors.length; cnt++) {
+			double deviceScaleFactor = deviceScaleFactors[cnt];
+			screenshotFileName = String.format("test1_%03d.jpg",
+					(int) (100 * deviceScaleFactor));
+			layoutMetrics = chromeDevTools.send(Page.getLayoutMetrics());
+			rect = layoutMetrics.getContentSize();
+			width = rect.getWidth().intValue();
+			height = rect.getHeight().intValue();
+			System.err.println(String.format("Content size: %dx%d", width, height));
+			chromeDevTools.send(
 				// @formatter:off
 				Emulation.setDeviceMetricsOverride(
 					rect.getWidth().intValue(), 
@@ -76,8 +83,8 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 					Optional.empty()
 				)
 				// @formatter:on
-		);
-		String dataString = chromeDevTools.send(
+			);
+			String dataString = chromeDevTools.send(
 				// @formatter:off
 				Page.captureScreenshot(
 						Optional.of(Page.CaptureScreenshotFormat.JPEG), 
@@ -110,18 +117,36 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 		} catch (IOException e) {
 			System.err.println("Exception saving image (ignored): " + e.toString());
 		}
+		}
 	}
 
-	@Test
-	public void test2() {
 
-		screenshotFileName = "test2.jpg";
+	@After
+	public void clearPage() {
 		chromeDevTools.send(CSS.disable());
 		try {
 			chromeDevTools.send(DOM.disable());
 		} catch (DevToolsException e) {
 			// DOM agent hasn't been enabled
 		}
+		driver.get("about:blank");
+	}
+
+	@Test
+	public void test2() {
+
+		screenshotFileName = "test1_100.jpg";
+		chromeDevTools.send(CSS.disable());
+		try {
+			chromeDevTools.send(DOM.disable());
+		} catch (DevToolsException e) {
+			// DOM agent hasn't been enabled
+		}
+		layoutMetrics = chromeDevTools.send(Page.getLayoutMetrics());
+		rect = layoutMetrics.getContentSize();
+		width = rect.getWidth().intValue();
+		height = rect.getHeight().intValue();
+		System.err.println(String.format("Content size: %dx%d", width, height));
 		chromeDevTools.send(
 				// @formatter:off
 				Emulation.setDeviceMetricsOverride(

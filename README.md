@@ -203,10 +203,107 @@ assertThat(response, notNullValue());
 
 ```
 for some calls (but not specifically for `Page.printToPDF`) yet anoher alternavie signature via static method exists
-```
+
+```java
 response = chromeDevTools.send(new Command<PrintToPDFResponse>("Page.printToPDF", ImmutableMap.of("landscape", landscape), ConverterFunctions.map("data", PrintToPDFResponse.class)));
 
 ```
+#### Zoom the Browser window
+
+in additon to *legacy*-like keyboard zoom, the CDP supports `Page.setDeviceMetricsOverride` [method](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-setDeviceMetricsOverride) and `Emulation.setDeviceMetricsOverride` [method](https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setDeviceMetricsOverride): 
+
+```java
+  @Before
+  public void before() throws Exception {
+    baseURL = "https://www.wikipedia.org";
+    driver.get(baseURL);
+  }
+
+  @Test
+  public void test1() {
+    for (int cnt = 0; cnt != deviceScaleFactors.length; cnt++) {
+      double deviceScaleFactor = deviceScaleFactors[cnt];
+      screenshotFileName = String.format("test1_%03d.jpg",
+          (int) (100 * deviceScaleFactor));
+      layoutMetrics = chromeDevTools.send(Page.getLayoutMetrics());
+      rect = layoutMetrics.getContentSize();
+      width = rect.getWidth().intValue();
+      height = rect.getHeight().intValue();
+      System.err.println(String.format("Content size: %dx%d", width, height));
+      chromeDevTools.send(
+        // @formatter:off
+        Emulation.setDeviceMetricsOverride(
+          rect.getWidth().intValue(), 
+          rect.getHeight().intValue(),
+          deviceScaleFactor, 
+          false, 
+          Optional.empty(), 
+          Optional.empty(),
+          Optional.empty(), 
+          Optional.empty(), 
+          Optional.empty(), 
+          Optional.empty(),
+          Optional.empty(), 
+          Optional.empty(), 
+          Optional.empty()
+        )
+        // @formatter:on
+      );
+      String dataString = chromeDevTools.send(
+        // @formatter:off
+        Page.captureScreenshot(
+            Optional.of(Page.CaptureScreenshotFormat.JPEG), 
+            Optional.of(100),
+            Optional.empty(), 
+            Optional.of(true), 
+            Optional.of(true)
+        )
+        // @formatter:off
+    );
+    chromeDevTools.send(Emulation.clearDeviceMetricsOverride());
+
+    byte[] image = base64.decode(dataString);
+    try {
+      BufferedImage o = ImageIO.read(new ByteArrayInputStream(image));
+      System.err.println(String.format("Screenshot dimensions: %dx%d",
+          o.getWidth(), o.getHeight()));
+      assertThat((int) (width * deviceScaleFactor) - o.getWidth(),
+          not(greaterThan(2)));
+      assertThat((int) (height * deviceScaleFactor) - o.getHeight(),
+          not(greaterThan(2)));
+    } catch (IOException e) {
+      System.err.println("Exception loading image (ignored): " + e.toString());
+    }
+    try {
+      FileOutputStream fileOutputStream = new FileOutputStream(
+          screenshotFileName);
+      fileOutputStream.write(image);
+      fileOutputStream.close();
+    } catch (IOException e) {
+      System.err.println("Exception saving image (ignored): " + e.toString());
+    }
+    }
+  }
+
+
+@After
+public void clearPage() {
+  chromeDevTools.send(CSS.disable());
+  try {
+    chromeDevTools.send(DOM.disable());
+  } catch (DevToolsException e) {
+    // DOM agent hasn't been enabled
+  }
+  driver.get("about:blank");
+}
+
+```
+this test gets gradually magnified out page screen shots:
+
+![capture-multi-zoom.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/capture-multi-zoom.png)
+
+
+
 #### Filter URL
 ![xhr_logged_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/filtering-on_capture.jpg)
 Bandwidth improving filtering of certain mask URLs
