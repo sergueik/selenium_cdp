@@ -303,7 +303,79 @@ this test gets gradually magnified out page screen shots:
 ![capture-multi-zoom.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/capture-multi-zoom.png)
 
 
+alternatively use CDP commands for the same:
+```java
+  @SuppressWarnings("unchecked")
+  @Test
+  public void test() {
+    // Assert
+    params = new HashMap<>();
+    for (int cnt = 0; cnt != deviceScaleFactors.length; cnt++) {
+      double deviceScaleFactor = deviceScaleFactors[cnt];
+      filename = String.format("test2_%03d.jpg",
+          (int) (100 * deviceScaleFactor));
 
+      try {
+        command = "Page.getLayoutMetrics";
+        result = driver.executeCdpCommand(command, new HashMap<>());
+        System.err
+            .println("Page.getLayoutMetrics: " + result.get("contentSize"));
+        rect = (Map<String, Long>) result.get("contentSize");
+        height = rect.get("height");
+        width = rect.get("width");
+        command = "Emulation.setDeviceMetricsOverride";
+        // Act
+        System.err.println(String.format("Scaling to %02d%% %s",
+            (int) (100 * deviceScaleFactor), filename));
+        params.clear();
+        params.put("deviceScaleFactor", deviceScaleFactor);
+        params.put("width", width);
+        params.put("height", height);
+        params.put("mobile", false);
+        params.put("scale", 1);
+        driver.executeCdpCommand(command, params);
+
+        Utils.sleep(delay);
+        command = "Page.captureScreenshot";
+        // Act
+        result = driver.executeCdpCommand(command,
+            new HashMap<String, Object>());
+
+        command = "Emulation.clearDeviceMetricsOverride";
+        driver.executeCdpCommand(command, new HashMap<String, Object>());
+
+        // Assert
+        assertThat(result, notNullValue());
+        assertThat(result, hasKey("data"));
+        dataString = (String) result.get("data");
+        assertThat(dataString, notNullValue());
+
+        byte[] image = base64.decode(dataString);
+        BufferedImage o = ImageIO.read(new ByteArrayInputStream(image));
+        assertThat(o.getWidth(), greaterThan(0));
+        assertThat(o.getHeight(), greaterThan(0));
+        FileOutputStream fileOutputStream = new FileOutputStream(filename);
+        fileOutputStream.write(image);
+        fileOutputStream.close();
+      } catch (IOException e) {
+        System.err.println("Exception saving image (ignored): " + e.toString());
+      } catch (JsonSyntaxException e) {
+        System.err.println("JSON Syntax exception in " + command
+            + " (ignored): " + e.toString());
+      } catch (WebDriverException e) {
+        // willbe thrown if the required arguments are not provided.
+        // TODO: add failing test
+        System.err.println(
+            "Web Driver exception in " + command + " (ignored): " + Utils
+                .processExceptionMessage(e.getMessage() + "  " + e.toString()));
+      } catch (Exception e) {
+        System.err.println("Exception in " + command + "  " + e.toString());
+        throw (new RuntimeException(e));
+      }
+    }
+  }
+
+```
 #### Filter URL
 ![xhr_logged_capture.png](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/filtering-on_capture.jpg)
 Bandwidth improving filtering of certain mask URLs
