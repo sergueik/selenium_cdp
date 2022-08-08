@@ -891,7 +891,8 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
   * list of bidi APIs [examples](https://www.selenium.dev/documentation/webdriver/bidirectional/bidi_api)
   * [guide To Java 8 Optional](https://www.baeldung.com/java-optional)
   * [translation of the guide To Java 8 Optional](https://habr.com/ru/post/658457/)(in Russian)
-
+  * Ferrum - Ruby gem for "high-level" API for CDP backed Chrome browser automation [rubycdp/ferrum](https://github.com/rubycdp/ferrum) repository, [rubygems.org link](https://rubygems.org/gems/ferrum/versions/0.6.2) [documentation translation](https://habr.com/ru/post/681292/) (in Russian)
+  
 ### License
 This project is licensed under the terms of the MIT license.
 
