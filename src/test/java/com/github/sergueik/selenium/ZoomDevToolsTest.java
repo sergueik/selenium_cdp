@@ -15,12 +15,15 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v103.input.Input;
-import org.openqa.selenium.devtools.v103.input.Input.DispatchKeyEventType;
+import org.openqa.selenium.devtools.v104.input.Input;
+import org.openqa.selenium.devtools.v104.input.Input.DispatchKeyEventType;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchKeyEvent * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ * see also:
+ * https://github.com/ChromeDevTools/devtools-protocol/issues/74
+ * https://github.com/puppeteer/puppeteer/blob/main/src/common/Input.ts#L118
  */
 
 public class ZoomDevToolsTest {
@@ -30,11 +33,11 @@ public class ZoomDevToolsTest {
 	private static String osName = Utils.getOSName();
 	private static ChromeDriver driver;
 	private static DevTools chromeDevTools;
-	private static final int modifiers = 4;
+	private static final int modifiers = 2;
 	// Bit field representing pressed modifier keys. Alt=1, Ctrl=2,
 	// Meta/Command=4, Shift=8 (default: 0)
-	// NOTE: 2 does not go
-	private static String baseURL = "about:blank";
+	// NOTE: 2 has no effect
+	private static String baseURL = "https://www.wikipedia.org";
 
 	private static Map<String, Object> headers = new HashMap<>();
 
@@ -93,14 +96,12 @@ public class ZoomDevToolsTest {
 
 	@Test
 	public void zoomTest() {
-		// Assert
-		driver.get("https://www.wikipedia.org");
 		// Act
 		for (int cnt = 0; cnt != 5; cnt++) {
 
 			chromeDevTools.send(Input.dispatchKeyEvent(DispatchKeyEventType.KEYDOWN,
-					Optional.of(modifiers), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.of("U+002D"), Optional.empty(),
+					Optional.of(modifiers), Optional.empty(), Optional.of("-"),
+					Optional.empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(), Optional.empty()));

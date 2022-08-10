@@ -26,6 +26,9 @@ import com.google.gson.JsonSyntaxException;
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
  * https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchKeyEvent
+ * see also:
+ * https://github.com/ChromeDevTools/devtools-protocol/issues/74
+ * https://github.com/puppeteer/puppeteer/blob/main/src/common/Input.ts#L118
  */
 
 public class ZoomCdpTest {
@@ -58,7 +61,7 @@ public class ZoomCdpTest {
 
 	private static WebElement element = null;
 	private static By locator = null;
-	private static String baseURL = "about:blank";
+	private static String baseURL = "https://www.wikipedia.org";
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -164,21 +167,22 @@ public class ZoomCdpTest {
 	// https://chromedevtools.github.io/devtools-protocol/1-2/Input/#method-dispatchKeyEvent
 	public void zoomDefaultTest() {
 		// Assert
-		driver.get("https://www.wikipedia.org");
+
 		command = "Input.dispatchKeyEvent";
 		try {
 			// Act
 			for (int cnt = 0; cnt != 3; cnt++) {
 				params.clear();
-				params.put("type", "char");
-				params.put("keyIdentifier", "U+002D"); // minus
+				params.put("type", "keyDown");
+				// params.put("keyIdentifier", "U+002D"); // minus
 				params.put("modifiers", modifiers);
-				// params.put("text", "-");
+				params.put("text", "-");
+				params.put("windowsVirtualKeyCode", 189);
 				driver.executeCdpCommand(command, params);
 				Utils.sleep(delay);
 			}
 			params.clear();
-			params.put("type", "rawKeyDown");
+			params.put("type", "keyDown");
 			// keyDown, keyUp, rawKeyDown, char
 			params.put("text", "0");
 			params.put("modifiers", modifiers);
