@@ -17,7 +17,7 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
-
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -44,15 +44,18 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 	private static By locator = By
 			.cssSelector("div[class *='widget-mylocation-button-icon-common']");
 	private static String data = null;
-	private static Double latitude = 37.422290;
-	private static Double longitude = -122.084057;
-	private static long accuracy = 100;
 
-	@Ignore
+	@Before
+	public void beforeTest() {
+		// Arrange
+		setLocation();
+
+	}
+
+	// @Ignore
 	@Test
 	public void test1() {
 		// Act
-		setLocation();
 		baseURL = "https://www.google.com/maps";
 		driver.get(baseURL);
 		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
@@ -93,11 +96,10 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 		}
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test3() {
 		// Act
-		setLocation();
 		baseURL = "https://www.iplocation.net";
 		driver.get(baseURL);
 		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
@@ -114,7 +116,6 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 	@Test
 	public void test4() {
 		// Act
-		setLocation();
 		baseURL = "https://mycurrentlocation.net";
 		driver.get(baseURL);
 		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
@@ -127,17 +128,15 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 		System.err.println(element.getText());
 	}
 
-	@Test
-	public void test5() {
-		// Act
-		// this line will disappear from the log, at least on Windows host
-		System.err.print("test 5 check");
+	private void setLocation(Double latitude, Double longitude, long accuracy) {
+		chromeDevTools.send(Emulation.setGeolocationOverride(Optional.of(latitude),
+				Optional.of(longitude), Optional.of(accuracy)));
 	}
 
 	private void setLocation() {
-		chromeDevTools.send(Emulation.setGeolocationOverride(Optional.of(latitude),
-				Optional.of(longitude), Optional.of(accuracy)));
-
+		final Double latitude = 37.422290;
+		final Double longitude = -122.084057;
+		final long accuracy = 100;
+		setLocation(latitude, longitude, accuracy);
 	}
-
 }

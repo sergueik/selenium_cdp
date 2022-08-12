@@ -20,7 +20,7 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
-
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -48,11 +48,15 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 	private static By locator = By
 			.cssSelector("div[class *='widget-mylocation-button-icon-common']");
 	private static String data = null;
-	private static Double latitude = 37.422290;
-	private static Double longitude = -122.084057;
-	private static long accuracy = 100;
 
-	@Ignore
+	@Before
+	public void beforeTest() {
+		// Arrange
+		setLocation();
+
+	}
+
+	// @Ignore
 	@Test
 	// based on:
 	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setGeolocationOverride
@@ -65,8 +69,6 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-clearDeviceMetricsOverride
 	public void test1() {
 
-		// Arrange
-		setLocation();
 		try {
 			// Act
 
@@ -106,9 +108,10 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 					.println("Exception saving image file (ignored): " + e.toString());
 		} catch (JsonSyntaxException e) {
 			System.err.println("JSON Syntax exception in " + command + " (ignored): "
-					+ e.toString());
+					+ Utils.processExceptionMessage(e.getMessage()));
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
+					+ e.toString() + " " + "message: "
 					+ Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			System.err.println("Exception in " + command + "  " + e.toString());
@@ -117,10 +120,9 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 		// Assert
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test2() {
-		setLocation();
 		baseURL = "https://www.iplocation.net";
 		driver.get(baseURL);
 		locator = By
@@ -132,7 +134,6 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 
 	@Test
 	public void test3() {
-		setLocation();
 		baseURL = "https://mycurrentlocation.net";
 		driver.get(baseURL);
 		locator = By.cssSelector(".location-intro");
@@ -143,6 +144,13 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 	}
 
 	private void setLocation() {
+		final Double latitude = 37.422290;
+		final Double longitude = -122.084057;
+		final long accuracy = 100;
+		setLocation(latitude, longitude, accuracy);
+	}
+
+	private void setLocation(Double latitude, Double longitude, long accuracy) {
 		params.put("latitude", latitude);
 		params.put("longitude", longitude);
 		params.put("accuracy", accuracy);
@@ -156,7 +164,7 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 			// Act
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
-					+ Utils.processExceptionMessage(e.getMessage()));
+					+ "message: " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			System.err.println("Exception in " + command + "  " + e.toString());
 			throw (new RuntimeException(e));
