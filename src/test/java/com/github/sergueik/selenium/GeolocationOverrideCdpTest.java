@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +30,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.v103.emulation.Emulation;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -45,14 +47,21 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 	private static Map<String, Object> params = new HashMap<>();
 
 	private static WebElement element = null;
+	private static WebDriverWait wait;
+	private static int flexibleWait = 60;
+	private static int pollingInterval = 500;
+	// private static By locator = By
+	// .cssSelector("button[aria-label='Show Your Location']");
 	private static By locator = By
-			.cssSelector("div[class *='widget-mylocation-button-icon-common']");
+			.cssSelector("div[jsaction*='mouseover:mylocation.main']");
 	private static String data = null;
 
 	@Before
 	public void beforeTest() {
 		// Arrange
 		setLocation();
+		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
+		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 
 	}
 
@@ -76,7 +85,6 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 			driver.get(baseURL);
 
 			// click "my location" button when drawn
-
 			element = wait
 					.until(ExpectedConditions.visibilityOfElementLocated(locator));
 			element.click();

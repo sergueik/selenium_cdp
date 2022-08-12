@@ -38,18 +38,22 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 
 	private static WebElement element = null;
 	private static WebDriverWait wait;
-	private static int flexibleWait = 10;
+	private static int flexibleWait = 60;
 	private static int pollingInterval = 500;
 
+	// private static By locator = By
+	// .cssSelector("button[aria-label='Show Your Location']");
 	private static By locator = By
-			.cssSelector("div[class *='widget-mylocation-button-icon-common']");
+			.cssSelector("div[jsaction*='mouseover:mylocation.main']");
+
 	private static String data = null;
 
 	@Before
 	public void beforeTest() {
 		// Arrange
 		setLocation();
-
+		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
+		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 	}
 
 	// @Ignore
@@ -58,10 +62,11 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 		// Act
 		baseURL = "https://www.google.com/maps";
 		driver.get(baseURL);
-		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
-		wait.pollingEvery(Duration.ofMillis(pollingInterval));
-		locator = By
-				.cssSelector("div[class *='widget-mylocation-button-icon-common']");
+		// click "my location" button when drawn
+
+		// fails with timeout here, but not in CDP Test
+		// element = driver.findElement(locator);
+
 		element = wait
 				.until(ExpectedConditions.visibilityOfElementLocated(locator));
 		element.click();
