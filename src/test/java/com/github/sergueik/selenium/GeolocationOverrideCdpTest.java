@@ -21,6 +21,7 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -65,7 +66,12 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 
 	}
 
-	// @Ignore
+	@After
+	public void afterTest() {
+		driver.executeCdpCommand("Emulation.clearGeolocationOverride",
+				new HashMap<>());
+	}
+
 	@Test
 	// based on:
 	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setGeolocationOverride
@@ -98,8 +104,8 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 			// Assert
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("data"));
+			assertThat(result.get("data"), notNullValue());
 			data = (String) result.get("data");
-			assertThat(data, notNullValue());
 
 			Base64 base64 = new Base64();
 			byte[] image = base64.decode(data);
@@ -128,18 +134,6 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 		// Assert
 	}
 
-	// @Ignore
-	@Test
-	public void test2() {
-		baseURL = "https://www.iplocation.net";
-		driver.get(baseURL);
-		locator = By
-				.xpath("//table[@class= 'iptable']//*[contains(th, 'IP Location')]");
-		element = wait
-				.until(ExpectedConditions.visibilityOfElementLocated(locator));
-		System.err.println(element.getText());
-	}
-
 	@Test
 	public void test3() {
 		baseURL = "https://mycurrentlocation.net";
@@ -148,7 +142,7 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 		element = wait
 				.until(ExpectedConditions.visibilityOfElementLocated(locator));
 		assertThat(element.getText(), containsString("Mountain View"));
-		System.err.println(element.getText());
+		System.err.println("Location explained: " + element.getText());
 	}
 
 	private void setLocation() {

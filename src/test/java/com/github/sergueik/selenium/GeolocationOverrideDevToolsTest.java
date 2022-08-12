@@ -1,4 +1,4 @@
-package com.github.sergueik.selenium;
+	package com.github.sergueik.selenium;
 /**
  * Copyright 2021,2022 Serguei Kouzmine
  */
@@ -12,11 +12,13 @@ import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -56,7 +58,11 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 	}
 
-	// @Ignore
+	@After
+	public void afterTest() {
+		chromeDevTools.send(Emulation.clearGeolocationOverride());
+	}
+
 	@Test
 	public void test1() {
 		// Act
@@ -103,22 +109,6 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 
 	// @Ignore
 	@Test
-	public void test3() {
-		// Act
-		baseURL = "https://www.iplocation.net";
-		driver.get(baseURL);
-		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
-		wait.pollingEvery(Duration.ofMillis(pollingInterval));
-
-		locator = By
-				.xpath("//table[@class= 'iptable']//*[contains(th, 'IP Location')]");
-		element = wait
-				.until(ExpectedConditions.visibilityOfElementLocated(locator));
-		System.err.println(element.getText());
-	}
-
-	// @Ignore
-	@Test
 	public void test4() {
 		// Act
 		baseURL = "https://mycurrentlocation.net";
@@ -130,7 +120,7 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 		element = wait
 				.until(ExpectedConditions.visibilityOfElementLocated(locator));
 		assertThat(element.getText(), containsString("Mountain View"));
-		System.err.println(element.getText());
+		System.err.println("Location explained: " + element.getText());
 	}
 
 	private void setLocation(Double latitude, Double longitude, long accuracy) {
@@ -144,4 +134,8 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 		final long accuracy = 100;
 		setLocation(latitude, longitude, accuracy);
 	}
+	// Warning: after:
+	// WARNING: Failed to shutdown Driver Command Executor
+	// org.openqa.selenium.WebDriverException: Timed out waiting for driver server
+	// to stop.
 }
