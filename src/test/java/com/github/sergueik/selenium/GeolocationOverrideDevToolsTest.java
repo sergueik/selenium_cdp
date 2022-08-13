@@ -1,4 +1,4 @@
-	package com.github.sergueik.selenium;
+package com.github.sergueik.selenium;
 /**
  * Copyright 2021,2022 Serguei Kouzmine
  */
@@ -33,6 +33,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * see:
+ * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setGeolocationOverride
+ * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-clearGeolocationOverride
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 

@@ -37,7 +37,15 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
- *
+ * based on:
+ * https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
+ * https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/main/java/com/sahajamit/messaging/MessageBuilder.java
+ * see also:
+ * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setGeolocationOverride
+ * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-clearGeolocationOverride
+ * https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
+ * https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#method-getProperties
+ * https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#method-evaluate 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -45,6 +53,7 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 
 	private static String command = null;
 	private static Map<String, Object> result = new HashMap<>();
+	private static Map<String, Object> result2 = new HashMap<>();
 	private static Map<String, Object> params = new HashMap<>();
 
 	private static WebElement element = null;
@@ -73,15 +82,6 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 	}
 
 	@Test
-	// based on:
-	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation#method-setGeolocationOverride
-	// see also:
-	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/test/java/com/sahajamit/DemoTests.java
-	// https://github.com/sahajamit/chrome-devtools-webdriver-integration/blob/master/src/main/java/com/sahajamit/messaging/MessageBuilder.java
-	// https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-getLayoutMetrics
-	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setDeviceMetricsOverride
-	// https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
-	// https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-clearDeviceMetricsOverride
 	public void test1() {
 
 		try {
@@ -143,6 +143,63 @@ public class GeolocationOverrideCdpTest extends BaseCdpTest {
 				.until(ExpectedConditions.visibilityOfElementLocated(locator));
 		assertThat(element.getText(), containsString("Mountain View"));
 		System.err.println("Location explained: " + element.getText());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void test4() {
+		// Arrange
+		driver.executeCdpCommand("Runtime.enable", new HashMap<>());
+
+		driver.get(baseURL);
+		command = "Runtime.evaluate";
+		params = new HashMap<>();
+		params.put("expression",
+				"function example(){ return navigator.geolocation;} example();");
+		result = driver.executeCdpCommand(command, params);
+		System.err.println("Response to " + command + ": " + result);
+		command = "Runtime.getProperties";
+		params = new HashMap<>();
+		result2 = (Map<String, Object>) result.get("result");
+		params.put("objectId", result2.get("objectId").toString());
+		result = driver.executeCdpCommand(command, params);
+		System.err.println("Response to " + command + ": " + result);
+
+		// https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/getCurrentPosition
+		// https://w3c.github.io/geolocation-api/#getcurrentposition-method
+		command = "Runtime.evaluate";
+		params = new HashMap<>();
+		// @formatter:off
+		params.put("expression",
+				"const options = {" 
+						+ " enableHighAccuracy: true," 
+						+ " timeout: 5000,"
+						+ " maximumAge: 0" 
+						+ "};" 
+						+ " function success(pos) {"
+						+ " const crd = pos.coords;"
+						+ "	console.log('Your current position is:');"
+						+ " console.log(`Latitude : ${crd.latitude}`);"
+						+ " console.log(`Longitude: ${crd.longitude}`);"
+						+ " console.log(`More or less ${crd.accuracy} meters.`);" + " }"
+						+ " function error(err) {"
+						+ " console.warn(`ERROR(${err.code}): ${err.message}`);" + " }"
+						+ "function example(){"
+						+ " return navigator.geolocation.getCurrentPosition(success, error, options);} "
+						+ " example();"
+						);
+		// @formatter:on
+		// NOTE: a shorter call, ( still async ) is
+		// as shown in https://www.w3.org/TR/geolocation/
+		/*
+		navigator.geolocation.getCurrentPosition(position => {
+		  const { latitude, longitude } = position.coords;
+		 // provide feedback
+		})
+		*/
+		result = driver.executeCdpCommand(command, params);
+		System.err.println("Response to " + command + ": " + result);
+		Utils.sleep(1000);
 	}
 
 	private void setLocation() {
