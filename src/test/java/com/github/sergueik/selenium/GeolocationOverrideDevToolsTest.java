@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v103.emulation.Emulation;
-import org.openqa.selenium.devtools.v103.page.Page;
+import org.openqa.selenium.devtools.v104.emulation.Emulation;
+import org.openqa.selenium.devtools.v104.page.Page;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
