@@ -40,7 +40,7 @@ public class BasicAuthDevToolsTest extends BaseDevToolsTest {
 			.format("http://httpbin.org/basic-auth/%s/%s", username, password);
 
 	@Test
-	public void test1() throws UnsupportedEncodingException {
+	public void test1() {
 		Predicate<URI> uriPredicate = uri -> uri.getHost().contains("httpbin.org");
 		((HasAuthentication) driver).register(uriPredicate,
 				UsernameAndPassword.of(username, password));

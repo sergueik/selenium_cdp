@@ -73,7 +73,7 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 
 		reqPattern.add(xhrReqPattern);
 		chromeDevTools
-		.send(Fetch.enable(Optional.of(reqPattern), Optional.of(false)));
+				.send(Fetch.enable(Optional.of(reqPattern), Optional.of(false)));
 	}
 
 	@After
@@ -110,6 +110,9 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 									+ (event.getResponseHeaders().isPresent() ? headers : "none")
 									+ "\tresource type: " + event.getResourceType());
 							// always empty
+							// Also possible to work with headers as a map
+							// Map<String, Object> headersJsonMap = event.getRequest()
+							//		.getHeaders().toJson();
 							event.getRequest().getPostData().ifPresent((data) -> {
 								System.err.println("Post Data:\n" + data + "\n");
 							});
