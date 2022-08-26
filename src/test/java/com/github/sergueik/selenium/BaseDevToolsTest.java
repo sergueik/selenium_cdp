@@ -53,6 +53,8 @@ public class BaseDevToolsTest {
 		if (runHeadless) {
 			ChromeOptions options = new ChromeOptions();
 			options.addArguments("--headless", "--disable-gpu");
+			// alternatively,
+	                // options.setHeadless(false)
 			driver = new ChromeDriver(options);
 		} else {
 			driver = new ChromeDriver();
