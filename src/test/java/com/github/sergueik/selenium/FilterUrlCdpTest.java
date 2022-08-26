@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.greaterThan;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.CoreMatchers.containsString;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
@@ -27,10 +29,12 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.imageio.ImageIO;
@@ -95,9 +99,6 @@ public class FilterUrlCdpTest extends BaseCdpTest {
 		String[] urls = new String[] {};
 		params.put("urls", urls);
 		driver.executeCdpCommand(command, params);
-		command = "Network.enable";
-		params = new HashMap<>();
-		driver.executeCdpCommand(command, params);
 		command = "Network.disable";
 		driver.executeCdpCommand(command, new HashMap<>());
 		params = new HashMap<>();
@@ -106,6 +107,7 @@ public class FilterUrlCdpTest extends BaseCdpTest {
 		driver.executeCdpCommand(command, params);
 	}
 
+	// @Ignore
 	// see also:
 	// https://github.com/adiohana/selenium-chrome-devtools-examples/blob/master/src/test/java/ChromeDevToolsTest.java
 	@Test
@@ -168,6 +170,38 @@ public class FilterUrlCdpTest extends BaseCdpTest {
 			throw (new RuntimeException(e));
 		}
 
+	}
+
+	@Test
+	public void test2() {
+		driver.get(Utils.getPageContent("ng_basic.htm"));
+		WebElement element = wait
+				.until(ExpectedConditions.visibilityOf(driver.findElement(
+						By.cssSelector("body > table > tbody > tr > td:nth-child(1)"))));
+		assertThat(element.getText(), containsString("A1"));
+		System.err.println(element.getText());
+
+	}
+
+	@Test
+	public void test3() {
+		params = new HashMap<>();
+		String[] urls = new String[] { "*.js" };
+		params.put("urls", urls);
+		command = "Network.setBlockedURLs";
+		driver.executeCdpCommand(command, params);
+		command = "Network.clearBrowserCache";
+		driver.executeCdpCommand(command, new HashMap<>());
+		params = new HashMap<>();
+		params.put("cacheDisabled", true);
+		command = "Network.setCacheDisabled";
+		driver.executeCdpCommand(command, params);
+		driver.get(Utils.getPageContent("ng_basic.htm"));
+		WebElement element = wait
+				.until(ExpectedConditions.visibilityOf(driver.findElement(
+						By.cssSelector("body > table > tbody > tr > td:nth-child(1)"))));
+		assertThat(element.getText(), containsString("{{item.a}}"));
+		System.err.println(element.getText());
 	}
 
 }
