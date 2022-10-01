@@ -19,7 +19,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.idealized.Network.UserAgent;
 //import org.openqa.selenium.devtools.Console;
 // import org.openqa.selenium.devtools.Log;
-import org.openqa.selenium.devtools.v104.network.Network;
+import org.openqa.selenium.devtools.v105.network.Network;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

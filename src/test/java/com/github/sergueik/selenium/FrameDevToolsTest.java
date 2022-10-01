@@ -9,12 +9,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.devtools.v104.fetch.Fetch;
-import org.openqa.selenium.devtools.v104.page.Page;
-import org.openqa.selenium.devtools.v104.page.model.Frame;
-import org.openqa.selenium.devtools.v104.page.model.FrameNavigated;
-import org.openqa.selenium.devtools.v104.page.model.JavascriptDialogOpening;
-import org.openqa.selenium.devtools.v104.page.model.FrameAttached;
+import org.openqa.selenium.devtools.v105.fetch.Fetch;
+import org.openqa.selenium.devtools.v105.page.Page;
+import org.openqa.selenium.devtools.v105.page.model.Frame;
+import org.openqa.selenium.devtools.v105.page.model.FrameNavigated;
+import org.openqa.selenium.devtools.v105.page.model.JavascriptDialogOpening;
+import org.openqa.selenium.devtools.v105.page.model.FrameAttached;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
