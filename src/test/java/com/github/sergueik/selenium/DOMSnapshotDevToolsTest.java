@@ -45,7 +45,7 @@ import org.openqa.selenium.devtools.v105.browser.model.Histogram;
 
 public class DOMSnapshotDevToolsTest extends BaseDevToolsTest {
 
-	private final static String baseURL = "https://www.wikipedia.org";
+	private final static String baseURL = "http://www.java2s.com"; // "https://www.wikipedia.org";
 
 	@After
 	public void afterTest() {
@@ -59,9 +59,6 @@ public class DOMSnapshotDevToolsTest extends BaseDevToolsTest {
 		driver.get(baseURL);
 	}
 
-	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowBounds
-	// @Ignore
-	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
 		DOMSnapshot.CaptureSnapshotResponse results = chromeDevTools
@@ -73,7 +70,7 @@ public class DOMSnapshotDevToolsTest extends BaseDevToolsTest {
 		List<String> strings = results.getStrings();
 		String title = strings.get((int) Long.parseLong(index.toString()));
 		System.err.println(
-				"Page Title index: " + index + " value: " + strings.get((int) Long.parseLong(index.toString())));
+				"Page Title index: " + index + " value: " + title);
 
 	}
 

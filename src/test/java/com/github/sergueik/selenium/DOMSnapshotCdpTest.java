@@ -30,6 +30,7 @@ import com.google.gson.JsonSyntaxException;
  * https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot/#type-DocumentSnapshot
  * https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot/#type-NodeTreeSnapshot
  * https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot/#type-LayoutTreeSnapshot
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot/#type-TextBoxSnapshot
  * see also:
  * https://stackoverflow.com/questions/58099695/is-there-a-way-in-hamcrest-to-test-for-a-value-to-be-a-number
  *
@@ -45,21 +46,19 @@ public class DOMSnapshotCdpTest extends BaseCdpTest {
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
 	private static Map<String, Object> data2 = new HashMap<>();
-	private final static String baseURL = "https://www.wikipedia.org";
+	private final static String baseURL = "http://www.java2s.com"; // "https://www.wikipedia.org";
 
 	@After
 	public void afterTest() {
 		command = "DOMSnapshot.disable";
-		params = new HashMap<String, Object>();
-		result = driver.executeCdpCommand(command, params);
+		driver.executeCdpCommand(command, new HashMap<String, Object>());
 		driver.get("about:blank");
 	}
 
 	@Before
 	public void beforeTest() {
 		command = "DOMSnapshot.enable";
-		params = new HashMap<String, Object>();
-		result = driver.executeCdpCommand(command, params);
+		driver.executeCdpCommand(command, new HashMap<String, Object>());
 		driver.get(baseURL);
 	}
 
@@ -94,6 +93,17 @@ public class DOMSnapshotCdpTest extends BaseCdpTest {
 			data2 = (Map<String, Object>) data.get("nodes");
 			for (String field : Arrays.asList(new String[] { "nodeName", "nodeValue", "nodeType", "attributes",
 					"currentSourceURL", "originURL" })) {
+				assertThat(data2, hasKey(field));
+			}
+			data2 = (Map<String, Object>) data.get("layout");
+			for (String field : Arrays.asList(new String[] { "nodeIndex", "styles", "text", "bounds", /*
+																										 * "offsetRects",
+																										 */
+					"scrollRects", "clientRects", "stackingContexts" })) {
+				assertThat(data2, hasKey(field));
+			}
+			data2 = (Map<String, Object>) data.get("textBoxes");
+			for (String field : Arrays.asList(new String[] { "start", "length", "bounds", "layoutIndex" })) {
 				assertThat(data2, hasKey(field));
 			}
 			long index = (long) data.get("title");
