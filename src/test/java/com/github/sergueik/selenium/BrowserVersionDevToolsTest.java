@@ -80,11 +80,15 @@ public class BrowserVersionDevToolsTest extends BaseDevToolsTest {
 	public void test4() {
 
 		// Act
-		// NOTE: there is no "org.openqa.selenium.devtools.v105.browser.Version"
-		// class
 		response = chromeDevTools.send(new Command<GetVersionResponse>("Browser.getVersion", ImmutableMap.of(),
 				ConverterFunctions.map("getVersionResponse", GetVersionResponse.class)));
 		assertThat(response, notNullValue());
+		assertThat(response.getProduct(), notNullValue());
+		assertThat(response.getRevision(), notNullValue());
+		assertThat(response.getProtocolVersion(), notNullValue());
+		assertThat(response.getUserAgent(), notNullValue());
+		assertThat(response.getJsVersion(), notNullValue());
+		
 	}
 
 }

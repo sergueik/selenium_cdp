@@ -134,10 +134,8 @@ public class WindowSizeDevToolsTest extends BaseDevToolsTest {
 
 		} catch (DevToolsException e) {
 			/*
-			 * DevToolsException exception in test5 (ignored): {"id":11,"error":{"code":-32000,
-			"message":"The 'minimized', 'maximized' and 'fullscreen' states cannot be combin
-			ed with 'left', 'top', 'width' or 'height'"},"sessionId":"DBB8A2BC3A6EDBB228EEA5
-			E26F34D42D"}
+			 * DevToolsException exception in test5 (ignored): {"id":11,"error":{"code":-32000, "message":"The 'minimized', 'maximized' and 'fullscreen' states cannot be combined with 'left', 'top', 'width' or 'height'"},
+			 * "sessionId":"DBB8A2BC3A6EDBB228EEA5E26F34D42D"}
 			 */
 			System.err.println("DevToolsException exception " + "in test5"
 					+ " (ignored): " + Utils.processExceptionMessage(e.getMessage()));

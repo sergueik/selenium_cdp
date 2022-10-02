@@ -133,8 +133,11 @@ public class WindowSizeCdpTest {
 
 			data = (Map<String, Object>) result.get("bounds");
 			assertThat(data, notNullValue());
-			assertThat(data, hasKey("width"));
-			assertThat(data, hasKey("height"));
+			for (String field : Arrays.asList(new String[] { "left", "top",
+					"width", "height", "windowState" })) {
+				assertThat(data, hasKey(field));
+			}
+
 			int width = Integer.parseInt(data.get("width").toString());
 			assertThat(String.format("Expected screen width: %d", customWidth), width,
 					is(customWidth));
@@ -207,6 +210,13 @@ public class WindowSizeCdpTest {
 		}
 	}
 
+	// TODO: for Java 11
+	// sudo apt install openjdk-11-jdk
+	// otherwise tests will fail with
+	// java.lang.UnsatisfiedLinkError: 
+	// Can't load library: /usr/lib/jvm/java-11-openjdk-amd64/lib/libawt_xawt.so
+	// and
+	// java.lang.NoClassDefFoundError: Could not initialize class javax.imageio.ImageIO
 	@Test
 	public void evaluateSizeTest() {
 		page = "fixed_size_page.html";
