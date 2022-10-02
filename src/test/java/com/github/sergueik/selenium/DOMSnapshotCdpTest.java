@@ -1,48 +1,37 @@
 package com.github.sergueik.selenium;
 
-import static org.hamcrest.CoreMatchers.is;
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
+
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
-import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.codec.binary.Base64;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
- * by https://toster.ru/q/653249?e=7897302#comment_1962398
+ * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot/#method-disable
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot/#method-enable
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot/#method-captureSnapshot
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot/#type-DocumentSnapshot
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot/#type-NodeTreeSnapshot
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot/#type-LayoutTreeSnapshot
+ * see also:
+ * https://stackoverflow.com/questions/58099695/is-there-a-way-in-hamcrest-to-test-for-a-value-to-be-a-number
  *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
@@ -50,11 +39,12 @@ import com.google.gson.JsonSyntaxException;
 
 public class DOMSnapshotCdpTest extends BaseCdpTest {
 
-	private static String page = null;
 	private static String command = null;
+	private static List<Object> documents = new ArrayList<Object>();
 	private static Map<String, Object> params = new HashMap<>();
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
+	private static Map<String, Object> data2 = new HashMap<>();
 	private final static String baseURL = "https://www.wikipedia.org";
 
 	@After
@@ -83,26 +73,37 @@ public class DOMSnapshotCdpTest extends BaseCdpTest {
 			// Act
 			command = "DOMSnapshot.captureSnapshot";
 			params = new HashMap<String, Object>();
-			result = driver.executeCdpCommand(command, params);
-			command = "DOMSnapshot.enable";
-			params = new HashMap<String, Object>();
+			params.put("computedStyles", new ArrayList());
 			result = driver.executeCdpCommand(command, params);
 			// Assert
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("documents"));
-
-			data = (Map<String, Object>) result.get("documents");
 			// documents - the nodes in the DOM tree. The DOMNode at index 0 corresponds to
 			// the root document.
+			documents = (List<Object>) result.get("documents");
+
+			data = (Map<String, Object>) documents.get(0);
+
 			assertThat(data, notNullValue());
 
 			for (String field : Arrays.asList(new String[] { "documentURL", "title", "baseURL", "contentLanguage",
-					"NodeTreeSnapshot", "nodes", "layout", "textBoxes", "contentWidth" })) {
+					"encodingName", "publicId", "systemId", "frameId", "nodes", "layout", "textBoxes", "scrollOffsetX",
+					"scrollOffsetY", "contentWidth", "contentHeight" })) {
 				assertThat(data, hasKey(field));
 			}
+			data2 = (Map<String, Object>) data.get("nodes");
+			for (String field : Arrays.asList(new String[] { "nodeName", "nodeValue", "nodeType", "attributes",
+					"currentSourceURL", "originURL" })) {
+				assertThat(data2, hasKey(field));
+			}
+			long index = (long) data.get("title");
 			assertThat(result, hasKey("strings"));
-			List<String>strings = (List<String>)result.get("strings");
+			List<String> strings = (List<String>) result.get("strings");
 
+			assertThat(strings, notNullValue());
+			assertThat(strings.size(), greaterThan((int) index));
+			assertThat(strings.get((int) index), notNullValue());
+			System.err.println("Page Title index: " + index + " value: " + strings.get((int) index));
 		} catch (JsonSyntaxException e) {
 			System.err.println("JSON Syntax exception in " + command + " (ignored): " + e.toString());
 		} catch (WebDriverException e) {
