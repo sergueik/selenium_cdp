@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
 
@@ -59,8 +60,13 @@ public class DOMSnapshotDevToolsTest extends BaseDevToolsTest {
 		driver.get(baseURL);
 	}
 
+	@Ignore
 	@Test
 	public void test() {
+		// org.openqa.selenium.devtools.DevToolsException: Unable to create instance of
+		// class
+		// org.openqa.selenium.devtools.v105.domsnapshot.DOMSnapshot$CaptureSnapshotResponse
+
 		DOMSnapshot.CaptureSnapshotResponse results = chromeDevTools
 				.send(DOMSnapshot.captureSnapshot(new ArrayList<String>(), Optional.of(false), Optional.of(false),
 						Optional.of(false), Optional.of(false)));
@@ -69,8 +75,7 @@ public class DOMSnapshotDevToolsTest extends BaseDevToolsTest {
 		StringIndex index = documentSnapshot.getTitle();
 		List<String> strings = results.getStrings();
 		String title = strings.get((int) Long.parseLong(index.toString()));
-		System.err.println(
-				"Page Title index: " + index + " value: " + title);
+		System.err.println("Page Title index: " + index + " value: " + title);
 
 	}
 
