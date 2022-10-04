@@ -71,7 +71,8 @@ public class DOMSnapshotCdpTest extends BaseCdpTest {
 	// org.openqa.selenium.json.JsonException: Expected to read a NAME but instead
 	// have: START_COLLECTION. Last 128 characters read:
 	// 0,1341,1342,1343,1344,1345,1346,1347,1348,1349,1350,1351,1352,1353,1354,1355,1356,1357,1358,94,1359,1360,1361],"attributes":[[],
-	@Ignore("org.openqa.selenium.json.JsonException: Expected to read a NAME but instead have: START_COLLECTION.")
+	// @Ignore("org.openqa.selenium.json.JsonException: Expected to read a NAME but
+	// instead have: START_COLLECTION.")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test1() {
@@ -104,10 +105,8 @@ public class DOMSnapshotCdpTest extends BaseCdpTest {
 				assertThat(data2, hasKey(field));
 			}
 			data2 = (Map<String, Object>) data.get("layout");
-			for (String field : Arrays.asList(new String[] { "nodeIndex", "styles", "text", "bounds", /*
-																										 * "offsetRects",
-																										 */
-					"scrollRects", "clientRects", "stackingContexts" })) {
+			for (String field : Arrays.asList(new String[] { "nodeIndex", "styles", "text",
+					"bounds" /* , "offsetRects", "scrollRects", "clientRects", "stackingContexts" */ })) {
 				assertThat(data2, hasKey(field));
 			}
 			data2 = (Map<String, Object>) data.get("textBoxes");
