@@ -37,7 +37,6 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
-// https://www.logicalincrements.com/articles/resolution
 
 public class DOMSnapshotCdpTest extends BaseCdpTest {
 
@@ -47,7 +46,7 @@ public class DOMSnapshotCdpTest extends BaseCdpTest {
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
 	private static Map<String, Object> data2 = new HashMap<>();
-	private final static String baseURL = "http://www.java2s.com"; // "https://www.wikipedia.org";
+	private final static String baseURL = "https://www.wikipedia.org";
 
 	@After
 	public void afterTest() {
@@ -63,16 +62,6 @@ public class DOMSnapshotCdpTest extends BaseCdpTest {
 		driver.get(baseURL);
 	}
 
-	// Exception in thread "CDP Connection"
-	// org.openqa.selenium.devtools.DevToolsException: Expected to read a NAME but
-	// instead have: START_COLLECTION. Last 128 characters read:
-	// 0,1341,1342,1343,1344,1345,1346,1347,1348,1349,1350,1351,1352,1353,1354,1355,1356,1357,1358,94,1359,1360,1361],"attributes":[[],
-	// Caused by:
-	// org.openqa.selenium.json.JsonException: Expected to read a NAME but instead
-	// have: START_COLLECTION. Last 128 characters read:
-	// 0,1341,1342,1343,1344,1345,1346,1347,1348,1349,1350,1351,1352,1353,1354,1355,1356,1357,1358,94,1359,1360,1361],"attributes":[[],
-	// @Ignore("org.openqa.selenium.json.JsonException: Expected to read a NAME but
-	// instead have: START_COLLECTION.")
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test1() {

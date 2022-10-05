@@ -24,10 +24,10 @@ import org.openqa.selenium.WebDriverException;
 
 import com.google.gson.JsonSyntaxException;
 
-import org.openqa.selenium.devtools.v105.domsnapshot.DOMSnapshot;
-import org.openqa.selenium.devtools.v105.domsnapshot.model.DocumentSnapshot;
-import org.openqa.selenium.devtools.v105.domsnapshot.model.StringIndex;
-import org.openqa.selenium.devtools.v105.browser.model.Histogram;
+import org.openqa.selenium.devtools.v106.domsnapshot.DOMSnapshot;
+import org.openqa.selenium.devtools.v106.domsnapshot.model.DocumentSnapshot;
+import org.openqa.selenium.devtools.v106.domsnapshot.model.StringIndex;
+import org.openqa.selenium.devtools.v106.browser.model.Histogram;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -60,12 +60,30 @@ public class DOMSnapshotDevToolsTest extends BaseDevToolsTest {
 		driver.get(baseURL);
 	}
 
-	@Ignore
+	// @Ignore("Unable to create instance of class
+	// org.openqa.selenium.devtools.v106.domsnapshot.DOMSnapshot$CaptureSnapshotResponse")
+	// NOTE: pom.xml
+	// org.openqa.selenium.devtools.DevToolsException: Unable to create instance of
+	// class
+	// org.openqa.selenium.devtools.v106.domsnapshot.DOMSnapshot$CaptureSnapshotResponse
+	// Exception in thread "CDP Connection"
+	// org.openqa.selenium.devtools.DevToolsException:
+	// Expected to read a NAME but instead have: START_COLLECTION. Last 128
+	// characters read:
+	// 0,1341,1342,1343,1344,1345,1346,1347,1348,1349,1350,1351,1352,1353,1354,1355,1356,1357,
+	// 1358,94,1359,1360,1361],
+	// "attributes":[[],
+	// on Ubuntu 18.04 the version 106 is not yet available. This leads to the
+	// error:
+	// You are using a no-op implementation of the CDP. The most likely reason for
+	// this is that Selenium was unable to find an implementation of the CDP
+	// protocol that matches your browser. Please be sure to include an
+	// implementation on the classpath, possibly by adding a new (maven) dependency
+	// of `org.seleniumhq.selenium:selenium-devtools-vNN:4.5.0` where `NN` matches
+	// the major version of the browser you're using.(..)
+
 	@Test
 	public void test() {
-		// org.openqa.selenium.devtools.DevToolsException: Unable to create instance of
-		// class
-		// org.openqa.selenium.devtools.v105.domsnapshot.DOMSnapshot$CaptureSnapshotResponse
 
 		DOMSnapshot.CaptureSnapshotResponse results = chromeDevTools
 				.send(DOMSnapshot.captureSnapshot(new ArrayList<String>(), Optional.of(false), Optional.of(false),
