@@ -27,6 +27,7 @@ import com.google.gson.JsonSyntaxException;
 import org.openqa.selenium.devtools.v106.domsnapshot.DOMSnapshot;
 import org.openqa.selenium.devtools.v106.domsnapshot.model.DocumentSnapshot;
 import org.openqa.selenium.devtools.v106.domsnapshot.model.StringIndex;
+import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.v106.browser.model.Histogram;
 
 /**
@@ -63,7 +64,8 @@ public class DOMSnapshotDevToolsTest extends BaseDevToolsTest {
 	// @Ignore("Unable to create instance of class
 	// org.openqa.selenium.devtools.v106.domsnapshot.DOMSnapshot$CaptureSnapshotResponse")
 	// NOTE: pom.xml
-	// org.openqa.selenium.devtools.DevToolsException: Unable to create instance of
+	// org.openqa.selenium.devtools.DevToolsException: Unable to create instance
+	// of
 	// class
 	// org.openqa.selenium.devtools.v106.domsnapshot.DOMSnapshot$CaptureSnapshotResponse
 	// Exception in thread "CDP Connection"
@@ -73,28 +75,36 @@ public class DOMSnapshotDevToolsTest extends BaseDevToolsTest {
 	// 0,1341,1342,1343,1344,1345,1346,1347,1348,1349,1350,1351,1352,1353,1354,1355,1356,1357,
 	// 1358,94,1359,1360,1361],
 	// "attributes":[[],
-	// on Ubuntu 18.04 the version 106 is not yet available. This leads to the
-	// error:
+
+	// NOTE: on Ubuntu 18.04 the version 106 is not yet available.
+	// This illustrates the error this leads to:
 	// You are using a no-op implementation of the CDP. The most likely reason for
 	// this is that Selenium was unable to find an implementation of the CDP
 	// protocol that matches your browser. Please be sure to include an
-	// implementation on the classpath, possibly by adding a new (maven) dependency
+	// implementation on the classpath, possibly by adding a new (maven)
+	// dependency
 	// of `org.seleniumhq.selenium:selenium-devtools-vNN:4.5.0` where `NN` matches
 	// the major version of the browser you're using.(..)
 
-	@Test
+	@Test(expected = DevToolsException.class)
 	public void test() {
+		try {
+			DOMSnapshot.CaptureSnapshotResponse results = chromeDevTools
+					.send(DOMSnapshot.captureSnapshot(new ArrayList<String>(),
+							Optional.of(false), Optional.of(false), Optional.of(false),
+							Optional.of(false)));
+			List<DocumentSnapshot> documentSnapshots = results.getDocuments();
+			DocumentSnapshot documentSnapshot = documentSnapshots.get(0);
+			StringIndex index = documentSnapshot.getTitle();
+			List<String> strings = results.getStrings();
+			String title = strings.get((int) Long.parseLong(index.toString()));
+			System.err.println("Page Title index: " + index + " value: " + title);
+		} catch (DevToolsException e) {
 
-		DOMSnapshot.CaptureSnapshotResponse results = chromeDevTools
-				.send(DOMSnapshot.captureSnapshot(new ArrayList<String>(), Optional.of(false), Optional.of(false),
-						Optional.of(false), Optional.of(false)));
-		List<DocumentSnapshot> documentSnapshots = results.getDocuments();
-		DocumentSnapshot documentSnapshot = documentSnapshots.get(0);
-		StringIndex index = documentSnapshot.getTitle();
-		List<String> strings = results.getStrings();
-		String title = strings.get((int) Long.parseLong(index.toString()));
-		System.err.println("Page Title index: " + index + " value: " + title);
-
+			// the full exception is too long
+			System.err.println("Exception (rethrown) " + e.getMessage());
+			throw e;
+		}
 	}
 
 }
