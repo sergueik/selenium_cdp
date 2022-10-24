@@ -171,6 +171,14 @@ public class NetworkDevToolsTest {
 		final RequestId[] requestIdCaptures = new RequestId[1];
 		chromeDevTools.addListener(Network.responseReceived(),
 				(ResponseReceived event) -> {
+
+					Response response = event.getResponse();
+					// System.err.println(response.getStatus());
+					if (response.getStatus().toString().startsWith("4")) {
+						System.err.println(response.getUrl()
+								+ " has failed with status code " + response.getStatus());
+					}
+
 					// collect request id for some purpose
 					// see also
 					// https://github.com/SrinivasanTarget/selenium4CDPsamples/blob/master/src/test/java/DevToolsTest.java#L86
