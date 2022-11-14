@@ -25,13 +25,13 @@ import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v106.network.Network.GetResponseBodyResponse;
-import org.openqa.selenium.devtools.v106.network.model.Response;
-import org.openqa.selenium.devtools.v106.network.Network;
-import org.openqa.selenium.devtools.v106.network.model.Headers;
-import org.openqa.selenium.devtools.v106.network.model.RequestId;
-import org.openqa.selenium.devtools.v106.network.model.DataReceived;
-import org.openqa.selenium.devtools.v106.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v107.network.Network.GetResponseBodyResponse;
+import org.openqa.selenium.devtools.v107.network.model.Response;
+import org.openqa.selenium.devtools.v107.network.Network;
+import org.openqa.selenium.devtools.v107.network.model.Headers;
+import org.openqa.selenium.devtools.v107.network.model.RequestId;
+import org.openqa.selenium.devtools.v107.network.model.DataReceived;
+import org.openqa.selenium.devtools.v107.network.model.ResponseReceived;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -188,10 +188,10 @@ public class NetworkDevToolsTest {
 								.println(String.format("Network request %s response status: %s",
 										event.getRequestId(), event.getResponse().getStatus()));
 					try {
-						Network.GetResponseBodyResponse response = chromeDevTools
+						Network.GetResponseBodyResponse responseBody = chromeDevTools
 								.send(Network.getResponseBody(event.getRequestId()));
-						String body = response.getBody();
-						if (response.getBase64Encoded()) {
+						String body = responseBody.getBody();
+						if (responseBody.getBase64Encoded()) {
 							try {
 								body = new String(Base64.decodeBase64(body.getBytes("UTF8")));
 							} catch (UnsupportedEncodingException e) {
