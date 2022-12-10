@@ -849,6 +849,10 @@ java.lang.NoSuchMethodError: java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/c
 ```
 the method the exception is complainign was [added](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/FileReader.html#%3Cinit%3E(java.io.File,java.nio.charset.Charset)) in Java 11
 
+### Note
+
+  * To get Google Chrome updates past version 108,  one needs Windows 10 or later. Some development environment computers are using Windows 8.1
+
 ### See Also
 
   * [chrome devtools](https://github.com/ChromeDevTools/awesome-chrome-devtools) project
@@ -894,6 +898,7 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
   * Ferrum - Ruby gem for "high-level" API for CDP backed Chrome browser automation [rubycdp/ferrum](https://github.com/rubycdp/ferrum) repository, [rubygems.org link](https://rubygems.org/gems/ferrum/versions/0.6.2) [documentation translation](https://habr.com/ru/post/681292/) (in Russian)
   * [serg-ty/selenium-tests-logger](https://github.com/serg-ty/selenium-tests-logger) project to enable listeners as part of the logging
 
+  * [list of existing headless web browsers](https://github.com/dhamaniasad/HeadlessBrowsers)
 
 ### License
 This project is licensed under the terms of the MIT license.
