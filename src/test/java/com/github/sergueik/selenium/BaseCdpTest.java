@@ -16,6 +16,7 @@ import org.junit.BeforeClass;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
@@ -38,7 +39,6 @@ public class BaseCdpTest {
 	protected static String baseURL = "about:blank";
 	protected static boolean debug = false;
 
-	
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 
@@ -103,6 +103,14 @@ public class BaseCdpTest {
 		// options for headless
 		// NOTE: Deprecated chrome option is ignored: useAutomationExtension
 		// options.setExperimentalOption("useAutomationExtension", false);
+
+
+		// see: http://barancev.github.io/slow-loading-pages/
+		// https://stackoverflow.com/questions/43734797/page-load-strategy-for-chrome-driver-updated-till-selenium-v3-12-0
+		DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+		desiredCapabilities.setCapability("pageLoadStrategy", "eager");
+		options.merge(desiredCapabilities);
+
 		if (runHeadless) {
 			options.addArguments("--headless", "--disable-gpu");
 		}

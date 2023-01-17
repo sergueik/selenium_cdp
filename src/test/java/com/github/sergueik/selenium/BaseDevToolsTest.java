@@ -16,6 +16,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  * Base class for selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -50,15 +51,20 @@ public class BaseDevToolsTest {
 										? "chromedriver.exe" : "chromedriver")
 								.toAbsolutePath().toString());
 
-		if (runHeadless) {
+			// see: http://barancev.github.io/slow-loading-pages/
+			// https://stackoverflow.com/questions/43734797/page-load-strategy-for-chrome-driver-updated-till-selenium-v3-12-0
+			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+			desiredCapabilities.setCapability("pageLoadStrategy", "eager");
 			ChromeOptions options = new ChromeOptions();
+			options.merge(desiredCapabilities);
+
+		if (runHeadless) {
 			options.addArguments("--headless", "--disable-gpu");
 			// alternatively,
-	                // options.setHeadless(false)
-			driver = new ChromeDriver(options);
-		} else {
-			driver = new ChromeDriver();
+			// options.setHeadless(false)
 		}
+		driver = new ChromeDriver(options);
+
 		Utils.setDriver(driver);
 
 		chromeDevTools = ((HasDevTools) driver).getDevTools();
