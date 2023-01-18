@@ -19,16 +19,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#method-enable
- * https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#type-RGBA
- * https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#method-highlightNode
- * https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#type-HighlightConfig
- * https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#method-hideHighlight
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-RGBA
+ * https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#method-highlightNode
+ * https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#type-HighlightConfig
+ * https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#method-hideHighlight
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -40,15 +38,10 @@ public class OverlayHighlightCDPTest extends BaseDevToolsTest {
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> params = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
-	private static Map<String, Object> data2 = new HashMap<>();
-	private static List<Object> data3 = new ArrayList<>();
 	private static String dataString = null;
 	private static List<Map<String, Object>> cookies = new ArrayList<>();
 	public static Long nodeId = (long) -1;
 	public static String isolationId = null;
-
-	private static By locator = null;
-	private static String baseURL = "about:blank";
 
 	@Before
 	public void before() {
@@ -97,23 +90,29 @@ public class OverlayHighlightCDPTest extends BaseDevToolsTest {
 				data.clear();
 				data.put("showInfo", true);
 				data.put("showRulers", true);
-				// DOM.RGBA
-				data2 = new HashMap<>();
-				data2.put("r", "255");
-				data2.put("g", "128");
-				data2.put("b", "64");
-				data.put("contentColor", data2);
-				data2.clear();
-				data2.put("r", 64);
-				data2.put("g", 128);
-				data2.put("b", 64);
 
-				data.put("marginColor", data2);
-				data2.clear();
-				data2.put("r", 0);
-				data2.put("g", 0);
-				data2.put("b", 128);
-				data.put("borderColor", data2);
+				Map<String, Object> contentColor = new HashMap<>();
+				contentColor.put("r", 128);
+				contentColor.put("g", 192);
+				contentColor.put("b", 255);
+				contentColor.put("a", 0.5);
+				data.put("contentColor", contentColor);
+
+				Map<String, Object> marginColor = new HashMap<>();
+				marginColor.clear();
+				marginColor.put("r", 64);
+				marginColor.put("g", 128);
+				marginColor.put("b", 64);
+				contentColor.put("a", 0.5);
+				data.put("marginColor", marginColor);
+
+				Map<String, Object> borderColor = new HashMap<>();
+				borderColor.clear();
+				borderColor.put("r", 0);
+				borderColor.put("g", 0);
+				borderColor.put("b", 128);
+				data.put("borderColor", borderColor);
+
 				params.clear();
 				params.put("nodeId", nodeId);
 				params.put("highlightConfig", data);
@@ -121,7 +120,6 @@ public class OverlayHighlightCDPTest extends BaseDevToolsTest {
 				result = driver.executeCdpCommand("DOM.highlightNode", params);
 				params.clear();
 				params.put("nodeId", nodeId);
-				dataString = null;
 				result = driver.executeCdpCommand("DOM.getOuterHTML", params);
 				assertThat(result, notNullValue());
 				assertThat(result, hasKey("outerHTML"));

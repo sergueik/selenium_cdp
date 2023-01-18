@@ -20,11 +20,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
- * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/
- * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest
- * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/devtools/NetworkInterceptor.html
- * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/remote/http/Route.html
- * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/remote/http/HttpRequest.html
+ * https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#method-enable
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-RGBA
+ * https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#method-highlightNode
+ * https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#type-HighlightConfig
+ * https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#method-hideHighlight
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -56,28 +56,31 @@ public class OverlayHighlightDevToolsTest extends BaseDevToolsTest {
 		List<NodeId> results = chromeDevTools
 				.send(DOM.querySelectorAll(result.getNodeId(), selector));
 
+		// based on:
+		// https://github.com/rkeeves/selenium-tricks/blob/main/src/test/java/io/github/rkeeves/interoperability/CDPHighlightByNodeIdTest.java
+		// https://youtu.be/OrOYvVf6tIM?t=328
 		results.forEach((NodeId nodeId) -> {
-			RGBA green = new RGBA(34, 177, 76, Optional.empty());
-			HighlightConfig highlightConfig = highlightOfColor(green);
+			float alpha = (float) 0.5;
+			RGBA contentColor = new RGBA(68, 255, 152, Optional.of(alpha));
+			boolean showInfo = true;
+			boolean showRulers = true;
+			boolean showAccessibilityInfo = false;
+			boolean showExtensionLines = true;
+			boolean showStyles = false;
+			HighlightConfig highlightConfig = new HighlightConfig(
+					Optional.of(showInfo), Optional.of(showStyles),
+					Optional.of(showRulers), Optional.of(showAccessibilityInfo),
+					Optional.of(showExtensionLines), Optional.of(contentColor),
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty());
+
 			chromeDevTools
 					.send(Overlay.highlightNode(highlightConfig, Optional.of(nodeId),
 							Optional.empty(), Optional.empty(), Optional.empty()));
-			// Debug breakpoint the line below to see green
-			System.err.println("It must be green");
 			Utils.sleep(500);
 		});
-	}
-
-	// origin:
-	// https://github.com/rkeeves/selenium-tricks/blob/main/src/test/java/io/github/rkeeves/interoperability/CDPHighlightByNodeIdTest.java
-	private static HighlightConfig highlightOfColor(RGBA green) {
-		return new HighlightConfig(Optional.empty(), Optional.empty(),
-				Optional.empty(), Optional.empty(), Optional.empty(),
-				Optional.of(green), Optional.empty(), Optional.empty(),
-				Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-				Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-				Optional.empty(), Optional.empty(), Optional.empty()
-		// https://youtu.be/OrOYvVf6tIM?t=328
-		);
 	}
 }
