@@ -10,7 +10,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeoutException;
+// import java.util.concurrent.TimeoutException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,6 +27,7 @@ import org.openqa.selenium.devtools.v108.network.Network;
 import org.openqa.selenium.devtools.v108.network.model.ErrorReason;
 import org.openqa.selenium.devtools.v108.network.model.Request;
 import org.openqa.selenium.remote.UnreachableBrowserException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -34,12 +35,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/
  * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest
- * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/devtools/NetworkInterceptor.html
- * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/remote/http/Route.html
- * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/remote/http/HttpRequest.html
+ * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-fulfillRequest
+ * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest 
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-Request
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
-
+// see also:
+// https://github.com/Sushmada/Selenium_CDP/blob/master/src/ChromeDevToolsSeleniumIntegration/FailNetworkRequest.java
 public class FetcFailRequestDevToolsTest extends BaseDevToolsTest {
 	private static String url = "https://www.wikipedia.org";
 	private static WebDriverWait wait;
@@ -49,7 +51,7 @@ public class FetcFailRequestDevToolsTest extends BaseDevToolsTest {
 
 	@Before
 	public void before() throws TimeoutException {
-		String urlPattern = ".*/portal/wikipedia.org/assets/.*";
+		String urlPattern = "*assets*";
 
 		RequestPattern requestPattern = new RequestPattern(Optional.of(urlPattern),
 				Optional.empty(), Optional.empty());
@@ -66,7 +68,7 @@ public class FetcFailRequestDevToolsTest extends BaseDevToolsTest {
 			System.err.println("About to handle the request: " + request.getUrl());
 			if (request.getUrl().matches(".*\\.(?:png|jpg|jpeg)$")) {
 				System.err.println("About to abort the request to " + request.getUrl());
-				ErrorReason errorReason = ErrorReason.ABORTED;
+				ErrorReason errorReason = ErrorReason.FAILED;
 				Fetch.failRequest(requestId, errorReason);
 			} else {
 				// NOTE: setting HTTP response code by hand
@@ -81,29 +83,34 @@ public class FetcFailRequestDevToolsTest extends BaseDevToolsTest {
 
 	@Test
 	public void test2() {
-		driver.navigate().to("https://www.wikipedia.org");
-
+		try {
+			driver.navigate().to("https://www.wikipedia.org");
+		} catch (TimeoutException e) {
+			System.err.println("continue");
+		}
 		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
 
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
-		element = wait.until(ExpectedConditions.visibilityOfElementLocated(
-				By.cssSelector("img.central-featured-logo")));
-
+		// Visibility or presence would time out
+		// element = wait.until(ExpectedConditions.visibilityOfElementLocated(
+		// By.cssSelector("img.central-featured-logo")));
+		// element = wait.until(ExpectedConditions
+		element = driver.findElement(By.cssSelector("img.central-featured-logo"));
+		// .presenceOfElementLocated(By.cssSelector("img.central-featured-logo")));
 		Long naturalWidth = (Long) driver
 				.executeScript("return arguments[0].naturalWidth", element);
 		Long naturalHeight = (Long) driver
 				.executeScript("return arguments[0].naturalHeight", element);
-		// assertThat(naturalWidth, is(0L));
-		// assertThat(naturalHeight, is(0L));
+		assertThat(naturalWidth, is(0L));
+		assertThat(naturalHeight, is(0L));
 	}
 
 	@After
 	public void after() {
 
-		chromeDevTools.send(Network.setBlockedURLs(new ArrayList<String>()));
-		chromeDevTools.send(Network.disable());
-		chromeDevTools.send(Network.setCacheDisabled(false));
+		chromeDevTools.send(Fetch.disable());
 		chromeDevTools.clearListeners();
 	}
 
 }
+
