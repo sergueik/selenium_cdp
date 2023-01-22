@@ -34,8 +34,9 @@ public class BrowserVersionDevToolsTest extends BaseDevToolsTest {
 		GetVersionResponse response = chromeDevTools.send(Browser.getVersion());
 		assertThat(response, notNullValue());
 		response.getUserAgent();
-		System.err.println("Browser Version : " + response.getProduct() + "\t" + "Browser User Agent : "
-				+ response.getUserAgent() + "\t" + "Browser Protocol Version : " + response.getProtocolVersion() + "\t"
+		System.err.println("Browser Version : " + response.getProduct() + "\t"
+				+ "Browser User Agent : " + response.getUserAgent() + "\t"
+				+ "Browser Protocol Version : " + response.getProtocolVersion() + "\t"
 				+ "Browser JS Version : " + response.getJsVersion());
 	}
 
@@ -43,12 +44,14 @@ public class BrowserVersionDevToolsTest extends BaseDevToolsTest {
 	@Test
 	public void test2() {
 		// Act
-		response = chromeDevTools.send(new Command<GetVersionResponse>("Browser.getVersion", ImmutableMap.of(),
-				o -> o.read(GetVersionResponse.class)));
+		response = chromeDevTools
+				.send(new Command<GetVersionResponse>("Browser.getVersion",
+						ImmutableMap.of(), o -> o.read(GetVersionResponse.class)));
 
 		assertThat(response, notNullValue());
-		System.err.println("Browser Version : " + response.getProduct() + "\t" + "Browser User Agent : "
-				+ response.getUserAgent() + "\t" + "Browser Protocol Version : " + response.getProtocolVersion() + "\t"
+		System.err.println("Browser Version : " + response.getProduct() + "\t"
+				+ "Browser User Agent : " + response.getUserAgent() + "\t"
+				+ "Browser Protocol Version : " + response.getProtocolVersion() + "\t"
 				+ "Browser JS Version : " + response.getJsVersion());
 	}
 
@@ -56,19 +59,22 @@ public class BrowserVersionDevToolsTest extends BaseDevToolsTest {
 	public void test3() {
 		// Act
 		try {
-			response = chromeDevTools
-					.send(new Command<GetVersionResponse>("Browser.getVersion", ImmutableMap.of(), o -> {
-						System.err.println("in callback: " + new Json().toJson((JsonInput) o));
+			response = chromeDevTools.send(new Command<GetVersionResponse>(
+					"Browser.getVersion", ImmutableMap.of(), o -> {
+						System.err
+								.println("in callback: " + new Json().toJson((JsonInput) o));
 						// difficult to parse, not attempted
 						return ((GetVersionResponse) o.read(GetVersionResponse.class));
 					}));
 
 			assertThat(response, notNullValue());
-			System.err.println("Browser Version : " + response.getProduct() + "\t" + "Browser User Agent : "
-					+ response.getUserAgent() + "\t" + "Browser Protocol Version : " + response.getProtocolVersion()
-					+ "\t" + "Browser JS Version : " + response.getJsVersion());
+			System.err.println("Browser Version : " + response.getProduct() + "\t"
+					+ "Browser User Agent : " + response.getUserAgent() + "\t"
+					+ "Browser Protocol Version : " + response.getProtocolVersion() + "\t"
+					+ "Browser JS Version : " + response.getJsVersion());
 		} catch (WebDriverException e) {
-			System.err.println("Web Driver exception (ignored): " + Utils.processExceptionMessage(e.getMessage()));
+			System.err.println("Web Driver exception (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			System.err.println("Exception: " + e.toString());
 			throw (new RuntimeException(e));
@@ -80,15 +86,28 @@ public class BrowserVersionDevToolsTest extends BaseDevToolsTest {
 	public void test4() {
 
 		// Act
-		response = chromeDevTools.send(new Command<GetVersionResponse>("Browser.getVersion", ImmutableMap.of(),
-				ConverterFunctions.map("getVersionResponse", GetVersionResponse.class)));
+		response = chromeDevTools.send(new Command<GetVersionResponse>(
+				"Browser.getVersion", ImmutableMap.of(), ConverterFunctions
+						.map("getVersionResponse", GetVersionResponse.class)));
 		assertThat(response, notNullValue());
 		assertThat(response.getProduct(), notNullValue());
 		assertThat(response.getRevision(), notNullValue());
 		assertThat(response.getProtocolVersion(), notNullValue());
 		assertThat(response.getUserAgent(), notNullValue());
 		assertThat(response.getJsVersion(), notNullValue());
-		
+
+	}
+
+	@Test
+	public void test5() {
+		// Act
+		response = chromeDevTools.send(Browser.getVersion());
+
+		assertThat(response, notNullValue());
+		System.err.println("Browser Version : " + response.getProduct() + "\t"
+				+ "Browser User Agent : " + response.getUserAgent() + "\t"
+				+ "Browser Protocol Version : " + response.getProtocolVersion() + "\t"
+				+ "Browser JS Version : " + response.getJsVersion());
 	}
 
 }
