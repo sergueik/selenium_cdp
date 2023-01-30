@@ -22,11 +22,11 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v108.css.CSS;
-import org.openqa.selenium.devtools.v108.dom.DOM;
-import org.openqa.selenium.devtools.v108.dom.model.Rect;
-import org.openqa.selenium.devtools.v108.emulation.Emulation;
-import org.openqa.selenium.devtools.v108.page.Page;
+import org.openqa.selenium.devtools.v109.css.CSS;
+import org.openqa.selenium.devtools.v109.dom.DOM;
+import org.openqa.selenium.devtools.v109.dom.model.Rect;
+import org.openqa.selenium.devtools.v109.emulation.Emulation;
+import org.openqa.selenium.devtools.v109.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -85,15 +85,16 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 				// @formatter:on
 			);
 			String dataString = chromeDevTools.send(
-				// @formatter:off
-				Page.captureScreenshot(
-						Optional.of(Page.CaptureScreenshotFormat.JPEG), 
-						Optional.of(100),
-						Optional.empty(), 
-						Optional.of(true), 
-						Optional.of(true)
-				)
-				// @formatter:off
+					// @formatter:off
+					Page.captureScreenshot(
+							Optional.of(Page.CaptureScreenshotFormat.JPEG), // format
+							Optional.of(100), // quality
+							Optional.empty(),  // clip
+							Optional.of(false),  // fromSurface
+							Optional.of(false), // captureBeyondViewport
+							Optional.of(false) // optimizeForSpeed
+					)
+					// @formatter:on
 		);
 		chromeDevTools.send(Emulation.clearDeviceMetricsOverride());
 
@@ -171,15 +172,16 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 				.send(DOM.enable(Optional.of(DOM.EnableIncludeWhitespace.NONE)));
 		chromeDevTools.send(CSS.enable());
 		String dataString = chromeDevTools.send(
-				// @formatter:off
-				Page.captureScreenshot(
-						Optional.of(Page.CaptureScreenshotFormat.JPEG), 
-						Optional.of(100),
-						Optional.empty(), 
-						Optional.of(true), 
-						Optional.of(true)
-				)
-				// @formatter:off
+			// @formatter:off
+			Page.captureScreenshot(
+				Optional.of(Page.CaptureScreenshotFormat.JPEG), // format
+				Optional.of(100), // quality
+				Optional.empty(),  // clip
+				Optional.of(false),  // fromSurface
+				Optional.of(false), // captureBeyondViewport
+				Optional.of(false) // optimizeForSpeed
+			)
+			// @formatter:off
 		);
 
 		Base64 base64 = new Base64();

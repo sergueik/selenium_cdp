@@ -24,8 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v108.page.Page;
-import org.openqa.selenium.devtools.v108.page.model.Viewport;
+import org.openqa.selenium.devtools.v109.page.Page;
+import org.openqa.selenium.devtools.v109.page.model.Viewport;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -102,15 +102,16 @@ public class ElementScreenshotDevToolsTest extends BaseDevToolsTest {
 			int scale = 1;
 			viewport = new Viewport(x, y, width, height, scale);
 			dataString = chromeDevTools.send(
-					// @formatter:off
-					Page.captureScreenshot(
-							Optional.of(Page.CaptureScreenshotFormat.JPEG), 
-							Optional.of(100),
-							Optional.of(viewport), 
-							Optional.of(true), 
-							Optional.of(true)
-					)
-					// @formatter:off
+				// @formatter:off
+				Page.captureScreenshot(
+					Optional.of(Page.CaptureScreenshotFormat.JPEG), // format
+					Optional.of(100), // quality
+					Optional.of(viewport),  // clip
+					Optional.of(false),  // fromSurface
+					Optional.of(false), // captureBeyondViewport
+					Optional.of(false) // optimizeForSpeed
+				)
+				// @formatter:off
 			);
 			
 			assertThat(dataString, notNullValue());

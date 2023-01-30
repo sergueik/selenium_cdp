@@ -1,6 +1,6 @@
 package com.github.sergueik.selenium;
 /**
- * Copyright 2021,2022 Serguei Kouzmine
+ * Copyright 2021,2022,2023 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v108.emulation.Emulation;
-import org.openqa.selenium.devtools.v108.page.Page;
+import org.openqa.selenium.devtools.v109.emulation.Emulation;
+import org.openqa.selenium.devtools.v109.page.Page;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -35,6 +35,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * see:
  * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setGeolocationOverride
  * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-clearGeolocationOverride
+ * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -84,11 +85,12 @@ public class GeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 		data = chromeDevTools.send(
 				// @formatter:off
 				Page.captureScreenshot(
-						Optional.of(Page.CaptureScreenshotFormat.JPEG), 
-						Optional.of(100),
-						Optional.empty(), 
-						Optional.of(true), 
-						Optional.of(true)
+						Optional.of(Page.CaptureScreenshotFormat.JPEG), // format
+						Optional.of(100), // quality
+						Optional.empty(),  // clip
+						Optional.of(false),  // fromSurface
+						Optional.of(false), // captureBeyondViewport
+						Optional.of(false) // optimizeForSpeed
 				)
 				// @formatter:on
 		);
