@@ -1,43 +1,36 @@
 package com.github.sergueik.selenium;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
+/**
+ * Copyright 2021,2023 Serguei Kouzmine
+ */
 
-import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.codec.binary.Base64;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
-import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.json.Json;
-import org.openqa.selenium.json.JsonInput;
-
-import com.google.gson.Gson;
-
 import org.openqa.selenium.devtools.v109.fetch.Fetch;
-import org.openqa.selenium.devtools.v109.fetch.Fetch.GetResponseBodyResponse;
 import org.openqa.selenium.devtools.v109.fetch.model.HeaderEntry;
 import org.openqa.selenium.devtools.v109.fetch.model.RequestPattern;
-import org.openqa.selenium.devtools.v109.fetch.model.RequestStage;
 import org.openqa.selenium.devtools.v109.fetch.model.RequestPaused;
+import org.openqa.selenium.devtools.v109.fetch.model.RequestStage;
 import org.openqa.selenium.devtools.v109.network.model.ResourceType;
 
-import org.apache.commons.codec.binary.Base64;
+import com.google.gson.Gson;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -95,8 +88,8 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 									.isPresent() ? event.getResponseHeaders().get()
 											: new ArrayList<>();
 
-							List<String> headers = headerEntries
-									.stream().map(entry -> String.format("%s: %s",
+							List<String> headers = headerEntries.stream()
+									.map((HeaderEntry entry) -> String.format("%s: %s",
 											entry.getName(), entry.getValue()))
 									.collect(Collectors.toList());
 
@@ -112,8 +105,8 @@ public class XHRFetchDevToolsTest extends BaseDevToolsTest {
 							// always empty
 							// Also possible to work with headers as a map
 							// Map<String, Object> headersJsonMap = event.getRequest()
-							//		.getHeaders().toJson();
-							event.getRequest().getPostData().ifPresent((data) -> {
+							// .getHeaders().toJson();
+							event.getRequest().getPostData().ifPresent((String data) -> {
 								System.err.println("Post Data:\n" + data + "\n");
 							});
 

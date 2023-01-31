@@ -104,8 +104,8 @@ public class AuthHeadersCdpTest extends BaseCdpTest {
 	public void test1() throws UnsupportedEncodingException {
 		headers = new HashMap<>();
 		params = new HashMap<>();
-		params.put("headers", headers);
 		headers.put("authorization", "Basic " + authString);
+		params.put("headers", headers);
 
 		command = "Network.setExtraHTTPHeaders";
 		driver.executeCdpCommand(command, params);

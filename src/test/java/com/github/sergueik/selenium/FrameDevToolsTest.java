@@ -1,6 +1,6 @@
 package com.github.sergueik.selenium;
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2023 Serguei Kouzmine
  */
 
 import java.util.Optional;
@@ -9,12 +9,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.devtools.v109.fetch.Fetch;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.v109.page.Page;
-import org.openqa.selenium.devtools.v109.page.model.Frame;
-import org.openqa.selenium.devtools.v109.page.model.FrameNavigated;
-import org.openqa.selenium.devtools.v109.page.model.JavascriptDialogOpening;
 import org.openqa.selenium.devtools.v109.page.model.FrameAttached;
+import org.openqa.selenium.devtools.v109.page.model.FrameNavigated;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -24,8 +22,10 @@ import org.openqa.selenium.devtools.v109.page.model.FrameAttached;
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-public class FrameDevToolsTest extends EventSubscriptionCommonTest {
+// public class FrameDevToolsTest extends EventSubscriptionCommonTest {
+public class FrameDevToolsTest extends BaseDevToolsTest {
 	private static int cnt = 0;
+	private static WebElement element;
 	private final static int maxcnt = 10;
 	private final static String baseURL = "https://www.w3schools.com/html/tryit.asp?filename=tryhtml_iframe_target";
 
@@ -51,6 +51,7 @@ public class FrameDevToolsTest extends EventSubscriptionCommonTest {
 		chromeDevTools.clearListeners();
 		chromeDevTools.send(Page.disable());
 	}
+
 
 	// @Ignore
 	@Test

@@ -4,7 +4,6 @@ package com.github.sergueik.selenium;
  * Copyright 2021,2022 Serguei Kouzmine
  */
 
-
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -87,14 +86,17 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 		frameTree = chromeDevTools.send(Page.getFrameTree());
 		frames = frameTree.getChildFrames();
 		if (frames.isPresent()) {
-			frames.get().stream().map(o -> o.getFrame())
-					.map(frame -> String.format("Frame %s id: %s url: %s",
-							frame.getName().isPresent()
-									? String.format("name: %s", frame.getName().get()) : "",
-							frame.getId(), frame.getUrl()))
-					.forEach(System.err::println);
 
-			frames.get().stream().map(o -> o.getFrame()).forEach(frame -> {
+			frames.get().stream().map((FrameTree frameTree) -> {
+				Frame frame = frameTree.getFrame();
+				return String.format("Frame %s id: %s url: %s",
+						frame.getName().isPresent()
+								? String.format("name: %s", frame.getName().get()) : "",
+						frame.getId(), frame.getUrl());
+			}).forEach(System.err::println);
+
+			frames.get().stream().forEach((FrameTree frameTree) -> {
+				Frame frame = frameTree.getFrame();
 				try {
 					frameId = frame.getId();
 					DOM.GetFrameOwnerResponse response2 = chromeDevTools
@@ -114,7 +116,9 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 					System.err.println("Exception (ignored): " + e.toString());
 				}
 			});
-		} else {
+		} else
+
+		{
 			System.err.println("No Frames found on " + baseURL);
 		}
 	}
@@ -132,7 +136,8 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 				.send(DOM.enable(Optional.of(DOM.EnableIncludeWhitespace.NONE)));
 
 		chromeDevTools.send(Overlay.enable());
-		frames.get().stream().map(o -> o.getFrame()).forEach(frame -> {
+		frames.get().stream().forEach((FrameTree frameTree) -> {
+			Frame frame = frameTree.getFrame();
 			try {
 				color = new RGBA(Utils.getRandomColor(), Utils.getRandomColor(),
 						Utils.getRandomColor(), Optional.empty());
