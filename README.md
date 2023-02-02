@@ -64,7 +64,7 @@ Then in the test method callback is set up:
 public void test() {
 	chromeDevTools.addListener(Fetch.requestPaused(),
 		(RequestPaused event) -> {
-      event.getResponseHeaders().get().stream().map(entry -> String.format("%s: %s",
+      event.getResponseHeaders().get().stream().map((HeaderEntry entry) -> String.format("%s: %s",
               entry.getName(), entry.getValue())).collect(Collectors.toList());
       Fetch.GetResponseBodyResponse response = chromeDevTools.send(Fetch.getResponseBody(event.getRequestId()));
         String body = new String(Base64.decodeBase64(response.getBody().getBytes("UTF8")));
@@ -899,6 +899,8 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
   * [serg-ty/selenium-tests-logger](https://github.com/serg-ty/selenium-tests-logger) project to enable listeners as part of the logging
 
   * [list of existing headless web browsers](https://github.com/dhamaniasad/HeadlessBrowsers)
+  * [new headless mode](https://www.selenium.dev/blog/2023/headless-is-going-away/)
+
 
 ### License
 This project is licensed under the terms of the MIT license.

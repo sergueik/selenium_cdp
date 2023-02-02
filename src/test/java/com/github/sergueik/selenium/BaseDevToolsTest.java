@@ -55,15 +55,20 @@ public class BaseDevToolsTest {
 										? "chromedriver.exe" : "chromedriver")
 								.toAbsolutePath().toString());
 
-			// see: http://barancev.github.io/slow-loading-pages/
-			// https://stackoverflow.com/questions/43734797/page-load-strategy-for-chrome-driver-updated-till-selenium-v3-12-0
-			DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-			desiredCapabilities.setCapability("pageLoadStrategy", "eager");
-			ChromeOptions options = new ChromeOptions();
-			options.merge(desiredCapabilities);
+		// see: http://barancev.github.io/slow-loading-pages/
+		// https://stackoverflow.com/questions/43734797/page-load-strategy-for-chrome-driver-updated-till-selenium-v3-12-0
+		DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+		desiredCapabilities.setCapability("pageLoadStrategy", "eager");
+		ChromeOptions options = new ChromeOptions();
+		options.merge(desiredCapabilities);
 
 		if (runHeadless) {
-			options.addArguments("--headless", "--disable-gpu");
+			// see:
+			// https://www.selenium.dev/blog/2023/headless-is-going-away/
+			// for 109+ headless option changes
+			// "--headless=new"
+
+			options.addArguments("--headless=new" /* "--headless"*/, "--disable-gpu");
 			// alternatively,
 			// options.setHeadless(false)
 		}

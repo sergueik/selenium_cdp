@@ -104,7 +104,6 @@ public class BaseCdpTest {
 		// NOTE: Deprecated chrome option is ignored: useAutomationExtension
 		// options.setExperimentalOption("useAutomationExtension", false);
 
-
 		// see: http://barancev.github.io/slow-loading-pages/
 		// https://stackoverflow.com/questions/43734797/page-load-strategy-for-chrome-driver-updated-till-selenium-v3-12-0
 		DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
@@ -112,7 +111,11 @@ public class BaseCdpTest {
 		options.merge(desiredCapabilities);
 
 		if (runHeadless) {
-			options.addArguments("--headless", "--disable-gpu");
+			// see:
+			// https://www.selenium.dev/blog/2023/headless-is-going-away/
+			// for 109+ headless option changes
+			// "--headless=new"
+			options.addArguments("--headless=new", "--disable-gpu");
 		}
 
 		driver = new ChromeDriver(options);

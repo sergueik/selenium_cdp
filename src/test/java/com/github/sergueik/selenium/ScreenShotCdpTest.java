@@ -47,19 +47,9 @@ import static org.hamcrest.Matchers.hasKey;
  *
  */
 
-public class ScreenShotCdpTest {
-
-	private static String osName = Utils.getOSName();
+public class ScreenShotCdpTest extends BaseCdpTest {
+	
 	private static int delay = 3000;
-	private static ChromiumDriver driver;
-	private static WebDriverWait wait;
-	private static boolean runHeadless = false;
-	private static long width = 800;
-	private static long height = 600;
-
-	private static int flexibleWait = 60;
-	private static int pollingInterval = 500;
-
 	private static Gson gson = new Gson();
 
 	private static String command = null;
@@ -74,99 +64,12 @@ public class ScreenShotCdpTest {
 	private static Base64 base64 = new Base64();
 	private static Map<String, Long> rect;
 
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-
-		if ((System.getenv().containsKey("HEADLESS")
-				&& System.getenv("HEADLESS").matches("(?:true|yes|1)"))
-				|| (!(Utils.getOSName().equals("windows"))
-						&& !(System.getenv().containsKey("DISPLAY")))) {
-			runHeadless = true;
-		}
-
-		System
-				.setProperty("webdriver.chrome.driver",
-						Paths.get(System.getProperty("user.home"))
-								.resolve("Downloads").resolve(osName.equals("windows")
-										? "chromedriver.exe" : "chromedriver")
-								.toAbsolutePath().toString());
-
-		ChromeOptions options = new ChromeOptions();
-		// see also:
-		// https://ivanderevianko.com/2020/04/disable-logging-in-selenium-chromedriver
-		// https://antoinevastel.com/bot%20detection/2017/08/05/detect-chrome-headless.html
-		// @formatter:off
-		for (String optionAgrument : (new String[] {
-				"--allow-insecure-localhost",
-				"--allow-running-insecure-content",
-				"--browser.download.folderList=2",
-				"--browser.helperApps.neverAsk.saveToDisk=image/jpg,text/csv,text/xml,application/xml,application/vnd.ms-excel,application/x-excel,application/x-msexcel,application/excel,application/pdf",
-				"--disable-blink-features=AutomationControlled",
-				"--disable-default-app",
-				"--disable-dev-shm-usage",
-				"--disable-extensions",
-				"--disable-gpu",
-				"--disable-infobars",
-				"--disable-in-process-stack-traces",
-				"--disable-logging",
-				"--disable-notifications",
-				"--disable-popup-blocking",
-				"--disable-save-password-bubble",
-				"--disable-translate",
-				"--disable-web-security",
-				"--enable-local-file-accesses",
-				"--ignore-certificate-errors",
-				"--ignore-certificate-errors",
-				"--ignore-ssl-errors=true",
-				"--log-level=3",
-				"--no-proxy-server",
-				"--no-sandbox",
-				"--output=/dev/null",
-				"--ssl-protocol=any",
-				// "--start-fullscreen",
-				// "--start-maximized" ,
-				"--user-agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20120101 Firefox/33.0",
-				// String.format("--browser.download.dir=%s", downloadFilepath)
-				/*
-				 * "--user-data-dir=/path/to/your/custom/profile",
-				 * "--profile-directory=name_of_custom_profile_directory",
-				 */
-		})) {
-			options.addArguments(optionAgrument);
-		}
-		// @formatter:on
-		// options for headless
-		// NOTE: Deprecated chrome option is ignored: useAutomationExtension
-		// options.setExperimentalOption("useAutomationExtension", false);
-		if (runHeadless) {
-			options.addArguments("--headless", "--disable-gpu");
-		}
-
-		driver = new ChromeDriver(options);
-		// TODO:
-		/*
-		DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-		capabilities.setBrowserName(DesiredCapabilities.chrome().getBrowserName());
-		capabilities.setCapability(
-				org.openqa.selenium.chrome.ChromeOptions.CAPABILITY, options);
-		capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-		driver = new ChromeDriver(capabilities);
-		*/
-		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
-		Utils.setDriver(driver);
-		wait.pollingEvery(Duration.ofMillis(pollingInterval));
-	}
+	private static long width = 800;
+	private static long height = 600;
 
 	@Before
 	public void beforeTest() throws Exception {
 		driver.get(baseURL);
-	}
-
-	@AfterClass
-	public static void tearDown() {
-		if (driver != null) {
-			driver.quit();
-		}
 	}
 
 	@After
