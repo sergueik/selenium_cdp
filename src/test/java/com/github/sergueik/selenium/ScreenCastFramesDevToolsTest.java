@@ -4,6 +4,7 @@ package com.github.sergueik.selenium;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
@@ -11,13 +12,17 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriverException;
-
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.v109.network.model.TimeSinceEpoch;
 import org.openqa.selenium.devtools.v109.page.Page;
 import org.openqa.selenium.devtools.v109.page.Page.StartScreencastFormat;
 import org.openqa.selenium.devtools.v109.page.model.ScreencastFrame;
 import org.openqa.selenium.devtools.v109.page.model.ScreencastFrameMetadata;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.Actions;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -32,6 +37,7 @@ import org.openqa.selenium.devtools.v109.page.model.ScreencastFrameMetadata;
  */
 
 public class ScreenCastFramesDevToolsTest extends BaseDevToolsTest {
+	public Actions actions;
 	private int delay = 30000;
 	private final int maxWidth = 640;
 	private final int maxHeight = 480;
@@ -48,22 +54,14 @@ public class ScreenCastFramesDevToolsTest extends BaseDevToolsTest {
 	private final static Base64 base64 = new Base64();
 
 	@Before
-	public void before() throws Exception {
-		// TODO: youtube does not auto-play, need to interact with page
-		// baseURL = "https://youtu.be/h0wYBI2ubSk";
-		baseURL = "https://www.google.com";
-		driver.get(baseURL);
-	}
-
-	@Before
 	public void beforeTest() throws Exception {
-		chromeDevTools.send(Page.enable());
+		baseURL = "https://www.youtube.com/watch?v=ik6jzbW2jOE";
+		driver.get(baseURL);
 	}
 
 	@After
 	public void afterTest() throws Exception {
 		chromeDevTools.clearListeners();
-		chromeDevTools.send(Page.disable());
 	}
 
 	@Test
@@ -113,6 +111,16 @@ public class ScreenCastFramesDevToolsTest extends BaseDevToolsTest {
 					}
 				});
 
+		// based on:
+		// https://stackoverflow.com/questions/63599903/how-can-i-play-a-youtube-video-selenium
+		Utils.sleep(5000);
+		WebElement element = driver.findElement(By.id("movie_player"));
+		actions = new Actions(driver);
+		actions.moveToElement(element).click().build().perform();
+
+		element.sendKeys(Keys.SPACE);
+		Utils.sleep(1000);
+		element.click();
 		chromeDevTools.send(Page.startScreencast(Optional.of(format),
 				Optional.of(quality), Optional.of(maxWidth), Optional.of(maxHeight),
 				Optional.of(everyNthFrame)));
