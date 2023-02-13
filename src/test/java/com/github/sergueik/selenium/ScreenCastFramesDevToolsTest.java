@@ -22,7 +22,6 @@ import org.openqa.selenium.devtools.v109.page.Page.StartScreencastFormat;
 import org.openqa.selenium.devtools.v109.page.model.ScreencastFrame;
 import org.openqa.selenium.devtools.v109.page.model.ScreencastFrameMetadata;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.interactions.Actions;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -45,8 +44,8 @@ public class ScreenCastFramesDevToolsTest extends BaseDevToolsTest {
 	private final int everyNthFrame = 10;
 	private final StartScreencastFormat format = Page.StartScreencastFormat.PNG;
 	private String screencastFileName = null;
-	private static long nowEpoch;
-	private static long frameEpoch;
+	private static long testStartEpoch;
+	private static double frameEpoch;
 	private static String data;
 	private static boolean debug = true;
 	private static byte[] image;
@@ -69,7 +68,7 @@ public class ScreenCastFramesDevToolsTest extends BaseDevToolsTest {
 		// Arrange
 		// add to the seconds since the start of the recorging to the screenshot
 		// filename
-		nowEpoch = System.currentTimeMillis() / 1000;
+		testStartEpoch = System.currentTimeMillis() / 1000;
 		chromeDevTools.addListener(Page.screencastFrame(),
 				(ScreencastFrame screencastFrame) -> {
 
@@ -81,16 +80,16 @@ public class ScreenCastFramesDevToolsTest extends BaseDevToolsTest {
 						TimeSinceEpoch timestamp = metadata.getTimestamp().get();
 
 						String data = screencastFrame.getData();
-						frameEpoch = (long) Math.ceil((double) timestamp.toJson());
-
+						frameEpoch = (double) timestamp.toJson();
 						sesionId = screencastFrame.getSessionId();
 						image = base64.decode(data);
-						screencastFileName = "temp." + (frameEpoch - nowEpoch) + "."
-								+ Math.ceil(Math.random() * 100) + ".png";
+						screencastFileName = String.format("temp.%05.2f.png",
+								(frameEpoch - testStartEpoch));
 						try {
 							if (debug)
-								System.err.println(String.format("Saving frame at: %s as %s",
-										Long.toUnsignedString(frameEpoch), screencastFileName));
+								System.err
+										.println(String.format("Saving frame at: %013.2f as %s",
+												frameEpoch, screencastFileName));
 							FileOutputStream fileOutputStream = new FileOutputStream(
 									screencastFileName);
 							fileOutputStream.write(image);
