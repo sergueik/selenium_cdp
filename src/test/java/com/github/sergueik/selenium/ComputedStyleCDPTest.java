@@ -19,6 +19,7 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -46,15 +47,14 @@ public class ComputedStyleCDPTest extends BaseCdpTest {
 
 	private static String selector = null;
 
-	private static String command = "DOM.getDocument";
+	private static String command = null;
 	private WebElement element;
 
 	private static Map<String, Object> params = new HashMap<>();
 	private static Map<String, Object> result = new HashMap<>();
-	private static List<Object> propArray = new ArrayList<>();
+	private static List<Object> properties = new ArrayList<>();
 	public static Long nodeId = (long) -1;
 	public static Long rootNodeId = (long) -1;
-	private static String data;
 	private boolean debug = false;
 
 	@After
@@ -133,14 +133,15 @@ public class ComputedStyleCDPTest extends BaseCdpTest {
 				assertThat(result, notNullValue());
 
 				assertTrue(result.containsKey("computedStyle"));
-				propArray = (List<Object>) result.get("computedStyle");
+				properties = (List<Object>) result.get("computedStyle");
 
-				assertThat(propArray.size(), greaterThan(1));
-				propArray.stream().forEach(o -> {
+				assertThat(properties.size(), greaterThan(1));
+				properties.stream().forEach(property -> {
 					if (debug)
-						System.err.println(String.format("element: %s", o.toString()));
-					if (o.toString().contains("background-color")) {
-						result = (Map<String, Object>) o;
+						System.err
+								.println(String.format("element: %s", property.toString()));
+					if (property.toString().contains("background-color")) {
+						result = (Map<String, Object>) property;
 						if (result.get("name").toString().contains("background-color"))
 							System.err.println(
 									String.format("computed style: %s", result.get("value")));
@@ -170,9 +171,8 @@ public class ComputedStyleCDPTest extends BaseCdpTest {
 		}
 	}
 
-	// origin:
+	// based on:
 	// http://www.java2s.com/example/java/java.util/convert-array-to-map.html
-	//
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <K, V> Map<K, V> listToMap(List<Object> objects) {
 		HashMap map = new HashMap();
