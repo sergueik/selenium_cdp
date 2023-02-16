@@ -34,6 +34,7 @@ import com.google.gson.JsonSyntaxException;
  * https://chromedevtools.github.io/devtools-protocol/tot/CSS/#method-enable
  * https://chromedevtools.github.io/devtools-protocol/tot/CSS/#method-disable
  * https://chromedevtools.github.io/devtools-protocol/tot/CSS/#method-getComputedStyleForNode
+ * https://chromedevtools.github.io/devtools-protocol/tot/CSS/#method-setEffectivePropertyValueForNode
  * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
@@ -55,6 +56,8 @@ public class ComputedStyleCDPTest extends BaseCdpTest {
 	private static List<Object> properties = new ArrayList<>();
 	public static Long nodeId = (long) -1;
 	public static Long rootNodeId = (long) -1;
+	private static final String propertyName = "background-color";
+	private static final String value = "rgb(10,10,10)";
 	private boolean debug = false;
 
 	@After
@@ -85,10 +88,10 @@ public class ComputedStyleCDPTest extends BaseCdpTest {
 			selector = String.format("div.bd-example button.%s", data);
 			element = driver.findElement(By.cssSelector(selector));
 			assertThat(element, notNullValue());
-			String value = styleOfElement(element, "background-color");
+			String value = styleOfElement(element, propertyName);
 
-			System.err.println(
-					element.getText() + " computed style: background-color: " + value);
+			System.err.println(element.getText() + " computed style: " + propertyName
+					+ ": " + value);
 		}
 
 		try {
@@ -140,13 +143,23 @@ public class ComputedStyleCDPTest extends BaseCdpTest {
 					if (debug)
 						System.err
 								.println(String.format("element: %s", property.toString()));
-					if (property.toString().contains("background-color")) {
+					if (property.toString().contains(propertyName)) {
 						result = (Map<String, Object>) property;
-						if (result.get("name").toString().contains("background-color"))
+						if (result.get("name").toString().contains(propertyName))
 							System.err.println(
 									String.format("computed style: %s", result.get("value")));
 					}
 				});
+
+				// paint in dark gray
+
+				command = "CSS.setEffectivePropertyValueForNode";
+				params.clear();
+				params.put("nodeId", nodeId);
+				params.put("propertyName", propertyName);
+				params.put("value", value);
+				result = driver.executeCdpCommand(command, params);
+				Utils.sleep(1000);
 
 				command = "DOM.getOuterHTML";
 				params.clear();
