@@ -37,6 +37,8 @@ import org.openqa.selenium.devtools.v109.dom.model.NodeId;
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getAttributes
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-Node
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getContainerForNode
+ * https://chromedevtools.github.io/devtools-protocol/tot/CSS/#method-setEffectivePropertyValueForNode
+ *  
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 public class ComputedStyleDevToolsTest extends BaseDevToolsTest {
@@ -52,6 +54,9 @@ public class ComputedStyleDevToolsTest extends BaseDevToolsTest {
 
 	private static NodeId nodeId = null;
 	private static NodeId rootNodeId = null;
+	private static final String propertyName = "background-color";
+	private static final String value = "rgb(10,10,10)";
+
 	private static boolean debug = false;
 
 	@After
@@ -76,10 +81,10 @@ public class ComputedStyleDevToolsTest extends BaseDevToolsTest {
 			selector = String.format("div.bd-example button.%s", data);
 			element = driver.findElement(By.cssSelector(selector));
 			assertThat(element, notNullValue());
-			String value = styleOfElement(element, "background-color");
+			String value = styleOfElement(element, propertyName);
 
-			System.err.println(
-					element.getText() + " computed style: background-color: " + value);
+			System.err.println(element.getText() + " computed style: " + propertyName
+					+ ": " + value);
 		}
 		try {
 			result = chromeDevTools
@@ -98,13 +103,16 @@ public class ComputedStyleDevToolsTest extends BaseDevToolsTest {
 					if (debug)
 						System.err
 								.println(String.format("element: %s", property.getName()));
-					if (property.getName().contains("background-color")) {
+					if (property.getName().contains(propertyName)) {
 
 						System.err.println(
 								String.format("computed style: %s", property.getValue()));
 
 					}
 				});
+				chromeDevTools.send(
+						CSS.setEffectivePropertyValueForNode(nodeId, propertyName, value));
+				Utils.sleep(1000);
 				System.err
 						.println(chromeDevTools.send(DOM.getOuterHTML(Optional.of(nodeId),
 								Optional.empty(), Optional.empty())));
