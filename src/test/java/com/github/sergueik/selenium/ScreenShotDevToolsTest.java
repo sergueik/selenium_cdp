@@ -22,11 +22,11 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v109.css.CSS;
-import org.openqa.selenium.devtools.v109.dom.DOM;
-import org.openqa.selenium.devtools.v109.dom.model.Rect;
-import org.openqa.selenium.devtools.v109.emulation.Emulation;
-import org.openqa.selenium.devtools.v109.page.Page;
+import org.openqa.selenium.devtools.v110.css.CSS;
+import org.openqa.selenium.devtools.v110.dom.DOM;
+import org.openqa.selenium.devtools.v110.dom.model.Rect;
+import org.openqa.selenium.devtools.v110.emulation.Emulation;
+import org.openqa.selenium.devtools.v110.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

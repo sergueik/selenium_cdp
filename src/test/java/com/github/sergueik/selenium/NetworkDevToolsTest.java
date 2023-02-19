@@ -25,13 +25,13 @@ import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v109.network.Network.GetResponseBodyResponse;
-import org.openqa.selenium.devtools.v109.network.model.Response;
-import org.openqa.selenium.devtools.v109.network.Network;
-import org.openqa.selenium.devtools.v109.network.model.Headers;
-import org.openqa.selenium.devtools.v109.network.model.RequestId;
-import org.openqa.selenium.devtools.v109.network.model.DataReceived;
-import org.openqa.selenium.devtools.v109.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v110.network.Network.GetResponseBodyResponse;
+import org.openqa.selenium.devtools.v110.network.model.Response;
+import org.openqa.selenium.devtools.v110.network.Network;
+import org.openqa.selenium.devtools.v110.network.model.Headers;
+import org.openqa.selenium.devtools.v110.network.model.RequestId;
+import org.openqa.selenium.devtools.v110.network.model.DataReceived;
+import org.openqa.selenium.devtools.v110.network.model.ResponseReceived;
 
 import org.apache.commons.codec.binary.Base64;
 

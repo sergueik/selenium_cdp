@@ -47,8 +47,8 @@ import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
 
-import org.openqa.selenium.devtools.v109.page.Page;
-import org.openqa.selenium.devtools.v109.page.Page.PrintToPDFResponse;
+import org.openqa.selenium.devtools.v110.page.Page;
+import org.openqa.selenium.devtools.v110.page.Page.PrintToPDFResponse;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -216,7 +216,7 @@ public class PrintToPDFDevToolsTest {
 
 	@Ignore
 	// Unable to create instance of class
-	// org.openqa.selenium.devtools.v109.page.Page$PrintToPDFResponse
+	// org.openqa.selenium.devtools.v110.page.Page$PrintToPDFResponse
 	// Caused by: org.openqa.selenium.json.JsonException: Expected to read a
 	// START_MAP
 	// but instead have: STRING. Last 26 characters read:

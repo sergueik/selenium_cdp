@@ -11,8 +11,8 @@ import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.json.Json;
 import org.openqa.selenium.json.JsonInput;
-import org.openqa.selenium.devtools.v109.browser.Browser;
-import org.openqa.selenium.devtools.v109.browser.Browser.GetVersionResponse;
+import org.openqa.selenium.devtools.v110.browser.Browser;
+import org.openqa.selenium.devtools.v110.browser.Browser.GetVersionResponse;
 
 import com.google.common.collect.ImmutableMap;
 

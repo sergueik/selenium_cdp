@@ -901,6 +901,7 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
   * [list of existing headless web browsers](https://github.com/dhamaniasad/HeadlessBrowsers)
   * [new headless mode](https://www.selenium.dev/blog/2023/headless-is-going-away/)
 
+  * [interactive performance analysis with Chrome DevTools](https://www.thisdot.co/blog/performance-analysis-with-chrome-devtools)
 
 ### License
 This project is licensed under the terms of the MIT license.
