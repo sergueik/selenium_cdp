@@ -2,6 +2,7 @@ package com.github.sergueik.selenium;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -72,6 +73,18 @@ public class Utils {
 			js.executeScript("arguments[0].style.border=''", element);
 		} catch (InterruptedException e) {
 			// System.err.println("Exception (ignored): " + e.toString());
+		}
+	}
+
+	protected static String getScriptContent(String scriptName) {
+		try {
+			final InputStream stream = Utils.class.getClassLoader()
+					.getResourceAsStream(scriptName);
+			final byte[] bytes = new byte[stream.available()];
+			stream.read(bytes);
+			return new String(bytes, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(scriptName);
 		}
 	}
 
