@@ -646,48 +646,6 @@ public class ChromiumCdpTest {
 	// @Ignore
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getDocuments
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Node
-	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-describeNode
-	@SuppressWarnings("unchecked")
-	@Test
-	public void describeNodeTest() {
-		// Arrange
-		driver.get("https://www.google.com");
-		String command = "DOM.getDocument";
-		params = new HashMap<>();
-		params.put("pierce", false);
-		params.put("depth", 0);
-		try {
-			// Act
-			result = driver.executeCdpCommand(command, params);
-			nodeId = (Long) ((Map<String, Object>) result.get("root")).get("nodeId");
-			// Describes node given its id
-			command = "DOM.describeNode";
-			params.clear();
-			params.put("nodeId", nodeId);
-			params.put("depth", 0);
-			result = driver.executeCdpCommand(command, params);
-			// Assert
-			assertThat(result, hasKey("node"));
-			data = (Map<String, Object>) result.get("node");
-			for (String field : Arrays.asList(new String[] { "baseURL", "localName",
-					"nodeName", "nodeType", "nodeValue" })) {
-				assertThat(data, hasKey(field));
-			}
-			assertThat(data.get("nodeName"), is("#document"));
-			System.err.println("Command " + command + " returned node: "
-					+ new Gson().toJson(data, Map.class));
-		} catch (WebDriverException e) {
-			System.err.println("Web Driver exception in " + command + " (ignored): "
-					+ Utils.processExceptionMessage(e.getMessage()));
-		} catch (Exception e) {
-			System.err.println("Exception in " + command + "  " + e.toString());
-			throw (new RuntimeException(e));
-		}
-	}
-
-	// @Ignore
-	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getDocuments
-	// https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Node
 	// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-querySelector
 	@SuppressWarnings("unchecked")
 	@Test

@@ -1,5 +1,7 @@
 package com.github.sergueik.selenium;
 
+import static org.hamcrest.CoreMatchers.is;
+
 /**
  * Copyright 2023 Serguei Kouzmine
  */
@@ -11,6 +13,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -77,17 +81,36 @@ public class DescribeNodeCdpTest extends BaseCdpTest {
 			result = driver.executeCdpCommand(command, params);
 			assertThat(result, hasKey("root"));
 			result2 = (Map<String, Object>) result.get("root");
+
 			nodeId = Long.parseLong(result2.get("nodeId").toString());
 			System.err
 					.println(String.format("Found document root node id %d", nodeId));
+			assertThat(result2.get("nodeName"), is("#document"));
 			assertThat(result2, hasKey("childNodeCount"));
 			System.err.println(
 					String.format("Found %d child nodes", result2.get("childNodeCount")));
 			assertThat(result2, hasKey("children"));
 			results2 = (List<Map<String, Object>>) result2.get("children");
 			results2.stream().forEach(o -> System.err.println(o.get("localName")));
+
+			command = "DOM.describeNode";
+			params.clear();
+			params.put("nodeId", nodeId);
+			params.put("depth", 0);
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, hasKey("node"));
+			result2 = (Map<String, Object>) result.get("node");
+			for (String field : Arrays.asList(new String[] { "documentURL", "baseURL",
+					"localName", "childNodeCount", "nodeId", "nodeName",
+					"nodeType", "nodeValue" })) {
+				assertThat(result2, hasKey(field));
+			}
+			System.err.println("Command " + command + " returned node: "
+					+ new Gson().toJson(result2, Map.class));
+
 			selector = "div.central-featured-lang";
-			
+
 			command = "DOM.querySelectorAll";
 			params.clear();
 			params.put("nodeId", nodeId);
@@ -111,9 +134,12 @@ public class DescribeNodeCdpTest extends BaseCdpTest {
 				assertThat(result, notNullValue());
 				assertThat(result, hasKey("node"));
 				result2 = (Map<String, Object>) result.get("node");
-				assertTrue(result2.containsKey("nodeName"));
 
-				assertTrue(result2.containsKey("attributes"));
+				for (String field : Arrays.asList(new String[] { "localName",
+						"attributes", "children", "childNodeCount", "nodeId", "nodeName",
+						"nodeType", "nodeValue" })) {
+					assertThat(result2, hasKey(field));
+				}
 
 				attributes = (List<String>) result2.get("attributes");
 				assertThat(attributes.size(), greaterThan(1));
