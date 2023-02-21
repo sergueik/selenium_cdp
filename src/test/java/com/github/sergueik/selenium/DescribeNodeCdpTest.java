@@ -38,7 +38,7 @@ import com.google.gson.JsonSyntaxException;
 public class DescribeNodeCdpTest extends BaseCdpTest {
 
 	private static String baseURL = "https://www.wikipedia.org";
-	private static String selector = null;
+	private static String selector = "div.central-featured-lang[lang='ru']";
 	private static String command = null;
 
 	private static Map<String, Object> params = new HashMap<>();
@@ -102,15 +102,13 @@ public class DescribeNodeCdpTest extends BaseCdpTest {
 			assertThat(result, hasKey("node"));
 			result2 = (Map<String, Object>) result.get("node");
 			for (String field : Arrays.asList(new String[] { "documentURL", "baseURL",
-					"localName", "childNodeCount", "nodeId", "nodeName",
-					"nodeType", "nodeValue" })) {
+					"localName", "childNodeCount", "nodeId", "nodeName", "nodeType",
+					"nodeValue" })) {
 				assertThat(result2, hasKey(field));
 			}
-			System.err.println("Command " + command + " returned node: "
-					+ new Gson().toJson(result2, Map.class));
-
-			selector = "div.central-featured-lang";
-
+			System.err
+					.println("node " + Long.parseLong(result2.get("nodeId").toString())
+							+ ":  " + new Gson().toJson(result2, Map.class));
 			command = "DOM.querySelectorAll";
 			params.clear();
 			params.put("nodeId", nodeId);
@@ -127,13 +125,16 @@ public class DescribeNodeCdpTest extends BaseCdpTest {
 				command = "DOM.describeNode";
 				params.clear();
 				params.put("nodeId", nodeId);
-				params.put("pierce", true);
-				params.put("depth", -1);
+				params.put("pierce", false);
+				params.put("depth", 1);
 
 				result = driver.executeCdpCommand(command, params);
 				assertThat(result, notNullValue());
 				assertThat(result, hasKey("node"));
 				result2 = (Map<String, Object>) result.get("node");
+				System.err
+						.println("node " + Long.parseLong(result2.get("nodeId").toString())
+								+ ":  " + new Gson().toJson(result2, Map.class));
 
 				for (String field : Arrays.asList(new String[] { "localName",
 						"attributes", "children", "childNodeCount", "nodeId", "nodeName",
