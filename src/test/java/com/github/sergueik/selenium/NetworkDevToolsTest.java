@@ -174,7 +174,8 @@ public class NetworkDevToolsTest {
 
 					Response response = event.getResponse();
 					// System.err.println(response.getStatus());
-					if (response.getStatus().toString().startsWith("4")) {
+					if ((response.getStatus().toString().startsWith("4"))
+							|| response.getStatus().compareTo(400) > 0) {
 						System.err.println(response.getUrl()
 								+ " has failed with status code " + response.getStatus());
 					}
@@ -210,4 +211,5 @@ public class NetworkDevToolsTest {
 		driver.get(url);
 
 	}
+
 }
