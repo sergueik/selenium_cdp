@@ -22,8 +22,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.devtools.v110.emulation.Emulation;
-import org.openqa.selenium.devtools.v110.page.Page;
+import org.openqa.selenium.devtools.v111.emulation.Emulation;
+import org.openqa.selenium.devtools.v111.page.Page;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.gson.Gson;

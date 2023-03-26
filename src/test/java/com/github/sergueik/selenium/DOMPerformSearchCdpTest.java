@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.devtools.v110.dom.DOM;
+import org.openqa.selenium.devtools.v111.dom.DOM;
 
 import com.google.gson.JsonSyntaxException;
 import static org.junit.Assert.assertTrue;
