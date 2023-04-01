@@ -76,7 +76,7 @@ public class Utils {
 		}
 	}
 
-	protected static String getScriptContent(String scriptName) {
+	public static String getScriptContent(String scriptName) {
 		try {
 			final InputStream stream = Utils.class.getClassLoader()
 					.getResourceAsStream(scriptName);

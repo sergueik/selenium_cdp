@@ -902,6 +902,7 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
   * [new headless mode](https://www.selenium.dev/blog/2023/headless-is-going-away/)
 
   * [interactive performance analysis with Chrome DevTools](https://www.thisdot.co/blog/performance-analysis-with-chrome-devtools)
+  * [replacing request url, postdata and headers](https://github.com/premsundarraj/SeleniumCDP)
 
 ### License
 This project is licensed under the terms of the MIT license.

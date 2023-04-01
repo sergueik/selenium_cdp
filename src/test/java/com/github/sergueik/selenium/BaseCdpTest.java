@@ -106,6 +106,9 @@ public class BaseCdpTest {
 
 		// see: http://barancev.github.io/slow-loading-pages/
 		// https://stackoverflow.com/questions/43734797/page-load-strategy-for-chrome-driver-updated-till-selenium-v3-12-0
+		// see also: https://github.com/SeleniumHQ/selenium/issues/11750
+		// for "--remote-allow-origins=*" said to be required with ChromeDriver 111
+
 		DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
 		desiredCapabilities.setCapability("pageLoadStrategy", "eager");
 		options.merge(desiredCapabilities);

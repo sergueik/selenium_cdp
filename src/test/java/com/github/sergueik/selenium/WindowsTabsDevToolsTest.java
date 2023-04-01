@@ -33,7 +33,7 @@ public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 		baseURL = "https://en.wikipedia.org/wiki/Main_Page";
 		targetId = chromeDevTools.send(Target.createTarget(baseURL,
 				Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-				Optional.of(true), Optional.of(false)));
+				Optional.of(true), Optional.of(false), Optional.of(false)));
 		Utils.sleep(1000);
 		System.err.println("TargetID: " + targetId);
 		sessionId = chromeDevTools
