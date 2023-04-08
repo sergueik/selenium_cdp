@@ -132,8 +132,8 @@
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-devtools-v110</artifactId>
-      <version>${selenium-devtools-v110.version}</version>
+      <artifactId>selenium-devtools-v111</artifactId>
+      <version>${selenium-devtools-v111.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
