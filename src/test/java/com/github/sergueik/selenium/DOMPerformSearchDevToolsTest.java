@@ -25,12 +25,12 @@ import org.openqa.selenium.WebDriverException;
 import com.google.gson.JsonSyntaxException;
 
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v111.dom.DOM;
-import org.openqa.selenium.devtools.v111.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v111.dom.DOM.PerformSearchResponse;
-import org.openqa.selenium.devtools.v111.dom.model.Node;
-import org.openqa.selenium.devtools.v111.dom.model.NodeId;
-import org.openqa.selenium.devtools.v111.dom.model.SetChildNodes;
+import org.openqa.selenium.devtools.v112.dom.DOM;
+import org.openqa.selenium.devtools.v112.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v112.dom.DOM.PerformSearchResponse;
+import org.openqa.selenium.devtools.v112.dom.model.Node;
+import org.openqa.selenium.devtools.v112.dom.model.NodeId;
+import org.openqa.selenium.devtools.v112.dom.model.SetChildNodes;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge

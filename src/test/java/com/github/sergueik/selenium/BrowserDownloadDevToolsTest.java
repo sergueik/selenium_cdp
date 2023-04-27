@@ -17,8 +17,8 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.json.Json;
 import org.openqa.selenium.json.JsonInput;
-import org.openqa.selenium.devtools.v111.browser.Browser;
-import org.openqa.selenium.devtools.v111.browser.model.DownloadProgress;
+import org.openqa.selenium.devtools.v112.browser.Browser;
+import org.openqa.selenium.devtools.v112.browser.model.DownloadProgress;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

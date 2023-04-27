@@ -25,14 +25,14 @@ import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v111.network.model.TimeSinceEpoch;
-import org.openqa.selenium.devtools.v111.runtime.Runtime;
-import org.openqa.selenium.devtools.v111.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.v111.runtime.model.ExecutionContextId;
-import org.openqa.selenium.devtools.v111.runtime.model.RemoteObject;
-import org.openqa.selenium.devtools.v111.runtime.model.TimeDelta;
-import org.openqa.selenium.devtools.v111.storage.Storage;
-import org.openqa.selenium.devtools.v111.storage.model.SharedStorageMetadata;
+import org.openqa.selenium.devtools.v112.network.model.TimeSinceEpoch;
+import org.openqa.selenium.devtools.v112.runtime.Runtime;
+import org.openqa.selenium.devtools.v112.runtime.Runtime.EvaluateResponse;
+import org.openqa.selenium.devtools.v112.runtime.model.ExecutionContextId;
+import org.openqa.selenium.devtools.v112.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.v112.runtime.model.TimeDelta;
+import org.openqa.selenium.devtools.v112.storage.Storage;
+import org.openqa.selenium.devtools.v112.storage.model.SharedStorageMetadata;
 import org.openqa.selenium.json.JsonException;
 
 /**

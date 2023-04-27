@@ -17,9 +17,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.openqa.selenium.devtools.v111.page.Page;
-import org.openqa.selenium.devtools.v111.page.model.NavigationEntry;
-import org.openqa.selenium.devtools.v111.page.model.TransitionType;
+import org.openqa.selenium.devtools.v112.page.Page;
+import org.openqa.selenium.devtools.v112.page.model.NavigationEntry;
+import org.openqa.selenium.devtools.v112.page.model.TransitionType;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
