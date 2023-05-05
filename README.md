@@ -903,6 +903,7 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
 
   * [interactive performance analysis with Chrome DevTools](https://www.thisdot.co/blog/performance-analysis-with-chrome-devtools)
   * [replacing request url, postdata and headers](https://github.com/premsundarraj/SeleniumCDP)
+  * [getting connection information and cookies from chrome dev tools and use with curl](https://github.com/fipso/ccurl.sh)
 
 ### License
 This project is licensed under the terms of the MIT license.
