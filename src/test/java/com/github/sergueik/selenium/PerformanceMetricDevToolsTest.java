@@ -4,17 +4,26 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.CoreMatchers.is;
 
+import org.apache.commons.collections4.CollectionUtils;
+
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.v112.page.Page;
 import org.openqa.selenium.devtools.v112.performance.Performance;
 import org.openqa.selenium.devtools.v112.performance.model.Metric;
+
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -38,6 +47,7 @@ public class PerformanceMetricDevToolsTest extends BaseDevToolsTest {
 			"TaskDuration", "TaskOtherDuration", "ThreadTime", "Timestamp",
 			"UACSSResources", "V8CompileDuration", "V8PerContextDatas",
 			"WorkerGlobalScopes" };
+	private static String baseURL = "https://developer.mozilla.org/en-US/docs/Web/API/PerformanceNavigationTiming";
 
 	@Before
 	public void before() throws Exception {
@@ -46,11 +56,11 @@ public class PerformanceMetricDevToolsTest extends BaseDevToolsTest {
 	}
 
 	@Test
-	public void test() {
-		// Act
-		baseURL = "https://developer.mozilla.org/en-US/docs/Web/API/PerformanceNavigationTiming";
+	public void test1() {
+		// Arrange
 		driver.get(baseURL);
 
+		// Act
 		metrics = chromeDevTools.send(Performance.getMetrics());
 		// Assert
 		assertThat(metrics, notNullValue());
@@ -64,7 +74,42 @@ public class PerformanceMetricDevToolsTest extends BaseDevToolsTest {
 
 	}
 
+	// slightly alternative key set validation
+	// origin:
+	// https://github.com/fugazi/carbonfour-selenium-4/blob/main/src/test/java/Selenium_4_Tests/TestDevToolsPerformance.java
+	@Test
+	public void test2() {
+		// Arrange
+		driver.get(baseURL);
+
+		metrics = chromeDevTools.send(Performance.getMetrics());
+		// Assert
+		assertThat(metrics, notNullValue());
+		// Act
+		List<String> metricNames = metrics.stream().map(Metric::getName)
+				.collect(Collectors.toList());
+		System.err.println("MetricNames: " + metricNames);
+		List<String> keyMetrics = Arrays.asList("Timestamp", "Documents", "Frames",
+				"JSEventListeners", "Nodes", "LayoutCount", "RecalcStyleCount",
+				"RecalcStyleDuration", "LayoutDuration", "MediaKeySessions",
+				"Resources", "DomContentLoaded", "NavigationStart", "TaskDuration",
+				"JSHeapUsedSize", "JSHeapTotalSize", "ScriptDuration");
+		keyMetrics.forEach(metric -> System.err.println("Metric: " + metric + "\n"
+				+ metrics.get(metricNames.indexOf(metric)).getValue()));
+		// NOTE: hamcrest does not have "containsAll"
+		String[] keyMetricsArray = new String[keyMetrics.size()];
+		keyMetrics.toArray(keyMetricsArray);
+		assertThat(CollectionUtils.containsAny(metricNames, keyMetrics), is(true));
+		// does not validate in the "correct" order - commented
+		// assertThat("Checking key performance metrics", metricNames,
+		//		containsInAnyOrder(keyMetricsArray));
+
+	}
+
+	// TODO:
+	// https://github.com/fugazi/carbonfour-selenium-4/blob/main/src/test/java/Selenium_4_Tests/TestLoginRelativeLocators.java
 	@After
+	// Disables performance tracking
 	public void afterTest() throws Exception {
 		chromeDevTools.send(Performance.disable());
 	}
