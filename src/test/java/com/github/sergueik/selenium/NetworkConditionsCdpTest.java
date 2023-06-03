@@ -1,16 +1,22 @@
 package com.github.sergueik.selenium;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openqa.selenium.WebDriverException;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -26,6 +32,9 @@ public class NetworkConditionsCdpTest extends BaseCdpTest {
 	private static String baseURL = "https://www.wikipedia.org";
 	private static String command = "Network.emulateNetworkConditions";
 	private static Map<String, Object> params = new HashMap<>();
+	@Rule
+	public ExpectedException exceptionRule = ExpectedException.none();
+
 
 	@Before
 	public void beforeTest() {
@@ -38,12 +47,12 @@ public class NetworkConditionsCdpTest extends BaseCdpTest {
 
 	@After
 	public void afterTest() {
-
 		params.put("offline", false);
 		driver.executeCdpCommand(command, params);
 		driver.get("about:blank");
 	}
 
+	// https://www.baeldung.com/junit-assert-exception
 	@Test(expected = WebDriverException.class)
 	public void test1() throws IOException {
 		params.put("offline", true);
@@ -60,5 +69,16 @@ public class NetworkConditionsCdpTest extends BaseCdpTest {
 			driver.executeCdpCommand(command, params);
 		}
 	}
+
+	@Test
+	public void test2() {
+		exceptionRule.expect(WebDriverException.class);
+		exceptionRule.expectMessage(containsString("ERR_INTERNET_DISCONNECTED"));
+		params.put("offline", true);
+		driver.executeCdpCommand(command, params);
+		driver.get(baseURL);
+
+	}
+
 }
 
