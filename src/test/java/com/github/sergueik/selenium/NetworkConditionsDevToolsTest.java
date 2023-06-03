@@ -17,9 +17,11 @@ import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
- * based on: https://github.com/Bhakti-satalkar/junit-selenium-offline-web-cdp-se4/blob/master/src/test/java/com/lambdatest/toggleNetworkOffline.java
  * see also:
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-emulateNetworkConditions
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ConnectionType
@@ -43,7 +45,7 @@ public class NetworkConditionsDevToolsTest extends BaseDevToolsTest {
 		driver.get("about:blank");
 	}
 
-	@Test
+	@Test(expected = WebDriverException.class)
 	public void test1() throws IOException {
 		offline = true;
 		chromeDevTools
@@ -52,7 +54,10 @@ public class NetworkConditionsDevToolsTest extends BaseDevToolsTest {
 		try {
 			driver.get(baseURL);
 		} catch (WebDriverException e) {
-			System.err.println("Exception (ignored): " + e.toString());
+			assertThat(e.getMessage(), containsString("ERR_INTERNET_DISCONNECTED"));
+			System.err.println("Exception (ignored): " + e.getMessage());
+			// e.printStackTrace(System.err);
+			throw (e);
 		} finally {
 			offline = false;
 			chromeDevTools
@@ -62,18 +67,22 @@ public class NetworkConditionsDevToolsTest extends BaseDevToolsTest {
 		}
 	}
 
-	@Test
+	// based on:
+	// https://github.com/Bhakti-satalkar/junit-selenium-offline-web-cdp-se4/blob/master/src/test/java/com/lambdatest/toggleNetworkOffline.java
+	@Test(expected = WebDriverException.class)
 	public void test2() throws IOException {
 		WebDriver augmentedDriver = new Augmenter().augment(driver);
 		ChromiumNetworkConditions networkConditions = new ChromiumNetworkConditions();
 		networkConditions.setOffline(true);
 		((HasNetworkConditions) augmentedDriver)
 				.setNetworkConditions(networkConditions);
-
 		try {
 			driver.get(baseURL);
 		} catch (WebDriverException e) {
-			System.err.println("Exception (ignored): " + e.toString());
+			assertThat(e.getMessage(), containsString("ERR_INTERNET_DISCONNECTED"));
+			System.err.println("Exception (ignored): " + e.getMessage());
+			// e.printStackTrace(System.err);
+			throw (e);
 		} finally {
 			((HasNetworkConditions) augmentedDriver)
 					.setNetworkConditions(new ChromiumNetworkConditions());
