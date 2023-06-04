@@ -8,45 +8,42 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.TimeZone;
 
 import org.junit.After;
 import org.junit.Test;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
+import org.openqa.selenium.devtools.v112.emulation.Emulation;
+
 /**
- * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
- * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setTimezoneOverride
- *
+ * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setUserAgentOverride
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
-public class TimeZoneCdpTest extends BaseCdpTest {
 
-	private static String command = "Emulation.setTimezoneOverride";
-	private static Map<String, Object> params = new HashMap<>();
+public class TimeZoneDevToolsTest extends BaseDevToolsTest {
 
+	private static WebElement element = null;
+	private static By locator = By.xpath(
+			"//table[@id=\"timezone\"]/tbody/tr/td[contains(text(),\"Time on Local Machine\")]/../td[@id=\"toString\"]");
 	private static final String timezoneId = "America/Lima";
 	private static final String timezoneDescription = "Peru Standard Time";
-	// https://docs.oracle.com/middleware/12211/wcs/tag-ref/MISC/TimeZones.html
 
-	static {
-		{
-			params.put("timezoneId", timezoneId);
-		}
-	};
 	private static String baseURL = "https://webbrowsertools.com/timezone/";
 
-	// see also:
-	// https://github.com/SrinivasanTarget/selenium4CDPsamples/blob/master/src/test/java/DevToolsTest.java#L169
 	@Test
 	public void test1() {
+		// does not work:
+		// Assume.assumeTrue(pingHost("webbrowsertools.com", 443, 3));
+		// NOTE: nc -z webbrowsertools.com 443
+		// echo $?
+		// 0
+
 		// Arrange
-		driver.executeCdpCommand(command, params);
+		chromeDevTools.send(Emulation.setTimezoneOverride(timezoneId));
 		// Act
 		driver.get(baseURL);
 		WebElement element = driver.findElement(By.xpath(
@@ -61,14 +58,16 @@ public class TimeZoneCdpTest extends BaseCdpTest {
 
 	}
 
-	@Test(expected = WebDriverException.class)
+	@Test(expected = NullPointerException.class)
+	// "If The timezone identifier is empty, disables the override and
+	// restores default host system timezone."
+	// NOTE: sending null leads to NPE
 	public void test2() {
+		// Arrange
 		try {
-			// Arrange
-			driver.executeCdpCommand(command, new HashMap<>());
-			// Assert
-		} catch (WebDriverException e) {
-			System.err.println("Web Driver exception in " + command + " (expected): "
+			chromeDevTools.send(Emulation.setTimezoneOverride(null));
+		} catch (NullPointerException e) {
+			System.err.println("Null Pointer exception (expected): "
 					+ Utils.processExceptionMessage(e.getMessage()));
 			throw e;
 		}
@@ -80,8 +79,8 @@ public class TimeZoneCdpTest extends BaseCdpTest {
 		TimeZone timeZone = Calendar.getInstance().getTimeZone();
 		System.err.println(String.format("Current TimeZone is: %s (%s) ",
 				timeZone.getID(), timeZone.getDisplayName()));
-		params.put("timezoneId", timeZone.getID());
-		driver.executeCdpCommand(command, params);
+
+		chromeDevTools.send(Emulation.setTimezoneOverride(timeZone.getID()));
 		driver.get("about:blank");
 	}
 
