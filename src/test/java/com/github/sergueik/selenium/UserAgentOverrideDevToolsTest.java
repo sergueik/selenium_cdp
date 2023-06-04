@@ -17,6 +17,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.idealized.Network.UserAgent;
+import org.openqa.selenium.devtools.v112.emulation.Emulation;
 //import org.openqa.selenium.devtools.Console;
 // import org.openqa.selenium.devtools.Log;
 import org.openqa.selenium.devtools.v112.network.Network;
@@ -40,7 +41,7 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 	public final static String consoleMessage = "message from test id #" + id;
 
 	@Test
-	public void test() {
+	public void test1() {
 		// the site may be down, and it can also reject autoated browsing
 		// pingHost() does not work reliably yet
 		// Assume.assumeTrue(pingHost("www.whoishostingthis.com", 443, 3));
@@ -64,8 +65,15 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 		try {
 			UserAgent userAgent = new UserAgent("python 2.7");
 			userAgent.platform("windows");
-			chromeDevTools.send(Network.setUserAgentOverride(userAgent.userAgent(),
-					Optional.empty(), Optional.empty(), Optional.empty()));
+			// @formatter:off
+			chromeDevTools.send(
+					Network.setUserAgentOverride(
+							userAgent.userAgent(), // userAgent 
+							Optional.empty(), // acceptLanguage
+							Optional.empty(), // platform
+							Optional.empty()) // userAgentMetadatas
+					);
+			// @formatter:on
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception (ignored): "
 					+ Utils.processExceptionMessage(e.getMessage()));
@@ -83,4 +91,56 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 				.println("Updated USER-AGENT: " + element.getAttribute("innerText"));
 	}
 
+	@Test
+	public void test2() {
+		// the site may be down, and it can also reject autoated browsing
+		// pingHost() does not work reliably yet
+		// Assume.assumeTrue(pingHost("www.whoishostingthis.com", 443, 3));
+		// Arrange
+		driver.get(baseURL);
+		locator = By.cssSelector("#content-base div.content-block-main");
+		elements = driver.findElements(locator);
+		if (elements.size() > 0) {
+			// You have been blocked
+			return;
+		}
+
+		element = driver.findElement(locator);
+		Utils.highlight(element);
+		Utils.sleep(100);
+		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
+		System.err
+				.println("Vanilla USER-AGENT: " + element.getAttribute("innerText"));
+
+		// Act
+		try {
+			UserAgent userAgent = new UserAgent("python 3.8");
+			userAgent.platform("windows");
+			// @formatter:off
+			chromeDevTools.send(
+					Emulation.setUserAgentOverride(
+							userAgent.userAgent(), // userAgent 
+							Optional.empty(), // acceptLanguage
+							Optional.empty(), // platform
+							Optional.empty()) // userAgentMetadatas
+					);
+			// @formatter:on
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			System.err.println("Exception " + e.toString());
+			throw (new RuntimeException(e));
+		}
+		driver.navigate().refresh();
+		Utils.sleep(1000);
+
+		element = driver.findElement(locator);
+		assertThat(element.isDisplayed(), is(true));
+		assertThat(element.getAttribute("innerText"), is("python 3.8"));
+		System.err
+				.println("Updated USER-AGENT: " + element.getAttribute("innerText"));
+	}
+
 }
+
