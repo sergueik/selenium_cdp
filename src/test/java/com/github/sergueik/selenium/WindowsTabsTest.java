@@ -1,38 +1,31 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2022,2023 Serguei Kouzmine
+ */
+
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.nio.file.Paths;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.WindowType;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import org.openqa.selenium.net.PortProber;
-
-import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.NoSuchSessionException;
-import java.util.Iterator;
-import java.util.List;
+import org.openqa.selenium.NoSuchWindowException;
+import org.openqa.selenium.WindowType;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
@@ -40,6 +33,8 @@ import java.util.List;
  *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
+
+@SuppressWarnings("unchecked")
 
 public class WindowsTabsTest extends BaseCdpTest {
 
@@ -184,6 +179,7 @@ public class WindowsTabsTest extends BaseCdpTest {
 		Utils.sleep(1000);
 	}
 
+	
 	@Test
 	// https://github.com/qtacore/chrome_master/blob/master/chrome_master/input_handler.py#L32
 	// https://www.javadoc.io/static/com.machinepublishers/jbrowserdriver/1.1.1/org/openqa/selenium/WindowType.html
@@ -233,11 +229,11 @@ public class WindowsTabsTest extends BaseCdpTest {
 
 	// utilities
 	private void openNewTab(String url) {
-		this.driver.switchTo().newWindow(WindowType.TAB).get(url);
+		BaseCdpTest.driver.switchTo().newWindow(WindowType.TAB).get(url);
 	}
 
 	private void openNewWindow(String url) {
-		this.driver.switchTo().newWindow(WindowType.WINDOW).get(url);
+		BaseCdpTest.driver.switchTo().newWindow(WindowType.WINDOW).get(url);
 	}
 
 	public Set<String> getAllWindows() {

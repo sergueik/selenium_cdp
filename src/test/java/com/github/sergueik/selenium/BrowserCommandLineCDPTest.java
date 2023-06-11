@@ -3,7 +3,7 @@ package com.github.sergueik.selenium;
 import static org.hamcrest.CoreMatchers.is;
 
 /**
- * Copyright 2022 Serguei Kouzmine
+ * Copyright 2022,2023 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -25,12 +25,11 @@ import org.junit.Test;
 
 public class BrowserCommandLineCDPTest extends BaseCdpTest {
 
-	private final static String url = "about:blank";
-
 	private static String command = "Browser.getBrowserCommandLine";
 	private static Map<String, Object> result = new HashMap<>();
 	private static List<String> results;
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
 		// Act
@@ -40,9 +39,8 @@ public class BrowserCommandLineCDPTest extends BaseCdpTest {
 
 		assertThat(result instanceof Map<?, ?>, is(true));
 		assertThat(result.containsKey("arguments"), is(true));
-		// histograms
 		assertThat(result.get("arguments") instanceof List<?>, is(true));
-		results = ((List<String>) result.get("arguments"));
+		results = (List<String>) result.get("arguments");
 		assertThat(results.size(), greaterThan(1));
 		System.err.println(String.join("\n", results));
 	}

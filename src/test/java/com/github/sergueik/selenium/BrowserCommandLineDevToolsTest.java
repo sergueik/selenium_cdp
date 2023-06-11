@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2022 Serguei Kouzmine
+ * Copyright 2022,2023 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -13,7 +13,6 @@ import java.util.Optional;
 
 import org.junit.Test;
 import org.openqa.selenium.devtools.v112.browser.Browser;
-import org.openqa.selenium.devtools.v112.browser.model.Histogram;
 
 /**
  * 
@@ -25,7 +24,6 @@ import org.openqa.selenium.devtools.v112.browser.model.Histogram;
 
 public class BrowserCommandLineDevToolsTest extends BaseDevToolsTest {
 
-	private final static String url = "about:blank";
 	private static List<String> results;
 
 	@Test

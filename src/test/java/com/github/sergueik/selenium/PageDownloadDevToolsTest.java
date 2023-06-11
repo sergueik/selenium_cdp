@@ -1,4 +1,7 @@
 package com.github.sergueik.selenium;
+/**
+ * Copyright 2022,2023 Serguei Kouzmine
+ */
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,6 +33,7 @@ import org.openqa.selenium.devtools.v112.page.model.DownloadWillBegin;
  * https://chromedevtools.github.io/devtools-protocol/tot/Page/#event-downloadProgres
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
+
 @SuppressWarnings("deprecation")
 
 public class PageDownloadDevToolsTest extends BaseDevToolsTest {
