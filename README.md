@@ -853,6 +853,86 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
 
   * To get Google Chrome updates past version 108,  one needs Windows 10 or later. Some development environment computers are using Windows 8.1
 
+### Note
+
+* When Chromium browser installed via snapd on Ubuntu __20.04__, all tests are failing with
+
+```text
+org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. Message: unknown error: DevToolsActivePort file doesn't exist 
+Host info: host: 'lenovoy40-1', ip: '127.0.1.1'
+Build info: version: '4.10.0', revision: 'c14d967899'
+System info: os.name: 'Linux', os.arch: 'amd64', os.version: '5.4.0-150-generic', java.version: '1.8.0_161'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [null, newSession {capabilities=[Capabilities {browserName: chrome, goog:chromeOptions: {args: [--remote-allow-origins=*, --allow-insecure-localhost, --allow-running-insecure-co..., --browser.download.folderLi..., --browser.helperApps.neverA..., --disable-blink-features=Au..., --disable-default-app, --disable-dev-shm-usage, --disable-extensions, --disable-gpu, --disable-infobars, --disable-in-process-stack-..., --disable-logging, --disable-notifications, --disable-popup-blocking, --disable-save-password-bubble, --disable-translate, --disable-web-security, --enable-local-file-accesses, --ignore-certificate-errors, --ignore-certificate-errors, --ignore-ssl-errors=true, --log-level=3, --no-proxy-server, --no-sandbox, --output=/dev/null, --ssl-protocol=any, --user-agent=Mozilla/5.0 (W...], extensions: []}}]}]
+	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:140)
+	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:96)
+	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:68)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:163)
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.invokeExecute(DriverCommandExecutor.java:196)
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:171)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:531)
+	at org.openqa.selenium.remote.RemoteWebDriver.startSession(RemoteWebDriver.java:227)
+	at org.openqa.selenium.remote.RemoteWebDriver.<init>(RemoteWebDriver.java:154)
+	at org.openqa.selenium.chromium.ChromiumDriver.<init>(ChromiumDriver.java:107)
+	at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:87)
+	at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:82)
+	at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:71)
+	at com.github.sergueik.selenium.BaseCdpTest.beforeClass(BaseCdpTest.java:124)
+
+```
+* when Chromium browser installed [via apt](https://askubuntu.com/questions/1204571/how-to-install-chromium-without-snap), from 
+```sh
+sudo add-apt-repository ppa:system76/pop
+sudo apt update
+sudo apt install -y -q chromium
+```
+the tests would work but the browser is quite old version __83__.
+
+The latest available version of chromium-broser on `http://archive.ubuntu.com/ubuntu/pool/universe/c/chromium-browser/` is __112__
+
+NOTE: will have to download a few packages to be able to install `chromium-browser`:
+
+* `chromium-browser_112.0.5615.49-0ubuntu0.18.04.1_amd64.deb`
+* `chromium-browser-l10n_112.0.5615.49-0ubuntu0.18.04.1_all.deb`
+* `chromium-codecs-ffmpeg_112.0.5615.49-0ubuntu0.18.04.1_amd64.deb`
+* `chromium-codecs-ffmpeg-extra_112.0.5615.49-0ubuntu0.18.04.1_amd64.deb`
+
+and install them in specific order:
+```sh
+dpkg -i chromium-codecs-ffmpeg_112.0.5615.49-0ubuntu0.18.04.1_amd64.deb 
+dpkg -i chromium-codecs-ffmpeg-extra_112.0.5615.49-0ubuntu0.18.04.1_amd64.deb 
+dpkg -i chromium-browser_112.0.5615.49-0ubuntu0.18.04.1_amd64.deb 
+```
+
+Since the version mismatch the test log will contain plenty of
+```text
+Match
+WARNING: Unable to find CDP implementation matching 112
+Jun 15, 2023 9:56:53 AM org.openqa.selenium.chromium.ChromiumDriver lambda$new$4
+WARNING: Unable to find version of CDP to use for . You may need to include a dependency on a specific version of the CDP using something similar to `org.seleniumhq.selenium:selenium-devtools-v86:4.10.0` where the version ("v86") matches the version of the chromium-based browser you're using and the version number of the artifact is the same as Selenium's.
+
+```
+
+* when Chrome latest stable deb package is downloaded and chrome is  installed via `dpkg`
+
+```sh
+cd ~/Downloads
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+apt install -y -q ./google-chrome-stable_current_amd64.deb
+```
+
+the tests work
+
+NOTE: is is better to use
+
+```sh
+dpkg -i ./google-chrome-stable_current_amd64.deb
+```
+the `apt` has the warning:
+```text
+W: Repository is broken: google-chrome-stable:amd64 (= 114.0.5735.133-1) has no Size information
+```
+
 ### See Also
 
   * [chrome devtools](https://github.com/ChromeDevTools/awesome-chrome-devtools) project
