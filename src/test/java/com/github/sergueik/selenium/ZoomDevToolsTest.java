@@ -15,8 +15,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v112.input.Input;
-import org.openqa.selenium.devtools.v112.input.Input.DispatchKeyEventType;
+import org.openqa.selenium.devtools.v113.input.Input;
+import org.openqa.selenium.devtools.v113.input.Input.DispatchKeyEventType;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

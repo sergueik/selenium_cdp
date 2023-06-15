@@ -11,15 +11,14 @@ import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.json.Json;
 import org.openqa.selenium.json.JsonInput;
-import org.openqa.selenium.devtools.v112.browser.Browser;
-import org.openqa.selenium.devtools.v112.browser.Browser.GetVersionResponse;
+import org.openqa.selenium.devtools.v113.browser.Browser;
+import org.openqa.selenium.devtools.v113.browser.Browser.GetVersionResponse;
 
 import com.google.common.collect.ImmutableMap;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
- * see: https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-
- * getVersion
+ * see: https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getVersion
  *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
