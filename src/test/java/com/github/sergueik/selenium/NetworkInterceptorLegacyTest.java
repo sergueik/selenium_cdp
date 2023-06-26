@@ -30,10 +30,14 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
+ * https://www.selenium.dev/documentation/webdriver/bidirectional/bidi_api/#network-interception
+ * 
  * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/devtools/NetworkInterceptor.html
  * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/remote/http/Route.html
- * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/remote/http/Route.PreicatedConfig.html
+ * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/remote/http/Route.PredicatedConfig.html
+ * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/remote/http/HttpHandler.html
  * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/remote/http/HttpRequest.html
+ *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -43,7 +47,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class NetworkInterceptorLegacyTest extends BaseDevToolsTest {
 
 	private static String url = null;
-	private static NetworkInterceptor networkInterceptor;
+	private static NetworkInterceptor networkInterceptor;	
+	private static Predicate<HttpRequest> predicate;
+	private static PredicatedConfig predicatedConfig;
+	private static Route route;
 	private static WebDriverWait wait;
 	private static int flexibleWait = 10;
 	private static int pollingInterval = 500;
@@ -63,14 +70,14 @@ public class NetworkInterceptorLegacyTest extends BaseDevToolsTest {
 								&& req.getUri().matches(".*\\.(?:png|jpg|jpeg)$"))
 						.to(() -> req -> new HttpResponse().setStatus(404)));
 						*/
-		Predicate<HttpRequest> predicate = (HttpRequest request) -> {
+		predicate = (HttpRequest request) -> {
 			return HttpMethod.GET.equals(request.getMethod())
 					&& request.getUri().matches(".*\\.(?:png|jpg|jpeg)$");
 		};
-		PredicatedConfig predicatedConfig = Route.matching(predicate);
+		predicatedConfig = Route.matching(predicate);
 		Supplier<HttpHandler> handler = () -> (
 				HttpRequest request) -> new HttpResponse().setStatus(404);
-		Route route = predicatedConfig.to(handler);
+		route = predicatedConfig.to(handler);
 		networkInterceptor = new NetworkInterceptor(driver, route);
 		// occasional exception in @Before
 		// Caused by: org.openqa.selenium.devtools.DevToolsException:
@@ -84,12 +91,14 @@ public class NetworkInterceptorLegacyTest extends BaseDevToolsTest {
 		url = "https://demoqa.com/books";
 		driver.navigate().to(url);
 		element = driver.findElement(By.cssSelector("header img"));
+		System.err.println("test1: found element" );
 		Long naturalWidth = (Long) driver
 				.executeScript("return arguments[0].naturalWidth", element);
 		Long naturalHeight = (Long) driver
 				.executeScript("return arguments[0].naturalHeight", element);
 		assertThat(naturalWidth, is(0L));
 		assertThat(naturalHeight, is(0L));
+		System.err.println("test1: done" );
 	}
 
 	// @Ignore
@@ -104,6 +113,7 @@ public class NetworkInterceptorLegacyTest extends BaseDevToolsTest {
 		element = wait.until(ExpectedConditions.visibilityOfElementLocated(
 				By.cssSelector("img.central-featured-logo")));
 
+		System.err.println("test2: found element" );
 		Long naturalWidth = (Long) driver
 				.executeScript("return arguments[0].naturalWidth", element);
 		Long naturalHeight = (Long) driver
@@ -125,3 +135,4 @@ public class NetworkInterceptorLegacyTest extends BaseDevToolsTest {
 	}
 	*/
 }
+
