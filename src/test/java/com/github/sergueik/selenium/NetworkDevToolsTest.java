@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2023 Serguei Kouzmine
  */
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -114,6 +114,7 @@ public class NetworkDevToolsTest {
 	public void before() throws Exception {
 		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
 				Optional.empty()));
+		chromeDevTools.send(Network.setCacheDisabled(true));
 	}
 
 	// https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setExtraHTTPHeaders
@@ -160,14 +161,28 @@ public class NetworkDevToolsTest {
 						.println(String.format("Network request %s data received at %s",
 								event.getRequestId(), event.getTimestamp()));
 		});
-		chromeDevTools.send(Network.setCacheDisabled(true));
 		driver.get(url);
+	}
 
+	@Test
+	public void test3() {
+		chromeDevTools.addListener(Network.responseReceived(),
+				(ResponseReceived event) -> {
+					Response response = event.getResponse();
+					System.err.println(String.format(
+							"Network request of %s status is %s Headers: %s",
+							response.getUrl(), response.getStatus(), response.getHeaders()));
+				});
+
+		driver.get("http://httpbin.org/basic-auth/guest/wrong_password");
+		// 401 - Unauthorized
+		driver.get("http://httpbin.org/status/403");
+		// 403 - Forbidden
 	}
 
 	// https://github.com/SeleniumHQ/selenium/blob/trunk/common/devtools/chromium/v93/browser_protocol.pdl#L5763
 	@Test
-	public void test3() {
+	public void test4() {
 		final RequestId[] requestIdCaptures = new RequestId[1];
 		chromeDevTools.addListener(Network.responseReceived(),
 				(ResponseReceived event) -> {
@@ -207,9 +222,9 @@ public class NetworkDevToolsTest {
 								+ Utils.processExceptionMessage(e.getMessage()));
 					}
 				});
-		chromeDevTools.send(Network.setCacheDisabled(true));
 		driver.get(url);
 
 	}
 
 }
+
