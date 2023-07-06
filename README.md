@@ -913,13 +913,45 @@ WARNING: Unable to find version of CDP to use for . You may need to include a de
 
 ```
 
-* when Chrome latest stable deb package is downloaded and chrome is  installed via `dpkg`
+* when Chrome latest stable deb package is downloaded and chrome is installed via `dpkg`
 
 ```sh
 cd ~/Downloads
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-apt install -y -q ./google-chrome-stable_current_amd64.deb
+sudo apt install -y -q ./google-chrome-stable_current_amd64.deb
 ```
+a longer version
+
+```sh
+cd ~/Downloads
+wget -nv "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+sudo apt-get install -qqy libxss1 libappindicator1 libindicator7
+sudo dpkg -i google-chrome-stable_current_amd64.deb
+rm google-chrome-stable_current_amd64.deb
+sudo apt-get install -qqy -f google-chrome-stable
+```
+```sh
+dpkg -l google-chrome-stable
+```
+```text
+Desired=Unknown/Install/Remove/Purge/Hold
+| Status=Not/Inst/Conf-files/Unpacked/halF-conf/Half-inst/trig-aWait/Trig-pend
+|/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
+||/ Name           Version      Architecture Description
++++-==============-============-============-=================================
+ii  google-chrome- 114.0.5735.1 amd64        The web browser from Google
+```
+Download latest Chromedriver
+```sh
+CHROMEDRIVER_VERSION=$(curl -s "http://chromedriver.storage.googleapis.com/LATEST_RELEASE")
+PACKAGE_ARCHIVE='chromedriver_linux64.zip'
+PLATFORM=linux64
+URL="http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_${PLATFORM}.zip"
+wget -O $PACKAGE_ARCHIVE -nv $URL
+unzip -o $PACKAGE_ARCHIVE
+```
+
+
 
 the tests work
 
@@ -984,6 +1016,7 @@ W: Repository is broken: google-chrome-stable:amd64 (= 114.0.5735.133-1) has no 
   * [interactive performance analysis with Chrome DevTools](https://www.thisdot.co/blog/performance-analysis-with-chrome-devtools)
   * [replacing request url, postdata and headers](https://github.com/premsundarraj/SeleniumCDP)
   * [getting connection information and cookies from chrome dev tools and use with curl](https://github.com/fipso/ccurl.sh)
+  * [How to Install Google Chrome Web Browser on Ubuntu 18.04](https://linuxize.com/post/how-to-install-google-chrome-web-browser-on-ubuntu-18-04/)
 
 ### License
 This project is licensed under the terms of the MIT license.
