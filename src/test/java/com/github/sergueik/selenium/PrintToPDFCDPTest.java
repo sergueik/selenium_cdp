@@ -1,6 +1,6 @@
 package com.github.sergueik.selenium;
 /**
- * Copyright 2022 Serguei Kouzmine
+ * Copyright 2022,2023 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -22,6 +22,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,6 +49,8 @@ import com.google.gson.JsonSyntaxException;
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
  * 
  * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-printToPDF
+ * see also:
+ * https://github.com/AlexBaranowski/chrome-print-page-python/blob/master/print_with_chrome.py
  */
 
 // NOTE: not extending BaseDevToolsTest
@@ -54,7 +58,7 @@ public class PrintToPDFCDPTest {
 
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> params = new HashMap<>();
-
+	private static boolean keepFile = true;
 	private static String command = null;
 	private static String magic = null;
 	private static boolean runHeadless = true;
@@ -116,7 +120,8 @@ public class PrintToPDFCDPTest {
 
 	@After
 	public void afterTest() {
-		new File(System.getProperty("user.dir") + "/" + filename).delete();
+		if (!keepFile)
+			new File(System.getProperty("user.dir") + "/" + filename).delete();
 		driver.get("about:blank");
 	}
 
@@ -126,9 +131,14 @@ public class PrintToPDFCDPTest {
 		driver.get(baseURL);
 	}
 
-	//
+	// print A4 (default is Letter)
+	// for page dimensions see https://papersizes.io/a/a4
+	// https://css.paperplaza.net/conferences/support/page.php
+	// NOTE: top margin is different on the first page and the rest
+	// (not attempted in this test)
 	@Test
-	public void test1() {
+	public void test2() {
+		filename = "result2.pdf";
 		command = "Page.printToPDF";
 		params = new HashMap<>();
 		params.put("landscape", landscape);
@@ -138,16 +148,13 @@ public class PrintToPDFCDPTest {
 
 		params.put("transferMode", transferMode);
 
-		// "paperHeight",
-		// "paperWidth",
-		// "marginTop",
-		// "marginBottom",
-		// "marginLeft",
-		// "marginRight",
-		// "pageRanges",
-		// "headerTemplate",
-		// "footerTemplate",
-		// "preferCSSPageSize",
+		params.put("paperHeight", 11.69);
+		params.put("paperWidth", 8.27);
+		params.put("marginTop", 1.0);
+		params.put("marginBottom", 1.44);
+		params.put("marginLeft", 0.75);
+		params.put("marginRight", 0.52);
+
 		// Act
 
 		result = driver.executeCdpCommand(command, params);
@@ -171,6 +178,9 @@ public class PrintToPDFCDPTest {
 			assertThat(pdf.text, containsString("Français"));
 			assertThat(pdf.encrypted, is(false));
 			assertThat(pdf.numberOfPages, equalTo(2));
+			assertThat(pdf.creator, is("Chromium"));
+			assertThat(pdf.getHeight(), equalTo(11.69));
+			assertThat(pdf.getWidth(), equalTo(8.26));
 
 		} catch (UnsupportedEncodingException e) {
 			System.err.println("Exception (ignored): " + e.toString());
@@ -190,15 +200,84 @@ public class PrintToPDFCDPTest {
 
 	}
 
-	private void writeToFile(byte[] data, String fileName) {
+	// enforce Letter (also the default)
+	// https://css.paperplaza.net/conferences/support/page.php
+	// NOTE: top margin is different on the first page and the rest
+	// (not attempted in this test)
+	@Test
+	public void test1() {
+		filename = "result1.pdf";
+		command = "Page.printToPDF";
+		params = new HashMap<>();
+		params.put("landscape", landscape);
+		params.put("displayHeaderFooter", displayHeaderFooter);
+		params.put("printBackground", printBackground);
+		params.put("preferCSSPageSize", preferCSSPageSize);
+
+		params.put("transferMode", transferMode);
+
+		params.put("paperHeight", 11.0);
+		params.put("paperWidth", 8.5);
+		params.put("marginTop", 1.0);
+		params.put("marginBottom", 0.75);
+		params.put("marginLeft", 0.75);
+		params.put("marginRight", 0.75);
+
+		// Act
+
+		result = driver.executeCdpCommand(command, params);
+
+		assertThat(result, notNullValue());
+		assertThat(result, hasKey("data"));
+
+		try {
+			body = new String(
+					Base64.decodeBase64(((String) result.get("data")).getBytes("UTF8")));
+			assertThat(body, notNullValue());
+			magic = body.substring(0, 9);
+			assertThat(magic, containsString("%PDF"));
+			writeToFile(Base64.decodeBase64((String) result.get("data")), filename);
+
+			PDF pdf = new PDF(
+					new File(System.getProperty("user.dir") + "/" + filename));
+			assertThat(pdf.text, containsString("The Free Encyclopedia"));
+			// NOTE: locale UTF8
+			assertThat(pdf.text, containsString("Русский"));
+			assertThat(pdf.text, containsString("Français"));
+			assertThat(pdf.encrypted, is(false));
+			assertThat(pdf.numberOfPages, equalTo(2));
+			assertThat(pdf.creator, is("Chromium"));
+			assertThat(pdf.getHeight(), equalTo(11.0));
+			assertThat(pdf.getWidth(), equalTo(8.5));
+		} catch (UnsupportedEncodingException e) {
+			System.err.println("Exception (ignored): " + e.toString());
+		} catch (JsonSyntaxException e) {
+			System.err.println("JSON Syntax exception in " + command + " (ignored): "
+					+ e.toString());
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception in " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (IOException e) {
+			System.err.println("Exception saving image (ignored): " + e.toString());
+		} catch (Exception e) {
+			System.err.println("Exception in " + command + "  " + e.toString());
+			e.printStackTrace();
+			throw (new RuntimeException(e));
+		}
+
+	}
+
+	private void writeToFile(byte[] data, String filename) {
 		try {
 			FileOutputStream fileOutputStream = new FileOutputStream(filename);
 			DataOutputStream out = new DataOutputStream(fileOutputStream);
 			out.write(data);
 			// appears to be blank
 			out.close();
+			System.err.println("Wrote: " + filename);
 		} catch (Exception e) {
-			System.err.println("Exception saving file " + e.toString());
+			System.err
+					.println("Exception saving file " + filename + " " + e.toString());
 			e.printStackTrace();
 			throw (new RuntimeException(e));
 		}
@@ -221,6 +300,16 @@ public class PrintToPDFCDPTest {
 		public final boolean encrypted;
 		public final boolean signed;
 		public final String signerName;
+		private double height;
+		private double width;
+
+		public double getHeight() {
+			return height;
+		}
+
+		public double getWidth() {
+			return width;
+		}
 
 		private PDF(String name, byte[] content) {
 			this(name, content, 1, Integer.MAX_VALUE);
@@ -236,6 +325,7 @@ public class PrintToPDFCDPTest {
 					pdfTextStripper.setEndPage(endPage);
 					this.text = pdfTextStripper.getText(pdf);
 					this.numberOfPages = pdf.getNumberOfPages();
+					pdf.getDocumentInformation().getPropertyStringValue("body");
 					this.author = pdf.getDocumentInformation().getAuthor();
 					// this.creationDate = pdf.getDocumentInformation().getCreationDate();
 					this.creator = pdf.getDocumentInformation().getCreator();
@@ -244,6 +334,26 @@ public class PrintToPDFCDPTest {
 					this.subject = pdf.getDocumentInformation().getSubject();
 					this.title = pdf.getDocumentInformation().getTitle();
 					this.encrypted = pdf.isEncrypted();
+					// find pdf page dimensions
+					// https://stackoverflow.com/questions/20904191/pdfbox-find-page-dimensions
+					float pageHeight = pdf.getPage(0).getMediaBox().getHeight() / 72;
+					float pageWidth = pdf.getPage(0).getMediaBox().getWidth() / 72;
+
+					// round down to 2 decimal places
+					// http://www.java2s.com/example/java-utility-method/decimal-round-index-1.html
+					NumberFormat format = NumberFormat.getInstance();
+					format.setGroupingUsed(false);
+					format.setMaximumFractionDigits(2);
+					try {
+						this.height = format.parse(format.format(pageHeight)).doubleValue();
+					} catch (ParseException e) {
+						this.height = pageHeight;
+					}
+					try {
+						this.width = format.parse(format.format(pageWidth)).doubleValue();
+					} catch (ParseException e) {
+						this.width = pageWidth;
+					}
 
 					PDSignature signature = pdf.getLastSignatureDictionary();
 					this.signed = signature != null;
