@@ -965,6 +965,11 @@ the `apt` has the warning:
 W: Repository is broken: google-chrome-stable:amd64 (= 114.0.5735.133-1) has no Size information
 ```
 
+### Note
+
+Starting with version __115__ the Chrome browser and ChromeDriver information is located on __Chrome for Testing availability__ [dashboard](https://googlechromelabs.github.io/chrome-for-testing/). The instructions of version lookup are provided on [version selection hint page](https://chromedriver.chromium.org/downloads/version-selection). Prior to that the `chromedriver` download links were posted on Chromedriver Downloads [page](https://chromedriver.chromium.org/downloads)
+
+
 ### See Also
 
   * [chrome devtools](https://github.com/ChromeDevTools/awesome-chrome-devtools) project

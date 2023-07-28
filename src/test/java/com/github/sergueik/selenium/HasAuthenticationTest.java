@@ -8,26 +8,26 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Predicate;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.HasAuthentication;
 import org.openqa.selenium.UsernameAndPassword;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 /**
  * Selected test scenarios for Selenium WebDriver
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ * 
  * based on discussion https://automated-testing.info/t/pri-ozhidanii-alerta-poyavlyaetsya-oshibka-o-ego-otsutstvii/29094/3
+ * and https://github.com/024RahulRaman/ChromeDevTools/blob/master/src/chromeDevTools/BasicAuthentication.java
  * https://www.selenium.dev/selenium/docs/api/java/index.html?org/openqa/selenium/HasAuthentication.html
  * see also https://stackoverflow.com/questions/42114940/how-to-handle-authentication-popup-in-chrome-with-selenium-webdriver-using-java
  * see also https://stackoverflow.com/questions/50834002/chrome-headless-browser-with-corporate-proxy-authetication-not-working/67321556#67321556
@@ -36,16 +36,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class HasAuthenticationTest extends BaseCdpTest {
 
-	private static String command = null;
 	private static String baseURL = "https://jigsaw.w3.org/HTTP/";
 	private String username = null;
 	private String password = null;
 	private static WebElement element = null;
-	private static List<WebElement> elements = new ArrayList<>();
 
-	private static Map<String, Object> params = new HashMap<>();
-	private static Map<String, Object> result = new HashMap<>();
-	private static Map<String, Object> result2 = new HashMap<>();
 	private HasAuthentication authentication;
 
 	@Before
@@ -127,5 +122,42 @@ public class HasAuthenticationTest extends BaseCdpTest {
 		Utils.highlight(element);
 		element.click();
 		Utils.sleep(1000);
+	}
+
+	@Test
+	public void test5() {
+		username = "guest";
+		password = "guest";
+
+		baseURL = String.format("http://httpbin.org/basic-auth/%s/%s", username,
+				password);
+		String hostname = baseURL.replaceAll("https?://", "").replaceAll("/.*$",
+				"");
+		Predicate<URI> uriPredicate = uri -> uri.getHost().contains(hostname);
+		authentication.register(uriPredicate,
+				UsernameAndPassword.of(username, password));
+		driver.get(baseURL);
+		Utils.sleep(100);
+		String pageSource = driver.getPageSource();
+		assertThat(pageSource, containsString("\"authenticated\": true"));
+		// System.err.println(pageSource);
+
+	}
+
+	// a small variation - no url filtering
+	@Test
+	public void test6() {
+		username = "guest";
+		password = "guest";
+
+		baseURL = String.format("http://httpbin.org/basic-auth/%s/%s", username,
+				password);
+		authentication.register(UsernameAndPassword.of(username, password));
+		driver.get(baseURL);
+		Utils.sleep(100);
+		String pageSource = driver.getPageSource();
+		assertThat(pageSource, containsString("\"authenticated\": true"));
+		// System.err.println(pageSource);
+
 	}
 }
