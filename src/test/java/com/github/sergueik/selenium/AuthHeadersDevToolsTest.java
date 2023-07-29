@@ -26,14 +26,15 @@ import org.openqa.selenium.devtools.v113.network.model.Headers;
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setExtraHTTPHeaders
  * https://chromedevtools.github.io/devtools-protocol/tot/Network#method-enable
- * 
+ * see also: https://stackoverflow.com/questions/50834002/chrome-headless-browser-with-corporate-proxy-authetication-not-working/67321556#67321556
+ * see also: https://medium.com/automationmaster/handling-basic-authentication-window-with-selenium-webdriver-and-devtools-api-ec716965fdb6 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
 public class AuthHeadersDevToolsTest extends BaseDevToolsTest {
 
 	private int cnt = 0;
-	// to test locally fire a dummy server and monitor the ariving the headers
+	// to test locally start a dummy server and monitor the ariving headers
 	// server-side
 	// driver.get("http://127.0.0.1:8080/demo/Demo");
 	// otherwise just hit a learning web site

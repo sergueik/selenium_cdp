@@ -26,6 +26,7 @@ import org.openqa.selenium.WebElement;
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setExtraHTTPHeaders
  * https://chromedevtools.github.io/devtools-protocol/tot/Network#method-enable
+ * see also: https://stackoverflow.com/questions/50834002/chrome-headless-browser-with-corporate-proxy-authetication-not-working/67321556#67321556
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -45,7 +46,6 @@ public class AuthHeadersCdpTest extends BaseCdpTest {
 	// define an explicit constructor
 	// private byte[] input = String.format("%s:%s", username,
 	// password).getBytes("UTF-8");
-	private static byte[] input = {};
 	private static String authString = null;
 
 	private static Map<String, Object> headers = new HashMap<>();
@@ -82,8 +82,7 @@ public class AuthHeadersCdpTest extends BaseCdpTest {
 		// NOT passing any parameters
 		command = "Network.enable";
 		driver.executeCdpCommand(command, new HashMap<>());
-
-		input = String.format("%s:%s", username, password).getBytes("UTF-8");
+		byte[] input = String.format("%s:%s", username, password).getBytes("UTF-8");
 		authString = new String(Base64.encodeBase64(input));
 
 		driver.get(baseURL);

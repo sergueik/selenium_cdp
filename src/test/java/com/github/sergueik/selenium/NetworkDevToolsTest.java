@@ -180,6 +180,36 @@ public class NetworkDevToolsTest {
 		// 403 - Forbidden
 	}
 
+	// https://stackoverflow.com/questions/6509628/how-to-get-http-response-code-using-selenium-webdriver
+	// python has seleniumwire
+	// https://github.com/wkeeling/selenium-wire#waiting-for-a-request
+	// module that extends Selenium's Python bindings to give you the ability to
+	// inspect requests made by the browser
+	@Test
+	public void test5() {
+
+		driver.get("http://httpbin.org/basic-auth/guest/wrong_password");
+		driver.getCurrentUrl();
+
+		// 401 - Unauthorized
+		driver.get("http://httpbin.org/status/403");
+		// 403 - Forbidden
+	}
+
+	@Test
+	public void test6() {
+		chromeDevTools.addListener(Network.requestServedFromCache(),
+				(RequestId event) -> {
+					System.err.println(String.format(
+							"Network request will be served fom cache: %s", event.toJson()));
+				});
+
+		driver.get("http://httpbin.org/basic-auth/guest/wrong_password");
+		// 401 - Unauthorized
+		driver.get("http://httpbin.org/status/403");
+		// 403 - Forbidden
+	}
+
 	// https://github.com/SeleniumHQ/selenium/blob/trunk/common/devtools/chromium/v93/browser_protocol.pdl#L5763
 	@Test
 	public void test4() {
@@ -227,4 +257,3 @@ public class NetworkDevToolsTest {
 	}
 
 }
-
