@@ -10,12 +10,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v113.dom.DOM;
-import org.openqa.selenium.devtools.v113.dom.model.Node;
-import org.openqa.selenium.devtools.v113.dom.model.NodeId;
-import org.openqa.selenium.devtools.v113.dom.model.RGBA;
-import org.openqa.selenium.devtools.v113.overlay.Overlay;
-import org.openqa.selenium.devtools.v113.overlay.model.HighlightConfig;
+import org.openqa.selenium.devtools.v114.dom.DOM;
+import org.openqa.selenium.devtools.v114.dom.model.Node;
+import org.openqa.selenium.devtools.v114.dom.model.NodeId;
+import org.openqa.selenium.devtools.v114.dom.model.RGBA;
+import org.openqa.selenium.devtools.v114.overlay.Overlay;
+import org.openqa.selenium.devtools.v114.overlay.model.HighlightConfig;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**

@@ -14,9 +14,9 @@ import org.junit.Test;
 
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import org.openqa.selenium.devtools.v113.page.Page;
-import org.openqa.selenium.devtools.v113.page.model.JavascriptDialogClosed;
-import org.openqa.selenium.devtools.v113.page.model.JavascriptDialogOpening;
+import org.openqa.selenium.devtools.v114.page.Page;
+import org.openqa.selenium.devtools.v114.page.model.JavascriptDialogClosed;
+import org.openqa.selenium.devtools.v114.page.model.JavascriptDialogOpening;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
