@@ -24,11 +24,11 @@ import org.openqa.selenium.WebDriverException;
 
 import com.google.gson.JsonSyntaxException;
 
-import org.openqa.selenium.devtools.v114.domsnapshot.DOMSnapshot;
-import org.openqa.selenium.devtools.v114.domsnapshot.model.DocumentSnapshot;
-import org.openqa.selenium.devtools.v114.domsnapshot.model.StringIndex;
+import org.openqa.selenium.devtools.v115.domsnapshot.DOMSnapshot;
+import org.openqa.selenium.devtools.v115.domsnapshot.model.DocumentSnapshot;
+import org.openqa.selenium.devtools.v115.domsnapshot.model.StringIndex;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v114.browser.model.Histogram;
+import org.openqa.selenium.devtools.v115.browser.model.Histogram;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -62,12 +62,12 @@ public class DOMSnapshotDevToolsTest extends BaseDevToolsTest {
 	}
 
 	// @Ignore("Unable to create instance of class
-	// org.openqa.selenium.devtools.v114.domsnapshot.DOMSnapshot$CaptureSnapshotResponse")
+	// org.openqa.selenium.devtools.v115.domsnapshot.DOMSnapshot$CaptureSnapshotResponse")
 	// NOTE: pom.xml
 	// org.openqa.selenium.devtools.DevToolsException: Unable to create instance
 	// of
 	// class
-	// org.openqa.selenium.devtools.v114.domsnapshot.DOMSnapshot$CaptureSnapshotResponse
+	// org.openqa.selenium.devtools.v115.domsnapshot.DOMSnapshot$CaptureSnapshotResponse
 	// Exception in thread "CDP Connection"
 	// org.openqa.selenium.devtools.DevToolsException:
 	// Expected to read a NAME but instead have: START_COLLECTION. Last 128

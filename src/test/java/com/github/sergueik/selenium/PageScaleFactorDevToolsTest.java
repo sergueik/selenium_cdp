@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v114.emulation.Emulation;
+import org.openqa.selenium.devtools.v115.emulation.Emulation;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge

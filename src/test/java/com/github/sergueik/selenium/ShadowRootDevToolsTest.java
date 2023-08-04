@@ -24,11 +24,11 @@ import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v114.runtime.Runtime;
-import org.openqa.selenium.devtools.v114.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.v114.runtime.model.ExecutionContextId;
-import org.openqa.selenium.devtools.v114.runtime.model.RemoteObject;
-import org.openqa.selenium.devtools.v114.runtime.model.TimeDelta;
+import org.openqa.selenium.devtools.v115.runtime.Runtime;
+import org.openqa.selenium.devtools.v115.runtime.Runtime.EvaluateResponse;
+import org.openqa.selenium.devtools.v115.runtime.model.ExecutionContextId;
+import org.openqa.selenium.devtools.v115.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.v115.runtime.model.TimeDelta;
 import org.openqa.selenium.json.JsonException;
 
 /**
@@ -91,8 +91,8 @@ public class ShadowRootDevToolsTest extends BaseDevToolsTest {
 							Optional.of(false), // replMode
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP
 							Optional.ofNullable(null), // uniqueContextId
-							// Optional.of("42"),
-							Optional.ofNullable(null) // generateWebDriverValue
+							Optional.ofNullable(null), // generateWebDriverValue
+                            Optional.empty() // serializationOptions
 			));
 			RemoteObject result = response.getResult();
 			assertThat(result, notNullValue());
