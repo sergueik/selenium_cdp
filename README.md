@@ -967,7 +967,25 @@ W: Repository is broken: google-chrome-stable:amd64 (= 114.0.5735.133-1) has no 
 
 ### Note
 
-Starting with version __115__ the Chrome browser and ChromeDriver information is located on __Chrome for Testing availability__ [dashboard](https://googlechromelabs.github.io/chrome-for-testing/). The instructions of version lookup are provided on [version selection hint page](https://chromedriver.chromium.org/downloads/version-selection). Prior to that the `chromedriver` download links were posted on Chromedriver Downloads [page](https://chromedriver.chromium.org/downloads)
+Starting with version __115__ the Chrome browser and ChromeDriver information is located on __Chrome for Testing availability__ [dashboard](https://googlechromelabs.github.io/chrome-for-testing/). 
+A broader listing of Chrome versions can be found in `https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json`:
+```sh
+
+curl -k -O https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
+```
+```sh
+
+jq '.versions[] | select(.version | contains( "114.")) ' known-good-versions-with-downloads.json  | jq '.downloads[]|.[]|select(.platform |contains("linux64"))'
+```
+```JSON
+{
+  "platform": "linux64",
+  "url": "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/114.0.5696.0/linux64/chrome-linux64.zip"
+}
+```
+ - extract the `chrome` and `chromedriver` links via `jq` (unfinished for chromedriver, save the full JSON locally and finish the query)
+
+The instructions of version lookup are provided on [version selection hint page](https://chromedriver.chromium.org/downloads/version-selection). Prior to that the `chromedriver` download links were posted on Chromedriver Downloads [page](https://chromedriver.chromium.org/downloads)
 
 
 ### See Also
