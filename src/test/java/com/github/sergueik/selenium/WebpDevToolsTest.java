@@ -11,13 +11,12 @@ import static org.hamcrest.Matchers.greaterThan;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Test;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.devtools.v115.emulation.Emulation;
+import org.openqa.selenium.devtools.v115.emulation.model.DisabledImageType;
 import org.openqa.selenium.interactions.Actions;
 
 /**
@@ -29,21 +28,22 @@ import org.openqa.selenium.interactions.Actions;
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-public class WebpCdpTest extends BaseCdpTest {
+public class WebpDevToolsTest extends BaseDevToolsTest {
 	private static String baseURL = "https://developers.google.com/speed/webp/gallery1";
 	private Actions actions;
 	private WebElement element;
-	private static String command = null;
-	private static Map<String, Object> params = new HashMap<>();
 	private static int delay = 3000;
 
 	@Test
 	public void test1() throws UnsupportedEncodingException {
 		// Arrange
-		params = new HashMap<>();
-		params.put("imageTypes", Arrays.asList("webp"));
-		command = "Emulation.setDisabledImageTypes";
-		driver.executeCdpCommand(command, params);
+		DisabledImageType type = DisabledImageType.WEBP;
+		// @formatter:off
+		chromeDevTools.send(
+				Emulation.setDisabledImageTypes(
+						Arrays.asList(type)) // imageTypes
+				);
+		// @formatter:on
 		// Act
 		driver.get(baseURL);
 		element = driver.findElement(By.xpath("//img[@alt='WebP Image']"));
