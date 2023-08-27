@@ -1,13 +1,16 @@
 package com.github.sergueik.selenium;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.devtools.DevToolsException;
-
 import org.openqa.selenium.devtools.v115.browser.Browser;
 import org.openqa.selenium.devtools.v115.browser.Browser.GetWindowForTargetResponse;
 import org.openqa.selenium.devtools.v115.browser.model.Bounds;
@@ -19,9 +22,10 @@ import com.google.common.collect.ImmutableMap;
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * see:
- * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-setWindowBounds
- * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getWindowBounds
  * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getWindowForTarget
+ * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getWindowBounds
+ * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-setWindowBounds
+ * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#type-WindowID
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -32,42 +36,52 @@ public class WindowSizeDevToolsTest extends BaseDevToolsTest {
 
 	private static WindowID windowId;
 	private static Bounds bounds;
+	private GetWindowForTargetResponse result;
+
+	@Before
+	public void before() throws DevToolsException {
+		result = chromeDevTools.send(Browser.getWindowForTarget(Optional.empty()));
+		windowId = result.getWindowId();
+		bounds = result.getBounds();
+	}
 
 	@Test
 	public void test1() {
-		System.err.println("test1");
 		// Act
 		try {
-			final GetWindowForTargetResponse result = chromeDevTools
+			result = chromeDevTools
 					.send(Browser.getWindowForTarget(Optional.empty()));
+			assertThat(result, notNullValue());
 			windowId = result.getWindowId();
+			bounds = result.getBounds();
+			assertThat(bounds, notNullValue());
 			System.err.println(String.format(
-					"top: %d left: %d width: %d height: %d state: %s",
-					result.getBounds().getTop().get(), result.getBounds().getLeft().get(),
-					result.getBounds().getWidth().get(),
-					result.getBounds().getHeight().get(),
-					result.getBounds().getWindowState().get()));
+					"test1: " + "top: %d left: %d width: %d height: %d state: %s",
+					bounds.getTop().get(), bounds.getLeft().get(),
+					bounds.getWidth().get(), bounds.getHeight().get(),
+					bounds.getWindowState().get()));
 		} catch (DevToolsException e) {
-			System.err.println("DevToolsException exception " + "in test2"
+			System.err.println("DevToolsException exception " + "in test1"
 					+ " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		}
 	}
 
+	// NOTE syntax
 	// origin:
 	// https://github.com/rookieInTraining/selenium-cdp-examples/blob/main/src/test/java/com/rookieintraining/cdp/alternative_examples/Browser.java#L34
 	@Test
 	public void test2() {
-		System.err.println("test2");
 		// Act
 		try {
-			Bounds bounds2 = chromeDevTools.send(new Command<>(
-					"Browser.getWindowBounds", ImmutableMap.of("windowId", windowId),
+			bounds = chromeDevTools.send(new Command<>("Browser.getWindowBounds",
+					ImmutableMap.of("windowId", windowId),
 					ConverterFunctions.map("bounds", Bounds.class)));
-			System.err.println(
-					String.format("top: %d left: %d width: %d height: %d state: %s",
-							bounds2.getTop().get(), bounds2.getLeft().get(),
-							bounds2.getWidth().get(), bounds2.getHeight().get(),
-							bounds2.getWindowState().get()));
+			assertThat(bounds, notNullValue());
+			System.err.println(String.format(
+					"test2: " + "top: %d left: %d width: %d height: %d state: %s",
+					bounds.getTop().get(), bounds.getLeft().get(),
+					bounds.getWidth().get(), bounds.getHeight().get(),
+					bounds.getWindowState().get()));
 		} catch (DevToolsException e) {
 			System.err.println("DevToolsException exception " + "in test2"
 					+ " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
@@ -76,17 +90,17 @@ public class WindowSizeDevToolsTest extends BaseDevToolsTest {
 
 	@Test
 	public void test3() {
-		System.err.println("test3");
 		// Act
 		try {
 			// java.lang.NullPointerException: windowId is required
 			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
+			assertThat(bounds, notNullValue());
 
-			System.err.println(
-					String.format("top: %d left: %d width: %d height: %d state: %s",
-							bounds.getTop().get(), bounds.getLeft().get(),
-							bounds.getWidth().get(), bounds.getHeight().get(),
-							bounds.getWindowState().get()));
+			System.err.println(String.format(
+					"test3: " + "top: %d left: %d width: %d height: %d state: %s",
+					bounds.getTop().get(), bounds.getLeft().get(),
+					bounds.getWidth().get(), bounds.getHeight().get(),
+					bounds.getWindowState().get()));
 		} catch (DevToolsException e) {
 			System.err.println("DevToolsException exception " + "in test3"
 					+ " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
@@ -95,20 +109,18 @@ public class WindowSizeDevToolsTest extends BaseDevToolsTest {
 
 	@Test
 	public void test4() {
-		System.err.println("test4");
 		// Act
 		try {
-			Bounds bounds2 = new Bounds(Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(),
-					Optional.of(WindowState.FULLSCREEN));
-			chromeDevTools.send(Browser.setWindowBounds(windowId, bounds2));
-			bounds2 = chromeDevTools.send(Browser.getWindowBounds(windowId));
-
-			System.err.println(
-					String.format("top: %d left: %d width: %d height: %d state: %s",
-							bounds2.getTop().get(), bounds2.getLeft().get(),
-							bounds2.getWidth().get(), bounds2.getHeight().get(),
-							bounds2.getWindowState().get()));
+			bounds = new Bounds(Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.of(WindowState.FULLSCREEN));
+			chromeDevTools.send(Browser.setWindowBounds(windowId, bounds));
+			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
+			assertThat(bounds, notNullValue());
+			System.err.println(String.format(
+					"test4: " + "top: %d left: %d width: %d height: %d state: %s",
+					bounds.getTop().get(), bounds.getLeft().get(),
+					bounds.getWidth().get(), bounds.getHeight().get(),
+					bounds.getWindowState().get()));
 		} catch (DevToolsException e) {
 			System.err.println("DevToolsException exception " + "in test4"
 					+ " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
@@ -118,28 +130,87 @@ public class WindowSizeDevToolsTest extends BaseDevToolsTest {
 
 	@Test
 	public void test5() {
-		System.err.println("test5");
 		// Act
 		try {
-			Bounds bounds2 = new Bounds(Optional.of(bounds.getTop().get() + 100),
+			bounds = new Bounds(Optional.of(bounds.getTop().get() + 100),
 					bounds.getLeft(), bounds.getWidth(), bounds.getHeight(),
 					Optional.of(WindowState.NORMAL));
 
-			System.err.println(
-					String.format("top: %d left: %d width: %d height: %d state: %s",
-							bounds2.getTop().get(), bounds2.getLeft().get(),
-							bounds2.getWidth().get(), bounds2.getHeight().get(),
-							bounds2.getWindowState().get()));
-			chromeDevTools.send(Browser.setWindowBounds(windowId, bounds2));
+			chromeDevTools.send(Browser.setWindowBounds(windowId, bounds));
+			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
+			System.err.println(String.format(
+					"test5: " + "top: %d left: %d width: %d height: %d state: %s",
+					bounds.getTop().get(), bounds.getLeft().get(),
+					bounds.getWidth().get(), bounds.getHeight().get(),
+					bounds.getWindowState().get()));
+
+		} catch (DevToolsException e) {
+			System.err.println("DevToolsException exception " + "in test5"
+					+ " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
+		}
+	}
+
+	@Test
+	public void test6() {
+		// Act
+		try {
+			bounds = new Bounds(Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.of(WindowState.MINIMIZED));
+
+			// No Value present
+			System.err.println(String.format("test6: " + "state: %s",
+					bounds.getWindowState().get()));
+			chromeDevTools.send(Browser.setWindowBounds(windowId, bounds));
+			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
+			System.err.println(String.format(
+					"test6: " + "top: %d left: %d width: %d height: %d state: %s",
+					bounds.getTop().get(), bounds.getLeft().get(),
+					bounds.getWidth().get(), bounds.getHeight().get(),
+					bounds.getWindowState().get()));
+
+		} catch (DevToolsException e) {
+			System.err.println("DevToolsException exception " + "in test6"
+					+ " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
+		}
+	}
+
+	@Test
+	public void test7() {
+		// Act
+		try {
+			bounds = new Bounds(Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.empty(), Optional.of(WindowState.MINIMIZED));
+			chromeDevTools.send(Browser.setWindowBounds(windowId, bounds));
+			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
+			System.err.println(String.format("test7(1): " + "state: %s",
+					bounds.getWindowState().get()));
+
+			bounds = new Bounds(Optional.of(0), Optional.of(0), Optional.of(1024),
+					Optional.of(768), Optional.of(WindowState.NORMAL));
+			chromeDevTools.send(Browser.setWindowBounds(windowId, bounds));
+			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
+			System.err.println(String.format(
+					"test7 (2): " + "top: %d left: %d width: %d height: %d state: %s",
+					bounds.getTop().get(), bounds.getLeft().get(),
+					bounds.getWidth().get(), bounds.getHeight().get(),
+					bounds.getWindowState().get()));
+			bounds = new Bounds(Optional.of(0), Optional.of(0), Optional.of(1024),
+					Optional.of(768), Optional.of(WindowState.NORMAL));
+			chromeDevTools.send(Browser.setWindowBounds(windowId, bounds));
+			bounds = chromeDevTools.send(Browser.getWindowBounds(windowId));
+			System.err.println(String.format(
+					"test7 (3): " + "top: %d left: %d width: %d height: %d state: %s",
+					bounds.getTop().get(), bounds.getLeft().get(),
+					bounds.getWidth().get(), bounds.getHeight().get(),
+					bounds.getWindowState().get()));
 
 		} catch (DevToolsException e) {
 			/*
 			 * DevToolsException exception in test5 (ignored): {"id":11,"error":{"code":-32000, "message":"The 'minimized', 'maximized' and 'fullscreen' states cannot be combined with 'left', 'top', 'width' or 'height'"},
 			 * "sessionId":"DBB8A2BC3A6EDBB228EEA5E26F34D42D"}
 			 */
-			System.err.println("DevToolsException exception " + "in test5"
+			System.err.println("DevToolsException exception " + "in test7"
 					+ " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
 		}
-
 	}
 }
