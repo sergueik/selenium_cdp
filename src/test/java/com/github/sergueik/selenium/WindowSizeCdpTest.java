@@ -1,4 +1,7 @@
 package com.github.sergueik.selenium;
+/**
+ * Copyright 2022-2023 Serguei Kouzmine
+ */
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -42,15 +45,19 @@ import com.google.gson.JsonSyntaxException;
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
  * by https://toster.ru/q/653249?e=7897302#comment_1962398
- *
+ * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getWindowBounds
+ * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-setWindowBounds
+ * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#type-WindowID
+ *  https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
+
 // https://www.logicalincrements.com/articles/resolution
 
 public class WindowSizeCdpTest {
 
-	private static final int customWidth = 1366;
-	private static final int customHeight = 768;
+	private static final long customWidth = 1366;
+	private static final long customHeight = 768;
 	private static final String imagePage = "image_page.html";
 	private static final String fixedSizePage = "fixed_size_page.html";
 
@@ -69,6 +76,7 @@ public class WindowSizeCdpTest {
 	private static String page = null;
 	private static String command = null;
 	private static Map<String, Object> params = new HashMap<>();
+	private Map<String, Object> bounds = new HashMap<String, Object>();
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
 	private static boolean headless = true;
@@ -114,18 +122,18 @@ public class WindowSizeCdpTest {
 		windowId = getBrowserWindowId();
 	}
 
-	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowBounds
+	//
 	// @Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void measureScreenSizeTest() {
 
-		command = "Browser.getWindowBounds";
 		driver.get(Utils.getPageContent(imagePage));
 		try {
+			command = "Browser.getWindowBounds";
 			// Act
 			params = new HashMap<String, Object>();
-			params.put("windowId", windowId);
+			params.put("windowId", (long) windowId);
 			result = driver.executeCdpCommand(command, params);
 			// Assert
 			assertThat(result, notNullValue());
@@ -133,19 +141,19 @@ public class WindowSizeCdpTest {
 
 			data = (Map<String, Object>) result.get("bounds");
 			assertThat(data, notNullValue());
-			for (String field : Arrays.asList(new String[] { "left", "top",
-					"width", "height", "windowState" })) {
+			for (String field : Arrays.asList(
+					new String[] { "left", "top", "width", "height", "windowState" })) {
 				assertThat(data, hasKey(field));
 			}
 
 			int width = Integer.parseInt(data.get("width").toString());
 			assertThat(String.format("Expected screen width: %d", customWidth), width,
-					is(customWidth));
+					is((int) customWidth));
 			// when the browser window is visible test will likely fail
 			// because dimensions will not match:
 			// Expected: is <1366> but: was <1051>
 			int height = Integer.parseInt(data.get("height").toString());
-			assertThat(height, is(customHeight));
+			assertThat(height, is((int) customHeight));
 			if (debug) {
 				System.err.println("Command " + command + " result: " + result);
 			}
@@ -175,25 +183,132 @@ public class WindowSizeCdpTest {
 		}
 	}
 
-	// @Ignore
-	@Test(expected = WebDriverException.class)
+	@Test
+	public void minimizeBrowserWindowTest() {
+
+		driver.get(Utils.getPageContent(imagePage));
+
+		try {
+			// Act
+			command = "Browser.setWindowBounds";
+			params = new HashMap<String, Object>();
+			params.put("windowId", (long) windowId);
+			bounds = new HashMap<String, Object>();
+			bounds.put("windowState", "minimized");
+			params.put("bounds", bounds);
+			result = driver.executeCdpCommand(command, params);
+			// the "Browser.setWindowBounds" result is empty JSON - nothing to verify
+			assertThat(result, notNullValue());
+
+			// Assert
+			command = "Browser.getWindowBounds";
+			params = new HashMap<String, Object>();
+			params.put("windowId", windowId);
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, notNullValue());
+			System.err.println(
+					"resizeBrowserWindowTest Command " + command + " result: " + result);
+			data = (Map<String, Object>) result.get("bounds");
+			String windowState = data.get("windowState").toString();
+			assertThat(windowState, is("minimized"));
+		} catch (JsonSyntaxException e) {
+			System.err.println("JSON Syntax exception in " + command + " (ignored): "
+					+ e.toString());
+		} catch (WebDriverException e) {
+
+			System.err.println("Web Driver exception in " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+			throw e;
+		} catch (Exception e) {
+			System.err.println("Exception in " + command + "  " + e.toString());
+			e.printStackTrace();
+			throw (new RuntimeException(e));
+		}
+	}
+
+	@Test
+	public void modifyBrowserWindowTest() {
+		try {
+			// Act
+			command = "Browser.setWindowBounds";
+			params = new HashMap<String, Object>();
+			params.put("windowId", (long) windowId);
+			bounds = new HashMap<String, Object>();
+			bounds.put("windowState", "minimized");
+			params.put("bounds", bounds);
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, notNullValue());
+
+			// NOTE {"code":-32000,"message":"To resize minimized/maximized/fullscreen
+			// window, restore it to normal state first."}
+
+			command = "Browser.setWindowBounds";
+			bounds = new HashMap<String, Object>();
+			params.put("windowId", (long) windowId);
+			bounds.put("windowState", "normal");
+			params.put("bounds", bounds);
+			result = driver.executeCdpCommand(command, params);
+
+			command = "Browser.setWindowBounds";
+			bounds = new HashMap<String, Object>();
+			params.put("windowId", (long) windowId);
+			bounds.put("left", 0L);
+			bounds.put("top", 0L);
+			bounds.put("width", customWidth / 2);
+			bounds.put("height", customHeight / 2);
+			bounds.put("windowState", "normal");
+			params.put("bounds", bounds);
+			result = driver.executeCdpCommand(command, params);
+			assertThat(result, notNullValue());
+			// the result is empty JSON - nothing to verify
+		} catch (JsonSyntaxException e) {
+			System.err.println("JSON Syntax exception in " + command + " (ignored): "
+					+ e.toString());
+		} catch (WebDriverException e) {
+
+			System.err.println("Web Driver exception in " + command + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+			throw e;
+		} catch (Exception e) {
+			System.err.println("Exception in " + command + "  " + e.toString());
+			e.printStackTrace();
+			throw (new RuntimeException(e));
+		}
+	}
+
+	@Test
 	public void resizeBrowserWindowTest() {
 
 		driver.get(Utils.getPageContent(imagePage));
-		command = "Browser.setWindowBounds";
+
 		try {
 			// Act
+			command = "Browser.setWindowBounds";
 			params = new HashMap<String, Object>();
-			params.put("windowId", (Object) windowId);
-			// java.lang.UnsupportedOperationException
-			data = new HashMap<>();
-			data.put("left", (Object) 0);
-			data.put("top", (Object) 0);
-			data.put("width", (Object) (customWidth / 2));
-			data.put("height", (Object) (customHeight / 2));
-			data.put("windowState", (Object) "normal");
-			params.put("Bounds ", data);
-			driver.executeCdpCommand(command, params);
+			params.put("windowId", (long) windowId);
+			bounds = new HashMap<String, Object>();
+			bounds.put("left", 0L);
+			bounds.put("top", 0L);
+			bounds.put("width", customWidth / 2);
+			bounds.put("height", customHeight / 2);
+			bounds.put("windowState", "normal");
+			params.put("bounds", bounds);
+			result = driver.executeCdpCommand(command, params);
+			// the result is empty JSON - nothing to verify
+			assertThat(result, notNullValue());
+			// Assert
+			command = "Browser.getWindowBounds";
+			params = new HashMap<String, Object>();
+			params.put("windowId", windowId);
+			result = driver.executeCdpCommand(command, params);
+			// Assert
+			assertThat(result, notNullValue());
+			System.err.println(
+					"resizeBrowserWindowTest Command " + command + " result: " + result);
+
+			Utils.sleep(1000);
 			// TODO: Assert
 		} catch (JsonSyntaxException e) {
 			System.err.println("JSON Syntax exception in " + command + " (ignored): "
@@ -213,10 +328,11 @@ public class WindowSizeCdpTest {
 	// TODO: for Java 11
 	// sudo apt install openjdk-11-jdk
 	// otherwise tests will fail with
-	// java.lang.UnsatisfiedLinkError: 
+	// java.lang.UnsatisfiedLinkError:
 	// Can't load library: /usr/lib/jvm/java-11-openjdk-amd64/lib/libawt_xawt.so
 	// and
-	// java.lang.NoClassDefFoundError: Could not initialize class javax.imageio.ImageIO
+	// java.lang.NoClassDefFoundError: Could not initialize class
+	// javax.imageio.ImageIO
 	@Test
 	public void evaluateSizeTest() {
 		page = "fixed_size_page.html";
@@ -292,7 +408,6 @@ public class WindowSizeCdpTest {
 				+ dimension.get("height"));
 	}
 
-	// https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
 	private long getBrowserWindowId() {
 		command = "Browser.getWindowForTarget";
 		long windowId = (long) -1;
