@@ -23,8 +23,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v115.page.Page;
-import org.openqa.selenium.devtools.v115.page.model.ScriptIdentifier;
+import org.openqa.selenium.devtools.v116.page.Page;
+import org.openqa.selenium.devtools.v116.page.model.ScriptIdentifier;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

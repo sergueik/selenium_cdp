@@ -9,7 +9,7 @@ __cdp__ commands - an entirely different set of API communicated to the Chrome b
   * `getSearchResults`
   * `getNodeForLocation`
   * `getOuterHTML`
-  * `querySelectorAll
+  * `querySelectorAll`
   * `querySelector`
   * `getAttributes`
 

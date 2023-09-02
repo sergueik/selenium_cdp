@@ -20,9 +20,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v115.page.Page;
-import org.openqa.selenium.devtools.v115.performance.Performance;
-import org.openqa.selenium.devtools.v115.performance.model.Metric;
+import org.openqa.selenium.devtools.v116.page.Page;
+import org.openqa.selenium.devtools.v116.performance.Performance;
+import org.openqa.selenium.devtools.v116.performance.model.Metric;
 
 
 /**

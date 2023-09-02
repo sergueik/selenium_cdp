@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
-import org.openqa.selenium.devtools.v115.browser.Browser;
+import org.openqa.selenium.devtools.v116.browser.Browser;
 
 /**
  * 

@@ -56,6 +56,9 @@ public class Utils {
 		}
 	}
 
+	// see also:
+	// https://github.com/testleaf-software/devtools-selenium/blob/master/DevTools-Selenium/src/main/java/com/qeagle/devtools/utils/HighlightNode.java#L51
+	// has CDP dependencies on specific Selenium version
 	public static void highlight(WebElement element) {
 		highlight(element, highlightInterval, "solid yellow");
 	}

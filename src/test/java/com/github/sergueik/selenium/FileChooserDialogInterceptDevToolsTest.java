@@ -9,9 +9,9 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v115.page.Page;
-import org.openqa.selenium.devtools.v115.page.model.FileChooserOpened;
-import org.openqa.selenium.devtools.v115.page.model.FrameId;
+import org.openqa.selenium.devtools.v116.page.Page;
+import org.openqa.selenium.devtools.v116.page.model.FileChooserOpened;
+import org.openqa.selenium.devtools.v116.page.model.FrameId;
 import org.openqa.selenium.interactions.Actions;
 
 /**
