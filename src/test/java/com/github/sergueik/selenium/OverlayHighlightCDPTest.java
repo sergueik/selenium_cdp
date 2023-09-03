@@ -9,7 +9,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.core.IsNot.not;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +16,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 
 /**
@@ -39,7 +37,6 @@ public class OverlayHighlightCDPTest extends BaseDevToolsTest {
 	private static Map<String, Object> params = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
 	private static String dataString = null;
-	private static List<Map<String, Object>> cookies = new ArrayList<>();
 	public static Long nodeId = (long) -1;
 	public static String isolationId = null;
 

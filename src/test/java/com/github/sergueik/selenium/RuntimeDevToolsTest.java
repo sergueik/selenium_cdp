@@ -114,7 +114,7 @@ public class RuntimeDevToolsTest {
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP
 							Optional.ofNullable(null), // uniqueContextId
 							Optional.ofNullable(null), // generateWebDriverValue
-                            Optional.empty() // serializationOptions
+							Optional.empty() // serializationOptions
 			));
 			// org.openqa.selenium.devtools.DevToolsException:
 			// {"id":6,"error":{"code":-32602,"message":"Invalid
@@ -136,12 +136,13 @@ public class RuntimeDevToolsTest {
 		try {
 			expression = "var y = 456; y;";
 
-			EvaluateResponse response = chromeDevTools.send(Runtime.evaluate(
-					expression, Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
+			EvaluateResponse response = chromeDevTools
+					.send(Runtime.evaluate(expression, Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty()));
 
 			Object result = response.getResult();
 			System.err
@@ -159,10 +160,13 @@ public class RuntimeDevToolsTest {
 		try {
 			expression = "var y = 456; y;";
 
-			Object response = chromeDevTools.send(Runtime.evaluate(expression, Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
+			Object response = chromeDevTools
+					.send(Runtime.evaluate(expression, Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty()));
 			assertThat(response, notNullValue());
 			System.err.println(
 					String.format("test 3 Response type is %s", response.getClass()));
@@ -185,8 +189,9 @@ public class RuntimeDevToolsTest {
 		// evaluate
 		chromeDevTools.send(Runtime.enable());
 		expression = "var y = 42; y;";
-		chromeDevTools.send(Runtime.evaluate(expression, null, null, null, null,
-				null, null, null, null, null, null, null, null, null, null, null, null));
+		chromeDevTools
+				.send(Runtime.evaluate(expression, null, null, null, null, null, null,
+						null, null, null, null, null, null, null, null, null, null));
 		/*
 				chromeDevTools.send(
 						Runtime.evaluate(expression, null, null, null, null, null, null, null,
@@ -217,8 +222,8 @@ public class RuntimeDevToolsTest {
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP
 							Optional.empty(), // uniqueContextId
 							Optional.ofNullable(null), // generateWebDriverValue
-                            Optional.empty() // serializationOptions
-            ));
+							Optional.empty() // serializationOptions
+			));
 
 			response.getResult();
 		} catch (JsonException e) {
@@ -250,8 +255,8 @@ public class RuntimeDevToolsTest {
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP
 							Optional.empty(), // uniqueContextId
 							Optional.ofNullable(null), // generateWebDriverValue
-                            Optional.empty() // serializationOptions
-                ));
+							Optional.empty() // serializationOptions
+			));
 
 			response.getResult();
 		} catch (JsonException e) {
@@ -270,13 +275,13 @@ public class RuntimeDevToolsTest {
 		try {
 			expression = "const letters = ['a', 'b', 'c']; letters.push('d'); letters";
 
-			EvaluateResponse response = chromeDevTools.send(Runtime.evaluate(
-					expression, Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(),
-                    Optional.empty()));
+			EvaluateResponse response = chromeDevTools
+					.send(Runtime.evaluate(expression, Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty(), Optional.empty(),
+							Optional.empty(), Optional.empty()));
 
 			Object rawResult = response.getResult();
 			System.err.println(String.format("Result raw %s:", rawResult.toString()));

@@ -14,9 +14,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.devtools.Command;
-import org.openqa.selenium.json.Json;
-import org.openqa.selenium.json.JsonInput;
 import org.openqa.selenium.devtools.v116.browser.Browser;
 import org.openqa.selenium.devtools.v116.browser.model.DownloadProgress;
 

@@ -1,19 +1,19 @@
 package com.github.sergueik.selenium;
 
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.openqa.selenium.devtools.v116.performance.Performance.disable;
+import static org.openqa.selenium.devtools.v116.performance.Performance.enable;
+import static org.openqa.selenium.devtools.v116.performance.Performance.getMetrics;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.IllegalFormatConversionException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.junit.AfterClass;
@@ -21,14 +21,15 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openqa.selenium.TimeoutException;
 // need to use branch cdp_codegen of SeleniumHQ/selenium
 // https://github.com/SeleniumHQ/selenium/tree/cdp_codegen/java/client/src/org/openqa/selenium/devtools
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
+// import org.openqa.selenium.devtools.v116.target.model.SessionID;
+import org.openqa.selenium.devtools.idealized.target.model.SessionID;
 import org.openqa.selenium.devtools.v116.browser.Browser;
 import org.openqa.selenium.devtools.v116.browser.Browser.GetWindowForTargetResponse;
 import org.openqa.selenium.devtools.v116.browser.model.Bounds;
@@ -38,22 +39,10 @@ import org.openqa.selenium.devtools.v116.input.Input.DispatchKeyEventType;
 import org.openqa.selenium.devtools.v116.log.Log;
 import org.openqa.selenium.devtools.v116.network.Network;
 import org.openqa.selenium.devtools.v116.network.model.Headers;
-import org.openqa.selenium.devtools.v116.network.model.RequestId;
-import org.openqa.selenium.devtools.v116.overlay.Overlay;
 import org.openqa.selenium.devtools.v116.page.Page;
 import org.openqa.selenium.devtools.v116.page.model.ScriptIdentifier;
 import org.openqa.selenium.devtools.v116.performance.Performance;
 import org.openqa.selenium.devtools.v116.performance.model.Metric;
-// import org.openqa.selenium.devtools.v116.target.model.SessionID;
-import org.openqa.selenium.devtools.idealized.target.model.SessionID;
-import org.openqa.selenium.devtools.v116.page.model.FrameTree;
-import org.openqa.selenium.devtools.v116.dom.model.RGBA;
-
-import static org.openqa.selenium.devtools.v116.performance.Performance.disable;
-import static org.openqa.selenium.devtools.v116.performance.Performance.enable;
-import static org.openqa.selenium.devtools.v116.performance.Performance.getMetrics;
-
-import org.openqa.selenium.TimeoutException;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

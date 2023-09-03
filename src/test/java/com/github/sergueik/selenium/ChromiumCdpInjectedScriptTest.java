@@ -13,15 +13,14 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.NoSuchElementException;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
@@ -44,7 +43,6 @@ public class ChromiumCdpInjectedScriptTest {
 	private static String identifier = null;
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> params = new HashMap<>();
-	private static Map<String, Object> data = new HashMap<>();
 	private static String stringData = null;
 	private static Boolean booleanData = false;
 	private static WebElement element = null;

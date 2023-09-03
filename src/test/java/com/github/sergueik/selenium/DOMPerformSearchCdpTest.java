@@ -6,25 +6,20 @@ package com.github.sergueik.selenium;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.devtools.v116.dom.DOM;
 
 import com.google.gson.JsonSyntaxException;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge

@@ -1,11 +1,11 @@
 package com.github.sergueik.selenium;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
@@ -13,10 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.openqa.selenium.WebDriverException;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -26,7 +22,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
  * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
-
+@SuppressWarnings("deprecation")
 public class NetworkConditionsCdpTest extends BaseCdpTest {
 
 	private static String baseURL = "https://www.wikipedia.org";

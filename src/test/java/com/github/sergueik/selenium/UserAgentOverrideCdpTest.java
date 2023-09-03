@@ -11,13 +11,11 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Assume;
-import org.junit.Ignore;
 import org.junit.Test;
-
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.NoSuchElementException;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired

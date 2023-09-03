@@ -20,7 +20,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.InvalidArgumentException;
-import org.openqa.selenium.WebElement;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge

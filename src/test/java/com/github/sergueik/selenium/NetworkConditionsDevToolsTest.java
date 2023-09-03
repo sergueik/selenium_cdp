@@ -1,10 +1,12 @@
 package com.github.sergueik.selenium;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+
 import java.io.IOException;
 import java.util.Optional;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
@@ -12,13 +14,7 @@ import org.openqa.selenium.chromium.ChromiumNetworkConditions;
 import org.openqa.selenium.chromium.HasNetworkConditions;
 import org.openqa.selenium.devtools.v116.network.Network;
 import org.openqa.selenium.devtools.v116.network.model.ConnectionType;
-
 import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -45,6 +41,7 @@ public class NetworkConditionsDevToolsTest extends BaseDevToolsTest {
 		driver.get("about:blank");
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test(expected = WebDriverException.class)
 	public void test1() throws IOException {
 		offline = true;

@@ -1,15 +1,11 @@
 package com.github.sergueik.selenium;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.CoreMatchers.is;
 
-import org.apache.commons.collections4.CollectionUtils;
-
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +16,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v116.page.Page;
 import org.openqa.selenium.devtools.v116.performance.Performance;
 import org.openqa.selenium.devtools.v116.performance.model.Metric;
 

@@ -20,8 +20,7 @@ public class InputCdpTest extends BaseCdpTest {
 	private final static String baseURL = "https://www.google.com";
 	private static String command;
 	private static Map<String, Object> params = new HashMap<>();
-	private static Map<String, Object> result = new HashMap<>();
-
+	
 	@Before
 	public void beforeTest() throws Exception {
 		driver.get(baseURL);

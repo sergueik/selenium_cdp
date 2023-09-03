@@ -11,16 +11,11 @@ import java.util.function.Consumer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import org.openqa.selenium.devtools.idealized.Domains;
-import org.openqa.selenium.devtools.idealized.Events;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -31,7 +26,7 @@ import org.openqa.selenium.devtools.idealized.Events;
 public class ExceptionListenerDevToolsTest extends BaseDevToolsTest {
 
 	private static WebElement element;
-	private static WebDriverWait wait;
+	
 	private List<JavascriptException> jsExceptions = new ArrayList<>();
 
 	@After

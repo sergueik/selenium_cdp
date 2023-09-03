@@ -5,29 +5,17 @@ package com.github.sergueik.selenium;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Optional;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.codec.binary.Base64;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.v116.emulation.Emulation;
-import org.openqa.selenium.devtools.v116.page.Page;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -58,7 +46,6 @@ public class IndirectGeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 	// .cssSelector("button[aria-label='Show Your Location']");
 	private static By locator = null;
 
-	private static String data = null;
 
 	@Before
 	public void beforeTest() {

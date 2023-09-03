@@ -1,5 +1,9 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2022,2023 Serguei Kouzmine
+ */
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

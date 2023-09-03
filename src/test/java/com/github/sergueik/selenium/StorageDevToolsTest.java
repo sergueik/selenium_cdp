@@ -3,34 +3,12 @@ package com.github.sergueik.selenium;
  * Copyright 2023 Serguei Kouzmine
  */
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Optional;
-
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 // import org.junit.Ignore;
 import org.junit.Test;
-
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.HasDevTools;
 import org.openqa.selenium.devtools.v116.network.model.TimeSinceEpoch;
-import org.openqa.selenium.devtools.v116.runtime.Runtime;
-import org.openqa.selenium.devtools.v116.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.v116.runtime.model.ExecutionContextId;
-import org.openqa.selenium.devtools.v116.runtime.model.RemoteObject;
-import org.openqa.selenium.devtools.v116.runtime.model.TimeDelta;
 import org.openqa.selenium.devtools.v116.storage.Storage;
 import org.openqa.selenium.devtools.v116.storage.model.SharedStorageMetadata;
 import org.openqa.selenium.json.JsonException;

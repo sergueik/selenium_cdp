@@ -25,7 +25,6 @@ public class SystemInfoCdpTest extends BaseCdpTest {
 
 	private static String command;
 	private static Map<String, Object> result = new HashMap<>();
-	private static List<Map<String, Object>> results = new ArrayList<>();
 
 	@Test(expected = WebDriverException.class)
 	public void test1() {

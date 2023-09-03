@@ -1,5 +1,7 @@
 package com.github.sergueik.selenium;
 
+import static org.hamcrest.CoreMatchers.is;
+
 /**
  * Copyright 2023 Serguei Kouzmine
  */
@@ -8,31 +10,14 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
 
-import java.nio.file.Paths;
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.devtools.v116.runtime.Runtime;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import com.google.gson.Gson;
-import static org.hamcrest.CoreMatchers.is;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -55,7 +40,6 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 	private static Map<String, Object> params = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
 
-	private static Gson gson = new Gson();
 	// "Downloads" -> inspect -> Copy -> Copy JS Path
 	private static final String expression = "document.querySelector('body > downloads-manager').shadowRoot.querySelector('#toolbar').shadowRoot.querySelector('#toolbar').shadowRoot.querySelector('#leftSpacer > h1').textContent";
 	private static boolean returnByValue = false;

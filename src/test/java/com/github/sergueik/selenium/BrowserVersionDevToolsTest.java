@@ -1,18 +1,17 @@
 package com.github.sergueik.selenium;
 
-import java.util.Map;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
-import org.openqa.selenium.json.Json;
-import org.openqa.selenium.json.JsonInput;
 import org.openqa.selenium.devtools.v116.browser.Browser;
 import org.openqa.selenium.devtools.v116.browser.Browser.GetVersionResponse;
+import org.openqa.selenium.json.Json;
+import org.openqa.selenium.json.JsonInput;
 
 import com.google.common.collect.ImmutableMap;
 

@@ -41,14 +41,11 @@ public class EventSubscriptionCommonTest {
 	public final static Duration duration = Duration.ofSeconds(flexibleWait);;
 	public final static int implicitWait = 1;
 	public final static int pollingInterval = 500;
-	private final static long highlightInterval = 100;
 	protected Alert alert = null;
 	protected static String name = null;
 	protected static WebElement element;
 	protected static List<WebElement> elements;
-	private final static String baseURL = "about:blank";
 
-	@SuppressWarnings("deprecation")
 	@BeforeClass
 	public static void setUp() {
 

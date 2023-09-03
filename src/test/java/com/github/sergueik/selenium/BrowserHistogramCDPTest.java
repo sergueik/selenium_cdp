@@ -1,5 +1,7 @@
 package com.github.sergueik.selenium;
 
+import static org.hamcrest.CoreMatchers.is;
+
 /**
  * Copyright 2022 Serguei Kouzmine
  */
@@ -7,25 +9,12 @@ package com.github.sergueik.selenium;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.CoreMatchers.is;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
-import org.openqa.selenium.WebDriverException;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge

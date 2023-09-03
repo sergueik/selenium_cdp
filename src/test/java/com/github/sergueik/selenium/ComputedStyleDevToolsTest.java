@@ -10,18 +10,14 @@ import static org.hamcrest.Matchers.greaterThan;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.v116.css.CSS;
 import org.openqa.selenium.devtools.v116.css.model.CSSComputedStyleProperty;

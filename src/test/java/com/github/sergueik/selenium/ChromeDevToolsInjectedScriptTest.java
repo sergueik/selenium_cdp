@@ -5,17 +5,12 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 // need to use branch cdp_codegen of SeleniumHQ/selenium
 // https://github.com/SeleniumHQ/selenium/tree/cdp_codegen/java/client/src/org/openqa/selenium/devtools
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -40,14 +35,9 @@ public class ChromeDevToolsInjectedScriptTest {
 	private static ChromiumDriver driver;
 	private static DevTools chromeDevTools;
 
-	private static Map<String, Object> headers = new HashMap<>();
-	private static String command = null;
 	private static String script = null;
 	private static ScriptIdentifier identifier = null;
 
-	private static String stringData = null;
-	private static Boolean booleanData = false;
-	private static WebElement element = null;
 	private static String baseURL = "https://www.wikipedia.org";
 
 	@BeforeClass
@@ -85,6 +75,7 @@ public class ChromeDevToolsInjectedScriptTest {
 	}
 
 	// https://github.com/SeleniumHQ/selenium/blob/0f197cbd4fa9acdd2ac3ddebbe0cc9b4ca26bff8/rb/spec/integration/selenium/webdriver/chrome/driver_spec.rb
+	@SuppressWarnings("deprecation")
 	@Ignore
 	@Test
 	public void scriptToEvaluateOnNewDocumentTest() {

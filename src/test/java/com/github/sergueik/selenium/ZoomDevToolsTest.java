@@ -1,16 +1,18 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2023 Serguei Kouzmine
+ */
+
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
+// import org.junit.Ignore;
 import org.junit.Test;
-// need to use branch cdp_codegen of SeleniumHQ/selenium
 // https://github.com/SeleniumHQ/selenium/tree/cdp_codegen/java/client/src/org/openqa/selenium/devtools
+
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.DevTools;
@@ -38,8 +40,6 @@ public class ZoomDevToolsTest {
 	// Meta/Command=4, Shift=8 (default: 0)
 	// NOTE: 2 has no effect
 	private static String baseURL = "https://www.wikipedia.org";
-
-	private static Map<String, Object> headers = new HashMap<>();
 
 	@BeforeClass
 	public static void setUp() throws Exception {

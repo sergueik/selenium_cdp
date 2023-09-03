@@ -1,41 +1,28 @@
 package com.github.sergueik.selenium;
 
 /* Copyright 2022 Serguei Kouzmine */
-import javax.imageio.ImageIO;
 
-import java.nio.file.Paths;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.codec.binary.Base64;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.devtools.v116.emulation.Emulation;
-import org.openqa.selenium.devtools.v116.page.Page;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.codec.binary.Base64;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.WebDriverException;
+
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -50,7 +37,6 @@ import static org.hamcrest.Matchers.hasKey;
 public class ScreenShotCdpTest extends BaseCdpTest {
 	
 	private static int delay = 3000;
-	private static Gson gson = new Gson();
 
 	private static String command = null;
 	private static Map<String, Object> result = new HashMap<>();

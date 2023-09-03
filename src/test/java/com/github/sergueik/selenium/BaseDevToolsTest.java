@@ -5,8 +5,6 @@ package com.github.sergueik.selenium;
  */
 
 import java.io.IOException;
-
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.file.Paths;

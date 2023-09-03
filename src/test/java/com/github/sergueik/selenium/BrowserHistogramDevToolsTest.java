@@ -27,7 +27,6 @@ public class BrowserHistogramDevToolsTest extends BaseDevToolsTest {
 
 	private final static String url = "https://en.wikipedia.org/wiki/Main_Page";
 
-	private static List<Histogram> results;
 	private static Histogram result;
 	private static boolean debug = false;
 

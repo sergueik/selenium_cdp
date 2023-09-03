@@ -15,10 +15,9 @@ import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
-
 import org.openqa.selenium.devtools.v116.fetch.Fetch;
 import org.openqa.selenium.devtools.v116.fetch.model.RequestId;
 import org.openqa.selenium.devtools.v116.fetch.model.RequestPattern;
@@ -26,9 +25,6 @@ import org.openqa.selenium.devtools.v116.fetch.model.RequestPaused;
 import org.openqa.selenium.devtools.v116.network.Network;
 import org.openqa.selenium.devtools.v116.network.model.ErrorReason;
 import org.openqa.selenium.devtools.v116.network.model.Request;
-import org.openqa.selenium.remote.UnreachableBrowserException;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
@@ -84,7 +80,7 @@ public class FetcFailRequestDevToolsTest extends BaseDevToolsTest {
 	@Test
 	public void test2() {
 		try {
-			driver.navigate().to("https://www.wikipedia.org");
+			driver.navigate().to(url);
 		} catch (TimeoutException e) {
 			System.err.println("continue");
 		}

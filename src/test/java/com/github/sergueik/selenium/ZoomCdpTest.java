@@ -1,10 +1,11 @@
 package com.github.sergueik.selenium;
+/**
+ * Copyright 2023 Serguei Kouzmine
+ */
 
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -12,15 +13,12 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -46,21 +44,13 @@ public class ZoomCdpTest {
 	// Bit field representing pressed modifier keys. Alt=1, Ctrl=2,
 	// Meta/Command=4, Shift=8 (default: 0).
 	private final static int delay = 1000;
-	private static Gson gson = new Gson();
 
 	private static String command = null;
-	private static Map<String, Object> result = new HashMap<>();
+
 	private static Map<String, Object> params = new HashMap<>();
-	private static Map<String, Object> data = new HashMap<>();
-	private static Map<String, Object> data2 = new HashMap<>();
-	private static List<Object> data3 = new ArrayList<>();
-	private static String dataString = null;
-	private static List<Map<String, Object>> cookies = new ArrayList<>();
 	public static Long nodeId = (long) -1;
 	public static String isolationId = null;
 
-	private static WebElement element = null;
-	private static By locator = null;
 	private static String baseURL = "https://www.wikipedia.org";
 
 	@BeforeClass

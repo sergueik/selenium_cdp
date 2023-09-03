@@ -8,8 +8,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.After;
@@ -37,8 +35,6 @@ import org.openqa.selenium.devtools.v116.fetch.model.AuthChallengeResponse.Respo
  */
 
 public class FetchAuthRequiredDevToolsTest extends BaseDevToolsTest {
-
-	private static Map<String, Object> headers = new HashMap<>();
 
 	private static final String username = "user";
 	private static final String password = "guest";

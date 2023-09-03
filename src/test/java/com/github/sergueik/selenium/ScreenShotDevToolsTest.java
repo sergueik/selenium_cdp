@@ -1,26 +1,24 @@
 package com.github.sergueik.selenium;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Optional;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.codec.binary.Base64;
+
 /* Copyright 2020,2022 Serguei Kouzmine */
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.CoreMatchers.not;
-
-import org.apache.commons.codec.binary.Base64;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
-import javax.imageio.ImageIO;
-
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.v116.css.CSS;
 import org.openqa.selenium.devtools.v116.dom.DOM;

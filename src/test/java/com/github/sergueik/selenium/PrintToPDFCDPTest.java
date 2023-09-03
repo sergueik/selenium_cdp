@@ -6,7 +6,6 @@ package com.github.sergueik.selenium;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
@@ -69,7 +68,6 @@ public class PrintToPDFCDPTest {
 	private static boolean printBackground = false;
 	private static boolean preferCSSPageSize = false;
 	private static String transferMode = "ReturnAsBase64";
-	private static int scale = 1;
 	private static String filename = "result1.pdf";
 	private static String osName = Utils.getOSName();
 	private static ChromiumDriver driver;

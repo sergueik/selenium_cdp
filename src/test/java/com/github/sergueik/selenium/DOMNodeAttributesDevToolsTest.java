@@ -34,7 +34,6 @@ public class DOMNodeAttributesDevToolsTest extends BaseDevToolsTest {
 	private static String baseURL = "https://www.wikipedia.org";
 	private final String selector = "div.central-featured-lang[lang='ru']";
 
-	private static String command = "DOM.getDocument";
 	private static Node result;
 	private static Map<String, Object> results = new HashMap<>();
 	private static NodeId nodeId = null;
@@ -53,7 +52,6 @@ public class DOMNodeAttributesDevToolsTest extends BaseDevToolsTest {
 		chromeDevTools.send(DOM.enable(Optional.of(enableIncludeWhitespace)));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void test1() {
 		try {

@@ -6,21 +6,16 @@ import static org.hamcrest.Matchers.hasKey;
 
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
@@ -58,8 +53,6 @@ public class RuntimeCdpTest {
 	private String expression;
 	private static final boolean returnByValue = false;
 
-	private static WebElement element = null;
-	private static By locator = null;
 	private final static String baseURL = "https://www.google.com";
 
 	@BeforeClass

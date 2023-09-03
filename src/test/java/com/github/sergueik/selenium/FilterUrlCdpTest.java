@@ -1,43 +1,28 @@
 package com.github.sergueik.selenium;
 
-import static org.hamcrest.Matchers.greaterThan;
-
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasKey;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.MonthDay;
-import java.time.Year;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import org.apache.commons.codec.binary.Base64;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.apache.commons.codec.binary.Base64;
-
-import javax.imageio.ImageIO;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

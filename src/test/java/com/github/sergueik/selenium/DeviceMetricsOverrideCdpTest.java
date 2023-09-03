@@ -38,7 +38,6 @@ public class DeviceMetricsOverrideCdpTest extends BaseCdpTest {
 	private Actions actions;
 	private WebElement element;
 
-	private static Map<String, Long> rect;
 	private static Map<Integer, Integer> widths = new HashMap<>();
 	static {
 		widths.put(600, 480);
@@ -83,7 +82,7 @@ public class DeviceMetricsOverrideCdpTest extends BaseCdpTest {
 			command = "Page.getLayoutMetrics";
 			result = driver.executeCdpCommand(command, new HashMap<>());
 			System.err.println("Page.getLayoutMetrics: " + result.get("contentSize"));
-			rect = (Map<String, Long>) result.get("contentSize");
+			Map<String, Long> rect = (Map<String, Long>) result.get("contentSize");
 			element = driver.findElement(By.xpath(
 					"//*[@id=\"content-base\"]//table//th[contains(text(),\"VIEWPORT-WIDTH\")]/../td"));
 			assertThat(element, notNullValue());

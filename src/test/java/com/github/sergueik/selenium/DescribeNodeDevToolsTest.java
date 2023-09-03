@@ -1,13 +1,9 @@
 package com.github.sergueik.selenium;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +54,6 @@ public class DescribeNodeDevToolsTest extends BaseDevToolsTest {
 		chromeDevTools.send(DOM.enable(Optional.of(EnableIncludeWhitespace.ALL)));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void test1() {
 		try {

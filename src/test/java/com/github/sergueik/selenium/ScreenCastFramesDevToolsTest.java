@@ -4,11 +4,9 @@ package com.github.sergueik.selenium;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +44,6 @@ public class ScreenCastFramesDevToolsTest extends BaseDevToolsTest {
 	private String screencastFileName = null;
 	private static long testStartEpoch;
 	private static double frameEpoch;
-	private static String data;
 	private static boolean debug = true;
 	private static byte[] image;
 	private static Integer sesionId;

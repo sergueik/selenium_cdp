@@ -1,14 +1,11 @@
 package com.github.sergueik.selenium;
-
 /**
  * Copyright 2023 Serguei Kouzmine
  */
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsNot.not;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -19,10 +16,8 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebElement;
 
 /**

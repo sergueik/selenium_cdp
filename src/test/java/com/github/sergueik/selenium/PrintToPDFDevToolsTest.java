@@ -6,7 +6,6 @@ package com.github.sergueik.selenium;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -25,32 +24,27 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Optional;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
-import org.apache.pdfbox.text.PDFTextStripper;
-
-import com.github.sergueik.selenium.PrintToPDFCDPTest.PDF;
-import com.google.common.collect.ImmutableMap;
-
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
-
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-
 import org.openqa.selenium.devtools.v116.page.Page;
 import org.openqa.selenium.devtools.v116.page.Page.PrintToPDFResponse;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge

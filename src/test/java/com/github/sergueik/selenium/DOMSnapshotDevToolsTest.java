@@ -1,34 +1,16 @@
 package com.github.sergueik.selenium;
 
-/**
- * Copyright 2022 Serguei Kouzmine
- */
-
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasKey;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.WebDriverException;
-
-import com.google.gson.JsonSyntaxException;
-
+import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.v116.domsnapshot.DOMSnapshot;
 import org.openqa.selenium.devtools.v116.domsnapshot.model.DocumentSnapshot;
 import org.openqa.selenium.devtools.v116.domsnapshot.model.StringIndex;
-import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v116.browser.model.Histogram;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge

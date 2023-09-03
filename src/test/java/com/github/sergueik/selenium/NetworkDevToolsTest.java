@@ -1,39 +1,29 @@
 package com.github.sergueik.selenium;
 
-/**
- * Copyright 2021,2023 Serguei Kouzmine
- */
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.codec.binary.Base64;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
-
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v116.network.Network.GetResponseBodyResponse;
-import org.openqa.selenium.devtools.v116.network.model.Response;
 import org.openqa.selenium.devtools.v116.network.Network;
+import org.openqa.selenium.devtools.v116.network.model.DataReceived;
 import org.openqa.selenium.devtools.v116.network.model.Headers;
 import org.openqa.selenium.devtools.v116.network.model.RequestId;
-import org.openqa.selenium.devtools.v116.network.model.DataReceived;
+import org.openqa.selenium.devtools.v116.network.model.Response;
 import org.openqa.selenium.devtools.v116.network.model.ResponseReceived;
-
-import org.apache.commons.codec.binary.Base64;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

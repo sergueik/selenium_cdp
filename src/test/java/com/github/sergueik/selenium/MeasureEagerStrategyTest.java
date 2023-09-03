@@ -6,29 +6,20 @@ package com.github.sergueik.selenium;
 
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.PageLoadStrategy;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -51,7 +42,7 @@ public class MeasureEagerStrategyTest {
 	private static int flexibleWait = 60;
 	private static int pollingInterval = 500;
 
-	private static WebElement element = null;
+	// private static WebElement element = null;
 	// private static By locator = By.xpath("//img[@alt='Carnival Home Page']");
 	// private static String baseURL = "https://www.carnival.com/";
 	// For an ad-heavy "https://www.carnival.com"

@@ -12,10 +12,8 @@ import java.util.TimeZone;
 
 import org.junit.After;
 import org.junit.Test;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
 import org.openqa.selenium.devtools.v116.emulation.Emulation;
 
 /**
@@ -26,9 +24,6 @@ import org.openqa.selenium.devtools.v116.emulation.Emulation;
 
 public class TimeZoneDevToolsTest extends BaseDevToolsTest {
 
-	private static WebElement element = null;
-	private static By locator = By.xpath(
-			"//table[@id=\"timezone\"]/tbody/tr/td[contains(text(),\"Time on Local Machine\")]/../td[@id=\"toString\"]");
 	private static final String timezoneId = "America/Lima";
 	private static final String timezoneDescription = "Peru Standard Time";
 
@@ -85,4 +80,3 @@ public class TimeZoneDevToolsTest extends BaseDevToolsTest {
 	}
 
 }
-
