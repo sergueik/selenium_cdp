@@ -1,7 +1,21 @@
 package com.github.sergueik.selenium;
 
+
+/**
+ * Copyright 2020-2023 Serguei Kouzmine
+ */
+
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -11,10 +25,18 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
+
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
@@ -22,6 +44,7 @@ import org.openqa.selenium.devtools.v116.network.Network;
 import org.openqa.selenium.devtools.v116.network.model.DataReceived;
 import org.openqa.selenium.devtools.v116.network.model.Headers;
 import org.openqa.selenium.devtools.v116.network.model.RequestId;
+import org.openqa.selenium.devtools.v116.network.model.RequestWillBeSent;
 import org.openqa.selenium.devtools.v116.network.model.Response;
 import org.openqa.selenium.devtools.v116.network.model.ResponseReceived;
 
@@ -47,9 +70,15 @@ public class NetworkDevToolsTest {
 
 	private int cnt = 0;
 	private static String baseURL = "about:blank";
-	private static final String url = "https://apache.org";
+	private static String url = "https://apache.org";
 
 	private static Map<String, Object> headers = new HashMap<>();
+
+	private static WebElement element = null;
+
+	private static WebDriverWait wait;
+	private static int flexibleWait = 60;
+	private static int pollingInterval = 500;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
@@ -77,7 +106,10 @@ public class NetworkDevToolsTest {
 		} else {
 			driver = new ChromeDriver();
 		}
+		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
+		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 		Utils.setDriver(driver);
+
 		chromeDevTools = ((HasDevTools) driver).getDevTools();
 
 		chromeDevTools.createSession();
@@ -104,6 +136,7 @@ public class NetworkDevToolsTest {
 	public void before() throws Exception {
 		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
 				Optional.empty()));
+		chromeDevTools.send(Network.clearBrowserCache());
 		chromeDevTools.send(Network.setCacheDisabled(true));
 	}
 
@@ -132,9 +165,9 @@ public class NetworkDevToolsTest {
 		 * is("customHeaderValue")));
 		 */
 		chromeDevTools.addListener(Network.requestWillBeSent(),
-				o -> System.err.println(String.format(
+				(RequestWillBeSent event) -> System.err.println(String.format(
 						"request will be sent with extra header %s=%s", "customHeaderName",
-						o.getRequest().getHeaders().get("customHeaderName"))));
+						event.getRequest().getHeaders().get("customHeaderName"))));
 		// to test with a dummy server fire on locally and inspect the headers
 		// server-side
 		// driver.get("http://127.0.0.1:8080/demo/Demo");
@@ -154,6 +187,11 @@ public class NetworkDevToolsTest {
 		driver.get(url);
 	}
 
+	// https://stackoverflow.com/questions/6509628/how-to-get-http-response-code-using-selenium-webdriver
+	// python has seleniumwire
+	// https://github.com/wkeeling/selenium-wire#waiting-for-a-request
+	// module that extends Selenium's Python bindings to give you the ability to
+	// inspect requests made by the browser
 	@Test
 	public void test3() {
 		chromeDevTools.addListener(Network.responseReceived(),
@@ -165,25 +203,46 @@ public class NetworkDevToolsTest {
 				});
 
 		driver.get("http://httpbin.org/basic-auth/guest/wrong_password");
+		driver.getCurrentUrl();
 		// 401 - Unauthorized
 		driver.get("http://httpbin.org/status/403");
 		// 403 - Forbidden
 	}
 
-	// https://stackoverflow.com/questions/6509628/how-to-get-http-response-code-using-selenium-webdriver
-	// python has seleniumwire
-	// https://github.com/wkeeling/selenium-wire#waiting-for-a-request
-	// module that extends Selenium's Python bindings to give you the ability to
-	// inspect requests made by the browser
+	// based on:
+	// https://software-testing.ru/library/testing/testing-tools/4066-selenium-4
+	// (in Russian)
 	@Test
 	public void test5() {
+		url = "https://www.wikipedia.org/";
+		Map<String, Map<String, Object>> capturedRequests = new HashMap<>();
+		chromeDevTools.send(
+				Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+		chromeDevTools.addListener(Network.requestWillBeSent(),
+				(RequestWillBeSent event) -> {
+					capturedRequests.put(event.getRequest().getUrl(),
+							event.getRequest().getHeaders().toJson());
+				});
+		driver.get(url);
+		element = wait.until(ExpectedConditions.visibilityOfElementLocated(
+				By.xpath("//*[contains(@title, 'Deutsch')]")));
 
-		driver.get("http://httpbin.org/basic-auth/guest/wrong_password");
-		driver.getCurrentUrl();
+		assertThat(element, notNullValue());
+		assertThat(element.isDisplayed(), is(true));
+		Utils.highlight(element);
+		Utils.sleep(1000);
+		element.click();
+		Utils.sleep(1000);
+		assertThat(capturedRequests.size(), greaterThan(1));
+		capturedRequests.keySet().stream().forEach(System.err::println);
+		assertThat(capturedRequests.keySet(),
+				hasItems(new String[] { "https://www.wikipedia.org/",
+						"https://www.wikipedia.org/static/favicon/wikipedia.ico" }));
+		// this is what is shown in the browser address bar
+		String script = "const currentUrl = window.location.href; console.log(currentUrl); return currentUrl;";
+		String url2 = (String) driver.executeScript(script);
+		assertThat(capturedRequests.containsKey(url2), is(true));
 
-		// 401 - Unauthorized
-		driver.get("http://httpbin.org/status/403");
-		// 403 - Forbidden
 	}
 
 	@Test
@@ -247,3 +306,4 @@ public class NetworkDevToolsTest {
 	}
 
 }
+
