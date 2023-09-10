@@ -70,8 +70,9 @@ public class PierceCdpTest extends BaseCdpTest {
 			result = driver.executeCdpCommand(command, params);
 			assertThat(result, hasKey("root"));
 			result2 = (Map<String, Object>) result.get("root");
-			Writer out = new OutputStreamWriter(
-					new FileOutputStream(new File("test1.json")), "UTF-8");
+			String resultFilepath = System.getProperty("user.dir") + System.getProperty("file.separator") + "target"  + System.getProperty("file.separator")  + "test1.json";
+			Writer out = new OutputStreamWriter(new FileOutputStream(new File(resultFilepath)), "UTF-8");
+
 			try {
 				out.write(new Gson().toJson(result2, Map.class));
 			} finally {
@@ -103,8 +104,8 @@ public class PierceCdpTest extends BaseCdpTest {
 			result = driver.executeCdpCommand(command, params);
 			assertThat(result, hasKey("root"));
 			result2 = (Map<String, Object>) result.get("root");
-			Writer out = new OutputStreamWriter(
-					new FileOutputStream(new File("test2.json")), "UTF-8");
+			String resultFilepath = System.getProperty("user.dir") + System.getProperty("file.separator") + "target"  + System.getProperty("file.separator")  + "test2.json";
+			Writer out = new OutputStreamWriter(new FileOutputStream(new File(resultFilepath)), "UTF-8");
 			try {
 				out.write(new Gson().toJson(result2, Map.class));
 			} finally {

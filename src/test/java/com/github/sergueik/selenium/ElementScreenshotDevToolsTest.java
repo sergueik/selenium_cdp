@@ -126,7 +126,7 @@ public class ElementScreenshotDevToolsTest extends BaseDevToolsTest {
 				System.err
 						.println("Exception loading image (	ignored): " + e.toString());
 			}
-			String screenshotFileName = String.format("card_devtools_%02d.png", cnt);
+			String screenshotFileName = System.getProperty("user.dir") + System.getProperty("file.separator") + "target"  + System.getProperty("file.separator") + String.format("card_devtools_%02d.png", cnt);
 			try {
 				FileOutputStream fileOutputStream = new FileOutputStream(
 						screenshotFileName);

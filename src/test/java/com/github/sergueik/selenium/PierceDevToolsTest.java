@@ -53,8 +53,9 @@ public class PierceDevToolsTest extends BaseDevToolsTest {
 		try {
 			result = chromeDevTools
 					.send(DOM.getDocument(Optional.of(-1), Optional.of(true)));
-			Writer out = new OutputStreamWriter(
-					new FileOutputStream(new File("test3.json")), "UTF-8");
+
+			String resultFilepath = System.getProperty("user.dir") + System.getProperty("file.separator") + "target"  + System.getProperty("file.separator")  + "test3.json";
+			Writer out = new OutputStreamWriter(new FileOutputStream(new File(resultFilepath)), "UTF-8");
 			try {
 				out.write(new Gson().toJson(result, Node.class));
 			} finally {
@@ -72,8 +73,8 @@ public class PierceDevToolsTest extends BaseDevToolsTest {
 		try {
 			result = chromeDevTools
 					.send(DOM.getDocument(Optional.of(-1), Optional.of(false)));
-			Writer out = new OutputStreamWriter(
-					new FileOutputStream(new File("test4.json")), "UTF-8");
+			String resultFilepath = System.getProperty("user.dir") + System.getProperty("file.separator") + "target"  + System.getProperty("file.separator")  + "test3.json";
+			Writer out = new OutputStreamWriter(new FileOutputStream(new File(resultFilepath)), "UTF-8");
 			try {
 				out.write(new Gson().toJson(result, Node.class));
 			} finally {
