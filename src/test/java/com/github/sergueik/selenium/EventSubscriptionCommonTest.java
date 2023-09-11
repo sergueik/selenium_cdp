@@ -126,64 +126,14 @@ public class EventSubscriptionCommonTest {
 		// Act
 		WebDriver iframe = driver.switchTo().frame(frame);
 
-		sleep(1000);
+		Utils.sleep(1000);
 		WebElement element = iframe.findElement(By.tagName("button"));
 		assertThat(element, notNullValue());
 		if (debug)
 			System.err.println(String.format("Selenium found button: %s\n",
 					element.getAttribute("outerHTML")));
-		highlight(element, 1000);
+		Utils.highlight(element, 1000);
 		return element;
-	}
-
-	protected void highlight(WebElement element) {
-		highlight(element, 100, "solid yellow");
-	}
-
-	protected static void highlight(WebElement element, long highlightInterval) {
-		highlight(element, highlightInterval, "solid yellow");
-	}
-
-	protected static void highlight(WebElement element, long highlightInterval,
-			String color) {
-		// err.println("Color: " + color);
-		if (wait == null) {
-			wait = new WebDriverWait(driver, duration);
-		}
-		// Selenium Driver version sensitive code: 3.13.0 vs. 3.8.0 and older
-		// https://stackoverflow.com/questions/49687699/how-to-remove-deprecation-warning-on-timeout-and-polling-in-selenium-java-client
-		wait.pollingEvery(Duration.ofMillis((int) pollingInterval));
-
-		// wait.pollingEvery(pollingInterval, TimeUnit.MILLISECONDS);
-
-		try {
-			wait.until(ExpectedConditions.visibilityOf(element));
-			executeScript(String.format("arguments[0].style.border='3px %s'", color),
-					element);
-			Thread.sleep(highlightInterval);
-			executeScript("arguments[0].style.border=''", element);
-		} catch (InterruptedException e) {
-			// err.println("Exception (ignored): " + e.toString());
-		}
-	}
-
-	// http://www.javawithus.com/tutorial/using-ellipsis-to-accept-variable-number-of-arguments
-	protected static Object executeScript(String script, Object... arguments) {
-		if (driver instanceof JavascriptExecutor) {
-			JavascriptExecutor javascriptExecutor = JavascriptExecutor.class
-					.cast(driver);
-			return javascriptExecutor.executeScript(script, arguments);
-		} else {
-			throw new RuntimeException("Script execution failed.");
-		}
-	}
-
-	protected static void sleep(Integer milliSeconds) {
-		try {
-			Thread.sleep((long) milliSeconds);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
 }

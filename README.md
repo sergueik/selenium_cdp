@@ -950,7 +950,7 @@ URL="http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedr
 wget -O $PACKAGE_ARCHIVE -nv $URL
 unzip -o $PACKAGE_ARCHIVE
 ```
-
+NOTE: the latest version of Chrome Driver that can be downloaded this way is `114.0.5735.90`
 
 
 the tests work
@@ -967,7 +967,10 @@ W: Repository is broken: google-chrome-stable:amd64 (= 114.0.5735.133-1) has no 
 
 ### Note
 
-Starting with version __115__ the Chrome browser and ChromeDriver information is located on __Chrome for Testing availability__ [dashboard](https://googlechromelabs.github.io/chrome-for-testing/). 
+Starting with version __115__ the Chrome browser and ChromeDriver
+information is located on 
+__Chrome for Testing availability__
+[dashboard page](https://googlechromelabs.github.io/chrome-for-testing/). 
 A broader listing of Chrome versions can be found in `https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json`:
 ```sh
 

@@ -70,7 +70,7 @@ public class JavascriptDialogDevToolsTest extends EventSubscriptionCommonTest {
 		element = findButton();
 		// Act
 		element.click();
-		sleep(100);
+		Utils.sleep(100);
 		alert = wait.until(ExpectedConditions.alertIsPresent());
 		// Assert
 		assertThat(alert, notNullValue());
@@ -78,7 +78,7 @@ public class JavascriptDialogDevToolsTest extends EventSubscriptionCommonTest {
 			System.err.println("Selenium entering text: " + text);
 		// Act
 		alert.sendKeys(text);
-		sleep(100);
+		Utils.sleep(100);
 		// NOTE: alert.sendKeys expects a String argument not Keys
 		// alert.sendKeys(Keys.RETURN);
 		alert.accept();

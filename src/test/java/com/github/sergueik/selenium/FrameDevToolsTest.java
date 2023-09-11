@@ -22,7 +22,7 @@ import org.openqa.selenium.devtools.v116.page.model.FrameNavigated;
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-// public class FrameDevToolsTest extends EventSubscriptionCommonTest {
+
 public class FrameDevToolsTest extends BaseDevToolsTest {
 	private static int cnt = 0;
 	private static WebElement element;

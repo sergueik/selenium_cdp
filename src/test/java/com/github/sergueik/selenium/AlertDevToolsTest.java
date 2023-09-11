@@ -46,8 +46,6 @@ public class AlertDevToolsTest extends EventSubscriptionCommonTest {
 		driver.get("about:blank");
 	}
 
-	// TODO: hanging
-	@Ignore
 	@Test
 	public void acceptTest() {
 		// Arrange
@@ -67,7 +65,7 @@ public class AlertDevToolsTest extends EventSubscriptionCommonTest {
 		element.sendKeys(Keys.ENTER);
 		//
 		// assertThat(element.getDomAttribute("id"), notNullValue());
-		sleep(100);
+		Utils.sleep(100);
 		alert = driver.switchTo().alert();
 		// Assert alert displayed
 		assertThat(alert, notNullValue());
@@ -77,8 +75,6 @@ public class AlertDevToolsTest extends EventSubscriptionCommonTest {
 		alert.accept();
 	}
 
-	// TODO: hanging ?
-	@Ignore
 	@Test
 	public void dismissTest() {
 		// Arrange
@@ -98,19 +94,17 @@ public class AlertDevToolsTest extends EventSubscriptionCommonTest {
 		element = findButton();
 		// assertThat(element.getDomAttribute("id"), notNullValue());
 		element.click();
-		sleep(100);
+		Utils.sleep(100);
 		alert = wait.until(ExpectedConditions.alertIsPresent());
 		// Assert alert displayed
 		assertThat(alert, notNullValue());
-		sleep(3000);
+		Utils.sleep(3000);
 		if (debug)
 			System.err.println("Selenium dismissing alert.");
 		// assert that dialog was canceled
 		alert.dismiss();
 	}
 
-	// TODO: hanging ?
-	@Ignore
 	@Test
 	public void promptTest() {
 		// Arrange
@@ -136,7 +130,7 @@ public class AlertDevToolsTest extends EventSubscriptionCommonTest {
 		element = findButton();
 		// Act
 		element.click();
-		sleep(100);
+		Utils.sleep(100);
 		alert = wait.until(ExpectedConditions.alertIsPresent());
 		// Assert
 		assertThat(alert, notNullValue());
@@ -144,7 +138,7 @@ public class AlertDevToolsTest extends EventSubscriptionCommonTest {
 			System.err.println("Selenium entering text: " + text);
 		// Act
 		alert.sendKeys(text);
-		sleep(100);
+		Utils.sleep(100);
 		// NOTE: alert.sendKeys expects a String argument not Keys
 		// alert.sendKeys(Keys.RETURN);
 		alert.accept();
