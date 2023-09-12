@@ -4,7 +4,7 @@
   <groupId>com.github.sergueik.selenium</groupId>
   <artifactId>selenium_cdp</artifactId>
   <packaging>jar</packaging>
-  <version>0.55.0-SNAPSHOT</version>
+  <version>0.56.0-SNAPSHOT</version>
   <name>selenum_cdp</name>
   <description>testing new Chrome Dev Tools bridge offered by Selenium 4.x </description>
   <url>http://maven.apache.org</url>

@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2020,2021,2023 Serguei Kouzmine
+ * Copyright 2023 Serguei Kouzmine
  */
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -19,8 +19,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.v116.page.Page;
 import org.openqa.selenium.devtools.v116.page.model.JavascriptDialogClosed;
 import org.openqa.selenium.devtools.v116.page.model.JavascriptDialogOpening;
@@ -37,7 +35,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-public class AlertDevToolsTest extends BaseDevToolsTest {
+public class AlertDevToolsLocalTest extends BaseDevToolsTest {
 
 	// NOTE: fragile w.r. org.openqa.selenium.NoAlertPresentException and slowly
 	// loading
@@ -55,14 +53,14 @@ public class AlertDevToolsTest extends BaseDevToolsTest {
 
 	@Before
 	public void before() {
+		debug = true;
 		wait = new WebDriverWait(driver, duration);
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 
 		chromeDevTools.createSession();
 		chromeDevTools.send(Page.enable());
 	}
-	// NOTE: failing in visiblt browser with java.util.concurrent.TimeoutException
-	// Timed out waiting for driver server to stop.(..)
+
 	@After
 	public void after() {
 		driver.switchTo().defaultContent();
@@ -85,7 +83,10 @@ public class AlertDevToolsTest extends BaseDevToolsTest {
 				(JavascriptDialogClosed event) -> assertThat(event.getResult(),
 						is(true)));
 		// Act
-		driver.get("https://www.w3schools.com/js/tryit.asp?filename=tryjs_alert");
+		if (debug)
+			System.err.println("Started local acceptTest.");
+		driver.get(Utils.getPageContent("tryit1.html"));
+		
 		element = findButton();
 		element.sendKeys(Keys.ENTER);
 		//
@@ -115,7 +116,9 @@ public class AlertDevToolsTest extends BaseDevToolsTest {
 				(JavascriptDialogClosed event) -> assertThat(event.getResult(),
 						is(false)));
 		// Act
-		driver.get("https://www.w3schools.com/js/tryit.asp?filename=tryjs_alert");
+		if (debug)
+			System.err.println("Started local dismissTest.");
+		driver.get(Utils.getPageContent("tryit1.html"));
 		// chromeDevTools.send(Page.reload(Optional.of(true), Optional.empty()));
 		element = findButton();
 		// assertThat(element.getDomAttribute("id"), notNullValue());
@@ -150,10 +153,8 @@ public class AlertDevToolsTest extends BaseDevToolsTest {
 		chromeDevTools.addListener(Page.javascriptDialogClosed(),
 				(JavascriptDialogClosed event) -> assertThat(event.getResult(),
 						is(true)));
-
-		driver.get(
-				"https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_prompt");
-
+		driver.get(Utils.getPageContent("tryjsref_prompt.html"));
+		
 		element = findButton();
 		// Act
 		element.click();
