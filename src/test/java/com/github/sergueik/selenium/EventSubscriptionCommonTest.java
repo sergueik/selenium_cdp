@@ -7,7 +7,9 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -29,15 +31,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-public class EventSubscriptionCommonTest {
+public class EventSubscriptionCommonTest extends BaseDevToolsTest {
 
-	protected static boolean debug = true;
-	protected static boolean runHeadless = false;
-	private static String osName = Utils.getOSName();
-	protected static ChromiumDriver driver;
-	protected static DevTools chromeDevTools;
 	protected static WebDriverWait wait;
-	public final static int flexibleWait = 60; // too long
+	public final static int flexibleWait = 10; // NOTE: 60 is quite long
 	public final static Duration duration = Duration.ofSeconds(flexibleWait);;
 	public final static int implicitWait = 1;
 	public final static int pollingInterval = 500;
@@ -45,53 +42,22 @@ public class EventSubscriptionCommonTest {
 	protected static String name = null;
 	protected static WebElement element;
 	protected static List<WebElement> elements;
+	protected static boolean debug = true;
 
-	@BeforeClass
-	public static void setUp() {
-
-		if (System.getenv().containsKey("HEADLESS")
-				&& System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
-			runHeadless = true;
-		}
-		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOSName().equals("windows"))
-				&& !(System.getenv().containsKey("DISPLAY"))) {
-			runHeadless = true;
-		}
-		System
-				.setProperty("webdriver.chrome.driver",
-						Paths.get(System.getProperty("user.home"))
-								.resolve("Downloads").resolve(osName.equals("windows")
-										? "chromedriver.exe" : "chromedriver")
-								.toAbsolutePath().toString());
-
-		if (runHeadless) {
-			ChromeOptions options = new ChromeOptions();
-			options.addArguments("--headless", "--disable-gpu");
-			driver = new ChromeDriver(options);
-		} else {
-			driver = new ChromeDriver();
-		}
-		Utils.setDriver(driver);
-		// Declare a wait time
+	// NOTE: fragile w.r. org.openqa.selenium.NoAlertPresentException and slowly
+	// loading
+	@Before
+	public void before() {
 
 		wait = new WebDriverWait(driver, duration);
-
-		// NOTE: constructor WebDriverWait(WebDriver, Duration) is undefined
-		// with Selenium 3.x ?
-		// wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
-
-		// Selenium Driver version sensitive code: 3.13.0 vs. 3.8.0 and older
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
-		// wait.pollingEvery(pollingInterval, TimeUnit.MILLISECONDS);
+	}
 
-		chromeDevTools = ((HasDevTools) driver).getDevTools();
-		// compiles but fails in runtime when version of selenium-java and
-		// selenium-devtools are different
-		// error is:
-		// Method
-		// org/openqa/selenium/chrome/ChromeDriver.getDevTools()Lorg/openqa/selenium/devtools/DevTools;
-		// is abstract
+	@After
+	public void after() {
+		driver.switchTo().defaultContent();
+		chromeDevTools.clearListeners();
+		driver.get("about:blank");
 	}
 
 	@AfterClass
@@ -135,5 +101,4 @@ public class EventSubscriptionCommonTest {
 		Utils.highlight(element, 1000);
 		return element;
 	}
-
 }
