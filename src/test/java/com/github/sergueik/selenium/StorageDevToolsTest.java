@@ -8,9 +8,9 @@ import org.junit.Before;
 // import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v116.network.model.TimeSinceEpoch;
-import org.openqa.selenium.devtools.v116.storage.Storage;
-import org.openqa.selenium.devtools.v116.storage.model.SharedStorageMetadata;
+import org.openqa.selenium.devtools.v117.network.model.TimeSinceEpoch;
+import org.openqa.selenium.devtools.v117.storage.Storage;
+import org.openqa.selenium.devtools.v117.storage.model.SharedStorageMetadata;
 import org.openqa.selenium.json.JsonException;
 
 /**

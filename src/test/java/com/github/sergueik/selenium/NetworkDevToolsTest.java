@@ -40,13 +40,13 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v116.network.Network;
-import org.openqa.selenium.devtools.v116.network.model.DataReceived;
-import org.openqa.selenium.devtools.v116.network.model.Headers;
-import org.openqa.selenium.devtools.v116.network.model.RequestId;
-import org.openqa.selenium.devtools.v116.network.model.RequestWillBeSent;
-import org.openqa.selenium.devtools.v116.network.model.Response;
-import org.openqa.selenium.devtools.v116.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v117.network.Network;
+import org.openqa.selenium.devtools.v117.network.model.DataReceived;
+import org.openqa.selenium.devtools.v117.network.model.Headers;
+import org.openqa.selenium.devtools.v117.network.model.RequestId;
+import org.openqa.selenium.devtools.v117.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v117.network.model.Response;
+import org.openqa.selenium.devtools.v117.network.model.ResponseReceived;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

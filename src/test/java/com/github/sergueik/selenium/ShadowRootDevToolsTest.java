@@ -12,11 +12,11 @@ import org.junit.After;
 import org.junit.Before;
 // import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v116.runtime.Runtime;
-import org.openqa.selenium.devtools.v116.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.v116.runtime.model.ExecutionContextId;
-import org.openqa.selenium.devtools.v116.runtime.model.RemoteObject;
-import org.openqa.selenium.devtools.v116.runtime.model.TimeDelta;
+import org.openqa.selenium.devtools.v117.runtime.Runtime;
+import org.openqa.selenium.devtools.v117.runtime.Runtime.EvaluateResponse;
+import org.openqa.selenium.devtools.v117.runtime.model.ExecutionContextId;
+import org.openqa.selenium.devtools.v117.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.v117.runtime.model.TimeDelta;
 import org.openqa.selenium.json.JsonException;
 
 /**

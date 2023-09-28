@@ -18,12 +18,12 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v116.page.Page;
-import org.openqa.selenium.devtools.v116.page.model.ScriptIdentifier;
+import org.openqa.selenium.devtools.v117.page.Page;
+import org.openqa.selenium.devtools.v117.page.model.ScriptIdentifier;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
- * based on:
+ * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-addScriptToEvaluateOnNewDocument
  *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
@@ -43,15 +43,21 @@ public class ChromeDevToolsInjectedScriptTest {
 	@BeforeClass
 	public static void setUp() throws Exception {
 
-		if (System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
+		if (System.getenv().containsKey("HEADLESS")
+				&& System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
 			runHeadless = true;
 		}
 		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY"))) {
+		if (!(Utils.getOSName().equals("windows"))
+				&& !(System.getenv().containsKey("DISPLAY"))) {
 			runHeadless = true;
 		}
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
+		System
+				.setProperty("webdriver.chrome.driver",
+						Paths.get(System.getProperty("user.home"))
+								.resolve("Downloads").resolve(osName.equals("windows")
+										? "chromedriver.exe" : "chromedriver")
+								.toAbsolutePath().toString());
 
 		if (runHeadless) {
 			ChromeOptions options = new ChromeOptions();
@@ -82,8 +88,13 @@ public class ChromeDevToolsInjectedScriptTest {
 		// Arrange
 		script = "window.was_here='true';";
 		identifier = chromeDevTools
-				.send(Page.addScriptToEvaluateOnNewDocument(script, Optional.empty(), Optional.empty()));
-		System.err.println(String.format("Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
+				.send(Page.addScriptToEvaluateOnNewDocument(script, // source
+						Optional.empty(), // worldName
+						Optional.of(false), // includeCommandLineAPI
+						Optional.of(false) // runImmediately
+		));
+		System.err.println(String.format(
+				"Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
 
 		// chromeDevTools.send(Debugger.getScriptSource((ScriptId) response));
 		// Cannot cast from ScriptIdentifier to ScriptId
@@ -103,7 +114,8 @@ public class ChromeDevToolsInjectedScriptTest {
 		// Arrange
 		String script = "window.was_here=true;";
 		identifier = chromeDevTools.send(Page.addScriptToEvaluateOnLoad(script));
-		System.err.println(String.format("Method Page.addScriptToEvaluateOnLoad result: %s", identifier));
+		System.err.println(String.format(
+				"Method Page.addScriptToEvaluateOnLoad result: %s", identifier));
 		driver.get(baseURL);
 		driver.navigate().refresh();
 		Utils.sleep(100);
@@ -121,8 +133,14 @@ public class ChromeDevToolsInjectedScriptTest {
 		// Arrange
 		script = "window.was_here=true;";
 		identifier = chromeDevTools
-				.send(Page.addScriptToEvaluateOnNewDocument(script, Optional.empty(), Optional.empty()));
-		System.err.println(String.format("Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
+				.send(Page.addScriptToEvaluateOnNewDocument(script, // source
+						Optional.empty(), // worldName
+						Optional.of(false), // includeCommandLineAPI
+						Optional.of(false) // runImmediately
+		));
+
+		System.err.println(String.format(
+				"Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
 
 		driver.get(baseURL);
 		Utils.sleep(100);
@@ -141,8 +159,14 @@ public class ChromeDevToolsInjectedScriptTest {
 		// Arrange
 		script = "Object.defineProperty(navigator, 'webdriver', { get: () => undefined });";
 		identifier = chromeDevTools
-				.send(Page.addScriptToEvaluateOnNewDocument(script, Optional.empty(), Optional.empty()));
-		System.err.println(String.format("Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
+				.send(Page.addScriptToEvaluateOnNewDocument(script, // source
+						Optional.empty(), // worldName
+						Optional.of(false), // includeCommandLineAPI
+						Optional.of(false) // runImmediately
+		));
+
+		System.err.println(String.format(
+				"Method Page.addScriptToEvaluateOnNewDocument result: %s", identifier));
 
 		// chromeDevTools.send(Debugger.getScriptSource((ScriptId) response));
 		// Cannot cast from ScriptIdentifier to ScriptId

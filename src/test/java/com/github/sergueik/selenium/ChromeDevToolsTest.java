@@ -4,9 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.openqa.selenium.devtools.v116.performance.Performance.disable;
-import static org.openqa.selenium.devtools.v116.performance.Performance.enable;
-import static org.openqa.selenium.devtools.v116.performance.Performance.getMetrics;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -22,27 +19,30 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.TimeoutException;
-// need to use branch cdp_codegen of SeleniumHQ/selenium
-// https://github.com/SeleniumHQ/selenium/tree/cdp_codegen/java/client/src/org/openqa/selenium/devtools
+
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-// import org.openqa.selenium.devtools.v116.target.model.SessionID;
+
+// import org.openqa.selenium.devtools.v117.target.model.SessionID;
 import org.openqa.selenium.devtools.idealized.target.model.SessionID;
-import org.openqa.selenium.devtools.v116.browser.Browser;
-import org.openqa.selenium.devtools.v116.browser.Browser.GetWindowForTargetResponse;
-import org.openqa.selenium.devtools.v116.browser.model.Bounds;
-import org.openqa.selenium.devtools.v116.browser.model.WindowID;
-import org.openqa.selenium.devtools.v116.input.Input;
-import org.openqa.selenium.devtools.v116.input.Input.DispatchKeyEventType;
-import org.openqa.selenium.devtools.v116.log.Log;
-import org.openqa.selenium.devtools.v116.network.Network;
-import org.openqa.selenium.devtools.v116.network.model.Headers;
-import org.openqa.selenium.devtools.v116.page.Page;
-import org.openqa.selenium.devtools.v116.page.model.ScriptIdentifier;
-import org.openqa.selenium.devtools.v116.performance.Performance;
-import org.openqa.selenium.devtools.v116.performance.model.Metric;
+import static org.openqa.selenium.devtools.v117.performance.Performance.disable;
+import static org.openqa.selenium.devtools.v117.performance.Performance.enable;
+import static org.openqa.selenium.devtools.v117.performance.Performance.getMetrics;
+import org.openqa.selenium.devtools.v117.browser.Browser;
+import org.openqa.selenium.devtools.v117.browser.Browser.GetWindowForTargetResponse;
+import org.openqa.selenium.devtools.v117.browser.model.Bounds;
+import org.openqa.selenium.devtools.v117.browser.model.WindowID;
+import org.openqa.selenium.devtools.v117.input.Input;
+import org.openqa.selenium.devtools.v117.input.Input.DispatchKeyEventType;
+import org.openqa.selenium.devtools.v117.log.Log;
+import org.openqa.selenium.devtools.v117.network.Network;
+import org.openqa.selenium.devtools.v117.network.model.Headers;
+import org.openqa.selenium.devtools.v117.page.Page;
+import org.openqa.selenium.devtools.v117.page.model.ScriptIdentifier;
+import org.openqa.selenium.devtools.v117.performance.Performance;
+import org.openqa.selenium.devtools.v117.performance.model.Metric;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -202,8 +202,11 @@ public class ChromeDevToolsTest {
 		// Arrange
 		final String script = "Object.defineProperty(navigator, 'webdriver', { get: () => undefined });";
 		ScriptIdentifier response = chromeDevTools
-				.send(Page.addScriptToEvaluateOnNewDocument(script, Optional.empty(),
-						Optional.empty()));
+				.send(Page.addScriptToEvaluateOnNewDocument(script, // source
+						Optional.empty(), // worldName
+						Optional.of(false), // includeCommandLineAPI
+						Optional.of(false) // runImmediately
+		));
 		System.err.println(String.format(
 				"Method Page.addScriptToEvaluateOnNewDocument result: %s", response));
 

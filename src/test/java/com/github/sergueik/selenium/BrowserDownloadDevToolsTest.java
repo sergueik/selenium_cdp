@@ -14,8 +14,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.devtools.v116.browser.Browser;
-import org.openqa.selenium.devtools.v116.browser.model.DownloadProgress;
+import org.openqa.selenium.devtools.v117.browser.Browser;
+import org.openqa.selenium.devtools.v117.browser.model.DownloadProgress;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
