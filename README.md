@@ -990,6 +990,12 @@ jq '.versions[] | select(.version | contains( "114.")) ' known-good-versions-wit
 
 The instructions of version lookup are provided on [version selection hint page](https://chromedriver.chromium.org/downloads/version-selection). Prior to that the `chromedriver` download links were posted on Chromedriver Downloads [page](https://chromedriver.chromium.org/downloads)
 
+* With Selenium version __4.14.0__ onwards one has to build it on JDK __11___ or later, even if targeting Java __1.8__ in `pom.xml`.  The JDK __1.8__ fails with
+
+```text
+[ERROR] bad class file: .m2\repository\org\seleniumhq\selenium\selenium-api\4.14.0\selenium-api-4.14.0.jar
+[ERROR] class file has wrong version 55.0, should be 52.0
+```
 
 ### See Also
 
