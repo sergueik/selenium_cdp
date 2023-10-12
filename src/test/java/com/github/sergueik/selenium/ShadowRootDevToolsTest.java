@@ -24,11 +24,11 @@ import org.openqa.selenium.json.JsonException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import org.openqa.selenium.devtools.v117.runtime.Runtime;
-import org.openqa.selenium.devtools.v117.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.v117.runtime.model.ExecutionContextId;
-import org.openqa.selenium.devtools.v117.runtime.model.RemoteObject;
-import org.openqa.selenium.devtools.v117.runtime.model.TimeDelta;
+import org.openqa.selenium.devtools.v118.runtime.Runtime;
+import org.openqa.selenium.devtools.v118.runtime.Runtime.EvaluateResponse;
+import org.openqa.selenium.devtools.v118.runtime.model.ExecutionContextId;
+import org.openqa.selenium.devtools.v118.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.v118.runtime.model.TimeDelta;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -308,7 +308,13 @@ public class ShadowRootDevToolsTest extends BaseDevToolsTest {
 			assertThat(result, notNullValue());
 			System.err.println(String.format("test5 result type: %s value: %s",
 					result.getType(), result.getValue()));
-			assertThat(result.getValue().isEmpty(), is(true));
+
+			// NOTE: With Java 1.8 will not compile
+			// symbol: method isEmpty()
+			// location: class java.util.Optional<java.lang.Object>
+			// assertThat(result.getValue().isEmpty(), is(true));
+			assertThat(result.getValue().isPresent(), is(false));
+
 		} catch (JsonException e) {
 			System.err.println(
 					"Exception in test5 reading result (ignored): " + e.toString());

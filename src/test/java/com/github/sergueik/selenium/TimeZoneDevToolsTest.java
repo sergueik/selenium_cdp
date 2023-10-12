@@ -14,7 +14,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v117.emulation.Emulation;
+import org.openqa.selenium.devtools.v118.emulation.Emulation;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
