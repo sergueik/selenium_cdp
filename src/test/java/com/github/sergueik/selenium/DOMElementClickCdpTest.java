@@ -19,9 +19,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 
 import com.google.gson.JsonSyntaxException;
+import static org.hamcrest.CoreMatchers.is;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -39,11 +43,11 @@ import com.google.gson.JsonSyntaxException;
 public class DOMElementClickCdpTest extends BaseCdpTest {
 
 	private static String baseURL = "https://www.wikipedia.org";
-	// private final String selector = "a.other-project-link:nth-of-type(0)";
-	// private final String selector = "a.other-project-link";
-	private final String selector = "#js-link-box-en > strong";
-	// private final String selector = "#js-link-box-de > strong";
-	private static String command = "DOM.getDocument";
+
+	private WebElement element;
+	private String selector = null;
+
+	private static String command = null;
 
 	private static Map<String, Object> params = new HashMap<>();
 	private static Map<String, Object> result = new HashMap<>();
@@ -52,6 +56,7 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 
 	@After
 	public void afterTest() {
+		Utils.sleep(3000);
 		driver.get("about:blank");
 		command = "DOM.disable";
 		result = driver.executeCdpCommand(command, new HashMap<String, Object>());
@@ -72,6 +77,14 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 	public void test1() {
 
 		try {
+			// selector = "a.other-project-link:nth-of-type(1)";
+			selector = "#js-link-box-it > strong";
+			element = driver.findElement(By.cssSelector(selector));
+			Utils.highlight(element);
+			Point point = element.getLocation();
+			System.err.println(
+					String.format("Element location x: %d y: %d", point.x, point.y));
+
 			command = "DOM.getDocument";
 			params = new HashMap<>();
 			params.put("pierce", false);
@@ -80,6 +93,7 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 			result = driver.executeCdpCommand(command, params);
 			nodeId = Long.parseLong(
 					((Map<String, Object>) result.get("root")).get("nodeId").toString());
+			System.err.println(String.format("Found Root Node Id: %d", nodeId));
 			command = "DOM.querySelectorAll";
 			params.clear();
 			params.put("nodeId", nodeId);
@@ -109,30 +123,33 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 				assertTrue(result.containsKey("quads"));
 				System.err.println(String.format("Id: %s\nquads: %s", nodeId.toString(),
 						result.get("quads")));
-				List<List<Double>> data1 = (List<List<Double>>) result.get("quads");
-				// NOTE: sometimes observed
-				// java.lang.ClassCastException: java.lang.Long cannot be cast to
-				// java.lang.Double
-				// quads: [[299, 167.4499969482422, 455, 167.4499969482422, 455,
-				// 191.4499969482422,299, 191.4499969482422]]
-				List<Double> data2 = (List<Double>) data1.get(0);
-				int x = Math.round(data2.get(0).longValue());
-				int y = Math.round(data2.get(1).longValue());
-				// System.err.println(String.format("Click at x: %.2f y: %.2f", x, y));
+				List<List<Object>> data1 = (List<List<Object>>) result.get("quads");
+				List<Object> data2 = (List<Object>) data1.get(0);
+				Double x1 = Double.parseDouble(data2.get(0).toString());
+				int x = Math.round(x1.longValue());
+				Double y1 = Double.parseDouble(data2.get(1).toString());
+				int y = Math.round(y1.longValue());
 				System.err.println(String.format("Click at x: %d y: %d", x, y));
 				command = "Input.dispatchMouseEvent";
 				params.clear();
 				params.put("x", x);
 				params.put("y", y);
+				params.put("button", "left");
 				params.put("type", "mousePressed");
+				params.put("clickCount", 1);
 				driver.executeCdpCommand(command, params);
 				Utils.sleep(100);
+				command = "Input.dispatchMouseEvent";
 				params.clear();
 				params.put("x", x);
 				params.put("y", y);
+				params.put("button", "left");
+				params.put("clickCount", 1);
+
 				params.put("type", "mouseReleased");
 				driver.executeCdpCommand(command, params);
-				Utils.sleep(10000);
+				Utils.sleep(1000);
+				System.err.println("Navigated to: " + driver.getTitle());
 			});
 
 		} catch (JsonSyntaxException e) {
@@ -150,57 +167,95 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Ignore
+	// @Ignore
 	@Test
 	public void test2() {
 
 		try {
-			command = "DOM.performSearch";
+			selector = "#js-link-box-de > strong";
+			element = driver.findElement(By.cssSelector(selector));
+			Utils.highlight(element);
+			Point point = element.getLocation();
+			System.err.println(
+					String.format("Element location x: %d y: %d", point.x, point.y));
+
+			command = "DOM.getDocument";
 			params = new HashMap<>();
-			params.put("query", selector);
-			params.put("includeUserAgentShadowDOM", false);
+			params.put("pierce", false);
+			params.put("depth", 1);
 			// Act
 			result = driver.executeCdpCommand(command, params);
-			assertThat(results, notNullValue());
-			assertThat(result, hasKey("searchId"));
-			assertThat(result, hasKey("resultCount"));
-			int resultCount = Integer.parseInt(result.get("resultCount").toString());
-			System.err.println(String.format("Search %s Has %d results:",
-					result.get("searchId").toString(), resultCount));
-			command = "DOM.getSearchResults";
+			nodeId = Long.parseLong(
+					((Map<String, Object>) result.get("root")).get("nodeId").toString());
+			System.err.println(String.format("Found Root Node Id: %d", nodeId));
+			command = "DOM.querySelector";
 			params.clear();
-			params.put("searchId", result.get("searchId"));
-			params.put("fromIndex", 0);
-			params.put("toIndex", resultCount - 1);
+			params.put("nodeId", nodeId);
+			params.put("selector", selector);
 
 			result = driver.executeCdpCommand(command, params);
-			assertThat(result, hasKey("nodeIds"));
-			results = (List<Long>) result.get("nodeIds");
+			assertThat(result, hasKey("nodeId"));
+			nodeId = (Long) result.get("nodeId");
 			// Assert
-			assertThat(results, notNullValue());
-			assertTrue(results.size() != 0);
-			System.err.println(
-					String.format("Found %d Node Ids: %s", results.size(), results)
-							+ ", explore first one");
-			/*
-			results.forEach(nodeId -> {
-				command = "DOM.getOuterHTML";
-				params.clear();
-				params.put("nodeId", nodeId);
-				result = driver.executeCdpCommand(command, params);
-				assertThat(result, notNullValue());
-				assertTrue(result.containsKey("outerHTML"));
-				System.err.println(String.format("Id: %s\nHTML: %s", nodeId.toString(),
-						result.get("outerHTML")));
-			});
-			*/
+			assertThat(nodeId != -1, is(true));
+			System.err.println(String.format("Found %d Node Id:", nodeId));
+			command = "DOM.getOuterHTML";
+			params.clear();
+			params.put("nodeId", nodeId);
+			result = driver.executeCdpCommand(command, params);
+			assertThat(result, notNullValue());
+			assertTrue(result.containsKey("outerHTML"));
+			System.err.println(String.format("Id: %s\nHTML: %s", nodeId.toString(),
+					result.get("outerHTML")));
+			command = "DOM.getContentQuads";
+			params.clear();
+			params.put("nodeId", nodeId);
+			result = driver.executeCdpCommand(command, params);
+			assertThat(result, notNullValue());
+			assertTrue(result.containsKey("quads"));
+			System.err.println(String.format("Id: %s\nquads: %s", nodeId.toString(),
+					result.get("quads")));
+			List<List<Object>> data1 = (List<List<Object>>) result.get("quads");
+			// NOTE: sometimes observed
+			// java.lang.ClassCastException: java.lang.Long cannot be cast to
+			// java.lang.Double
+			// quads: [[299, 167.4499969482422, 455, 167.4499969482422, 455,
+			// 191.4499969482422,299, 191.4499969482422]]
+			List<Object> data2 = (List<Object>) data1.get(0);
+			Double x1 = Double.parseDouble(data2.get(0).toString());
+			// java.lang.ClassCastException:
+			int x = Math.round(x1.longValue());
+			Double y1 = Double.parseDouble(data2.get(1).toString());
+			int y = Math.round(y1.longValue());
+			// System.err.println(String.format("Click at x: %.2f y: %.2f", x, y));
+			System.err.println(String.format("Click at x: %d y: %d", x, y));
+			command = "Input.dispatchMouseEvent";
+			params.clear();
+			params.put("x", x);
+			params.put("y", y);
+			params.put("button", "left");
+			params.put("type", "mousePressed");
+			params.put("clickCount", 1);
+			driver.executeCdpCommand(command, params);
+			Utils.sleep(100);
+			command = "Input.dispatchMouseEvent";
+			params.clear();
+			params.put("x", x);
+			params.put("y", y);
+			params.put("button", "left");
+			params.put("clickCount", 1);
+			params.put("type", "mouseReleased");
+			driver.executeCdpCommand(command, params);
+			System.err.println("Navigated to: " + driver.getTitle());
+			Utils.sleep(1000);
 
 		} catch (JsonSyntaxException e) {
 			System.err.println("JSON Syntax exception in " + command + " (ignored): "
 					+ e.toString());
 		} catch (WebDriverException e) {
-			System.err.println("Web Driver exception in " + command + " (ignored): "
-					+ Utils.processExceptionMessage(e.getMessage()));
+			System.err.println(
+					"Web Driver exception in " + command + " (ignored): " + e.getMessage()
+							+ " " + Utils.processExceptionMessage(e.getMessage()));
 		} catch (Exception e) {
 			System.err.println("Exception in " + command + "  " + e.toString());
 			e.printStackTrace();
