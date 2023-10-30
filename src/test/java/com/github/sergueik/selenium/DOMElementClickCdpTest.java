@@ -51,9 +51,7 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 	private static Map<String, Object> params = new HashMap<>();
 	private static Map<String, Object> result = new HashMap<>();
 	private static List<Long> results = new ArrayList<>();
-	private List<List<Object>> data = new ArrayList<>();
-	private List<Object> data1 = new ArrayList<>();
-	private Double value;
+	private static List<Integer> coords = new ArrayList<>();;
 	private static Long nodeId = -1l;
 
 	@After
@@ -124,33 +122,8 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 				assertTrue(result.containsKey("quads"));
 				System.err.println(String.format("Id: %s\nquads: %s", nodeId.toString(),
 						result.get("quads")));
-				data = (List<List<Object>>) result.get("quads");
-				data1 = (List<Object>) data.get(0);
-				value = Double.parseDouble(data1.get(0).toString());
-				int x = Math.round(value.longValue());
-				value = Double.parseDouble(data1.get(1).toString());
-				int y = Math.round(value.longValue());
-				System.err.println(String.format("Click at x: %d y: %d", x, y));
-				command = "Input.dispatchMouseEvent";
-				params.clear();
-				params.put("x", x);
-				params.put("y", y);
-				params.put("button", "left");
-				params.put("type", "mousePressed");
-				params.put("clickCount", 1);
-				driver.executeCdpCommand(command, params);
-				Utils.sleep(100);
-				command = "Input.dispatchMouseEvent";
-				params.clear();
-				params.put("x", x);
-				params.put("y", y);
-				params.put("button", "left");
-				params.put("clickCount", 1);
-
-				params.put("type", "mouseReleased");
-				driver.executeCdpCommand(command, params);
-				Utils.sleep(1000);
-				System.err.println("Navigated to: " + driver.getTitle());
+				coords = getCoords(result);
+				click(coords.get(0), coords.get(1));
 			});
 
 		} catch (JsonSyntaxException e) {
@@ -216,32 +189,8 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 			assertTrue(result.containsKey("quads"));
 			System.err.println(String.format("Id: %s\nquads: %s", nodeId.toString(),
 					result.get("quads")));
-			data = (List<List<Object>>) result.get("quads");
-			data1 = (List<Object>) data.get(0);
-			value = Double.parseDouble(data1.get(0).toString());
-			int x = Math.round(value.longValue());
-			value = Double.parseDouble(data1.get(1).toString());
-			int y = Math.round(value.longValue());
-			System.err.println(String.format("Click at x: %d y: %d", x, y));
-			command = "Input.dispatchMouseEvent";
-			params.clear();
-			params.put("x", x);
-			params.put("y", y);
-			params.put("button", "left");
-			params.put("type", "mousePressed");
-			params.put("clickCount", 1);
-			driver.executeCdpCommand(command, params);
-			Utils.sleep(100);
-			command = "Input.dispatchMouseEvent";
-			params.clear();
-			params.put("x", x);
-			params.put("y", y);
-			params.put("button", "left");
-			params.put("clickCount", 1);
-			params.put("type", "mouseReleased");
-			driver.executeCdpCommand(command, params);
-			System.err.println("Navigated to: " + driver.getTitle());
-			Utils.sleep(1000);
+			coords = getCoords(result);
+			click(coords.get(0), coords.get(1));
 
 		} catch (JsonSyntaxException e) {
 			System.err.println("JSON Syntax exception in " + command + " (ignored): "
@@ -308,33 +257,8 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 				assertTrue(result.containsKey("quads"));
 				System.err.println(String.format("Id: %s\nquads: %s", nodeId.toString(),
 						result.get("quads")));
-				data = (List<List<Object>>) result.get("quads");
-				data1 = (List<Object>) data.get(0);
-				value = Double.parseDouble(data1.get(0).toString());
-				int x = Math.round(value.longValue());
-				value = Double.parseDouble(data1.get(1).toString());
-				int y = Math.round(value.longValue());
-				System.err.println(String.format("Click at x: %d y: %d", x, y));
-				command = "Input.dispatchMouseEvent";
-				params.clear();
-				params.put("x", x);
-				params.put("y", y);
-				params.put("button", "left");
-				params.put("type", "mousePressed");
-				params.put("clickCount", 1);
-				driver.executeCdpCommand(command, params);
-				Utils.sleep(100);
-				command = "Input.dispatchMouseEvent";
-				params.clear();
-				params.put("x", x);
-				params.put("y", y);
-				params.put("button", "left");
-				params.put("clickCount", 1);
-
-				params.put("type", "mouseReleased");
-				driver.executeCdpCommand(command, params);
-				Utils.sleep(1000);
-				System.err.println("Navigated to: " + driver.getTitle());
+				coords = getCoords(result);
+				click(coords.get(0), coords.get(1));
 			});
 
 		} catch (JsonSyntaxException e) {
@@ -351,4 +275,46 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private List<Integer> getCoords(Map<String, Object> result) {
+		List<List<Object>> data = new ArrayList<>();
+		List<Object> data1 = new ArrayList<>();
+		Double value;
+		List<Integer> values = new ArrayList<>();
+		data = (List<List<Object>>) result.get("quads");
+		data1 = (List<Object>) data.get(0);
+		value = Double.parseDouble(data1.get(0).toString());
+		int x = Math.round(value.longValue());
+		value = Double.parseDouble(data1.get(1).toString());
+		int y = Math.round(value.longValue());
+		values.add(x);
+		values.add(y);
+		return values;
+	}
+
+	private void click(int x, int y) {
+
+		command = "Input.dispatchMouseEvent";
+		params.clear();
+		params.put("x", x);
+		params.put("y", y);
+		params.put("button", "left");
+		params.put("type", "mousePressed");
+		params.put("clickCount", 1);
+		driver.executeCdpCommand(command, params);
+		System.err.println(String.format("Click at x: %d y: %d", x, y));
+		Utils.sleep(100);
+		command = "Input.dispatchMouseEvent";
+		params.clear();
+		params.put("x", x);
+		params.put("y", y);
+		params.put("button", "left");
+		params.put("clickCount", 1);
+
+		params.put("type", "mouseReleased");
+		driver.executeCdpCommand(command, params);
+		Utils.sleep(1000);
+		System.err.println("Navigated to: " + driver.getTitle());
+
+	}
 }
