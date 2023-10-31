@@ -114,7 +114,7 @@ public class OverlayHighlightCDPTest extends BaseDevToolsTest {
 				params.put("nodeId", nodeId);
 				params.put("highlightConfig", data);
 				dataString = null;
-				result = driver.executeCdpCommand("DOM.highlightNode", params);
+				driver.executeCdpCommand("DOM.highlightNode", params);
 				params.clear();
 				params.put("nodeId", nodeId);
 				result = driver.executeCdpCommand("DOM.getOuterHTML", params);
@@ -125,9 +125,7 @@ public class OverlayHighlightCDPTest extends BaseDevToolsTest {
 				System.err.println("outerHTML: " + dataString);
 
 				Utils.sleep(500);
-
-				params.clear();
-				result = driver.executeCdpCommand("DOM.hideHighlight", params);
+				driver.executeCdpCommand("DOM.hideHighlight", new HashMap<>());
 			});
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "

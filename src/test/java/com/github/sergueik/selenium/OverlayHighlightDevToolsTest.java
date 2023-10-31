@@ -19,6 +19,8 @@ import org.openqa.selenium.devtools.v118.overlay.model.HighlightConfig;
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#method-enable
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-enable
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-disable
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-RGBA
  * https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#method-highlightNode
  * https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#type-HighlightConfig

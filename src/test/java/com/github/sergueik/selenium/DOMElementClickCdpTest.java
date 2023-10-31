@@ -29,11 +29,15 @@ import static org.hamcrest.CoreMatchers.is;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
+ * https://chromedevtools.github.io/devtools-protocol/tot/Overlay/#method-enable
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-enable
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-disable
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getDocument
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-querySelectorAll
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-querySelector
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getContentQuads
  * https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#method-highlightNode
+ * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-hideHighlight
  * https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#type-RGBA
  * https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#method-highlightRect
  * https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchMouseEvent
@@ -64,7 +68,9 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 		Utils.sleep(3000);
 		driver.get("about:blank");
 		command = "DOM.disable";
-		result = driver.executeCdpCommand(command, new HashMap<String, Object>());
+		driver.executeCdpCommand(command, new HashMap<String, Object>());
+		command = "Overlay.disable";
+		driver.executeCdpCommand(command, new HashMap<>());
 	}
 
 	@Before
@@ -72,9 +78,9 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 		command = "DOM.enable";
 		params = new HashMap<String, Object>();
 		params.put("includeWhitespace", "all");
-		result = driver.executeCdpCommand(command, params);
+		driver.executeCdpCommand(command, params);
 		command = "Overlay.enable";
-		result = driver.executeCdpCommand(command, new HashMap<>());
+		driver.executeCdpCommand(command, new HashMap<>());
 
 		driver.get(baseURL);
 	}
@@ -122,7 +128,11 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 				assertTrue(result.containsKey("outerHTML"));
 				System.err.println(String.format("Id: %s\nHTML: %s", nodeId.toString(),
 						result.get("outerHTML")));
-
+				// see also:
+				// https://github.com/sergueik/selenium_cdp/blob/master/src/test/java/com/github/sergueik/selenium/OverlayHighlightCDPTest.java
+				// the node below is highlighted by two API calls.
+				// It appears that the coordinates returned by "DOM.getContentQuads" are
+				// of the wrong DOM element and "DOM.highlightRect" illustrates this
 				command = "DOM.highlightNode";
 				params.clear();
 				params.put("nodeId", nodeId);
@@ -142,8 +152,10 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 				highlightConfig.put("showInfo", true);
 				params.put("highlightConfig", highlightConfig);
 
-				result = driver.executeCdpCommand(command, params);
-				Utils.sleep(1200);
+				driver.executeCdpCommand(command, params);
+				Utils.sleep(500);
+				// hide any highlight
+				driver.executeCdpCommand("DOM.hideHighlight", new HashMap<>());
 				command = "DOM.getContentQuads";
 				params.clear();
 				params.put("nodeId", nodeId);
@@ -175,6 +187,8 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 				result = driver.executeCdpCommand(command, params);
 				assertThat(result, notNullValue());
 				Utils.sleep(200);
+				// hide any highlight
+				driver.executeCdpCommand("DOM.hideHighlight", new HashMap<>());
 				click(x1, y1);
 
 			});
@@ -339,8 +353,8 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 		data = (List<List<Object>>) result.get("quads");
 		data1 = (List<Object>) data.get(0);
 		// quad coordinate format:
-		// An array of quad vertices, x immediately followed by y for each point,
-		// points clock-wise
+		// "An array of quad vertices, x immediately followed by y for each point,
+		// points clock-wise"
 		// left_top_x, left_top_y
 		// right_top_x, right_top_y
 		// right_bottom_x, right_bottom_y
