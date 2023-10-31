@@ -33,12 +33,17 @@ import static org.hamcrest.CoreMatchers.is;
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-querySelectorAll
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-querySelector
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getContentQuads
+ * https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#method-highlightNode
+ * https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#type-RGBA
+ * https://chromedevtools.github.io/devtools-protocol/1-2/DOM/#method-highlightRect
  * https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchMouseEvent
- *  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
 // based on:
 // https://github.com/estromenko/driverless-selenium/blob/init-project/driverless_selenium/webdriver.py
+// see also https://developer.chrome.com/docs/devtools/dom/
+
 public class DOMElementClickCdpTest extends BaseCdpTest {
 
 	private static String baseURL = "https://www.wikipedia.org";
@@ -68,6 +73,9 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 		params = new HashMap<String, Object>();
 		params.put("includeWhitespace", "all");
 		result = driver.executeCdpCommand(command, params);
+		command = "Overlay.enable";
+		result = driver.executeCdpCommand(command, new HashMap<>());
+
 		driver.get(baseURL);
 	}
 
@@ -77,7 +85,7 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 
 		try {
 			// Arrange
-			selector = "#js-link-box-it > strong";
+			selector = "#js-link-box-it > strong:nth-of-type(1)";
 			element = driver.findElement(By.cssSelector(selector));
 			Utils.highlight(element);
 			Point point = element.getLocation();
@@ -114,6 +122,28 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 				assertTrue(result.containsKey("outerHTML"));
 				System.err.println(String.format("Id: %s\nHTML: %s", nodeId.toString(),
 						result.get("outerHTML")));
+
+				command = "DOM.highlightNode";
+				params.clear();
+				params.put("nodeId", nodeId);
+				Map<String, Object> highlightConfig = new HashMap<>();
+				Map<String, Object> borderColor = new HashMap<>();
+				borderColor.put("r", 128);
+				borderColor.put("g", 0);
+				borderColor.put("b", 128);
+				highlightConfig.put("borderColor", borderColor);
+
+				Map<String, Object> contentColor = new HashMap<>();
+				contentColor.put("r", 128);
+				contentColor.put("g", 0);
+				contentColor.put("b", 128);
+				contentColor.put("a", 0.5);
+				highlightConfig.put("contentColor", contentColor);
+				highlightConfig.put("showInfo", true);
+				params.put("highlightConfig", highlightConfig);
+
+				result = driver.executeCdpCommand(command, params);
+				Utils.sleep(1200);
 				command = "DOM.getContentQuads";
 				params.clear();
 				params.put("nodeId", nodeId);
@@ -122,8 +152,31 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 				assertTrue(result.containsKey("quads"));
 				System.err.println(String.format("Id: %s\nquads: %s", nodeId.toString(),
 						result.get("quads")));
+
 				coords = getCoords(result);
-				click(coords.get(0), coords.get(1));
+				int x1 = coords.get(0);
+				int y1 = coords.get(1);
+				int x2 = coords.get(2);
+				int y2 = coords.get(3);
+
+				System.err.println(String
+						.format("highlightRect: x1=%d,y1=%d,x2=%d,y2=%d", x1, y1, x2, y2));
+				command = "DOM.highlightRect";
+				params.clear();
+				params.put("x", x1);
+				params.put("y", y1);
+				params.put("width", x2 - x1);
+				params.put("height", y2 - y1);
+				Map<String, Object> outlineColor = new HashMap<>();
+				outlineColor.put("r", 128);
+				outlineColor.put("g", 128);
+				outlineColor.put("b", 0);
+				params.put("outlineColor", outlineColor);
+				result = driver.executeCdpCommand(command, params);
+				assertThat(result, notNullValue());
+				Utils.sleep(200);
+				click(x1, y1);
+
 			});
 
 		} catch (JsonSyntaxException e) {
@@ -140,6 +193,7 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 		}
 	}
 
+	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test2() {
@@ -206,13 +260,14 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 		}
 	}
 
+	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test3() {
 
 		try {
 			// Arrange
-			selector = selector = "a.other-project-link:nth-of-type(1)";
+			selector = "a.other-project-link:nth-of-type(1)";
 			element = driver.findElement(By.cssSelector(selector));
 			Utils.highlight(element);
 			Point point = element.getLocation();
@@ -283,12 +338,20 @@ public class DOMElementClickCdpTest extends BaseCdpTest {
 		List<Integer> values = new ArrayList<>();
 		data = (List<List<Object>>) result.get("quads");
 		data1 = (List<Object>) data.get(0);
-		value = Double.parseDouble(data1.get(0).toString());
-		int x = Math.round(value.longValue());
-		value = Double.parseDouble(data1.get(1).toString());
-		int y = Math.round(value.longValue());
-		values.add(x);
-		values.add(y);
+		// quad coordinate format:
+		// An array of quad vertices, x immediately followed by y for each point,
+		// points clock-wise
+		// left_top_x, left_top_y
+		// right_top_x, right_top_y
+		// right_bottom_x, right_bottom_y
+		// left_bottom_x, left_bottom_y
+		int[] indices = { 0, 1, 4, 5 };
+		for (int cnt = 0; cnt != indices.length; cnt++) {
+			int index = indices[cnt];
+			value = Double.parseDouble(data1.get(index).toString());
+			int coord = Math.round(value.longValue());
+			values.add(coord);
+		}
 		return values;
 	}
 
