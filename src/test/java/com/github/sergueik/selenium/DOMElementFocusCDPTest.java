@@ -31,13 +31,13 @@ import org.openqa.selenium.WebDriverException;
 public class DOMElementFocusCDPTest extends BaseDevToolsTest {
 	private static String url = "https://formy-project.herokuapp.com/form";
 	private static final String selector = "input";
-	
+
 	private static String command = null;
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> params = new HashMap<>();
 	private static Map<String, Object> data = new HashMap<>();
 	private static String dataString = null;
-	public static Long nodeId = (long) -1;
+	public static Long nodeId = -1l;
 	public static String isolationId = null;
 
 	@Before

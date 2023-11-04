@@ -60,6 +60,7 @@ public class DOMElementClickDevToolsTest extends BaseDevToolsTest {
 		chromeDevTools.send(DOM.enable(Optional.of(enableIncludeWhitespace)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test(expected = DevToolsException.class)
 	public void test1() {
 		try {
