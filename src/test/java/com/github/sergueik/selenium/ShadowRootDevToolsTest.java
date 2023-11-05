@@ -24,11 +24,11 @@ import org.openqa.selenium.json.JsonException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import org.openqa.selenium.devtools.v118.runtime.Runtime;
-import org.openqa.selenium.devtools.v118.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.v118.runtime.model.ExecutionContextId;
-import org.openqa.selenium.devtools.v118.runtime.model.RemoteObject;
-import org.openqa.selenium.devtools.v118.runtime.model.TimeDelta;
+import org.openqa.selenium.devtools.v119.runtime.Runtime;
+import org.openqa.selenium.devtools.v119.runtime.Runtime.EvaluateResponse;
+import org.openqa.selenium.devtools.v119.runtime.model.ExecutionContextId;
+import org.openqa.selenium.devtools.v119.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.v119.runtime.model.TimeDelta;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -101,7 +101,8 @@ public class ShadowRootDevToolsTest extends BaseDevToolsTest {
 							Optional.of(false), // replMode
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP
 							Optional.ofNullable(null), // uniqueContextId
-							Optional.ofNullable(null), // generateWebDriverValue
+							// NOTE: removed in v119
+							// Optional.ofNullable(null), // generateWebDriverValue
 							Optional.empty() // serializationOptions
 			));
 			RemoteObject result = response.getResult();
@@ -142,8 +143,9 @@ public class ShadowRootDevToolsTest extends BaseDevToolsTest {
 							Optional.of(false), // disableBreaks
 							Optional.of(false), // replMode
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP
-							Optional.ofNullable(null), // uniqueContextId
-							Optional.ofNullable(null), // generateWebDriverValue
+							Optional.ofNullable(null), // uniqueContextId							
+							// NOTE: removed in v119
+							// Optional.ofNullable(null), // generateWebDriverValue
 							Optional.empty() // serializationOptions
 			));
 			RemoteObject result = response.getResult();
@@ -183,7 +185,8 @@ public class ShadowRootDevToolsTest extends BaseDevToolsTest {
 							Optional.of(false), // replMode
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP
 							Optional.ofNullable(null), // uniqueContextId
-							Optional.ofNullable(null), // generateWebDriverValue
+							// NOTE: removed in v119
+							// Optional.ofNullable(null), // generateWebDriverValue
 							Optional.empty() // serializationOptions
 			));
 			RemoteObject result = response.getResult();
@@ -222,7 +225,8 @@ public class ShadowRootDevToolsTest extends BaseDevToolsTest {
 							Optional.of(false), // replMode
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP
 							Optional.ofNullable(null), // uniqueContextId
-							Optional.ofNullable(null), // generateWebDriverValue
+							// NOTE: removed in v119
+							// Optional.ofNullable(null), // generateWebDriverValue
 							Optional.empty() // serializationOptions
 			));
 			RemoteObject result = response.getResult();
@@ -301,7 +305,8 @@ public class ShadowRootDevToolsTest extends BaseDevToolsTest {
 							Optional.of(false), // replMode
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP
 							Optional.ofNullable(null), // uniqueContextId
-							Optional.ofNullable(null), // generateWebDriverValue
+							// NOTE: removed in v119
+							// Optional.ofNullable(null), // generateWebDriverValue
 							Optional.empty() // serializationOptions
 			));
 			RemoteObject result = response.getResult();

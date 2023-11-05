@@ -4,7 +4,7 @@
   <groupId>com.github.sergueik.selenium</groupId>
   <artifactId>selenium_cdp</artifactId>
   <packaging>jar</packaging>
-  <version>0.59.0-SNAPSHOT</version>
+  <version>0.60.0-SNAPSHOT</version>
   <name>selenum_cdp</name>
   <description>testing new Chrome Dev Tools bridge offered by Selenium 4.x </description>
   <url>http://maven.apache.org</url>
@@ -22,7 +22,7 @@
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
     <pdfbox.version>2.0.27</pdfbox.version>
     <selenium.version>4.15.0</selenium.version>
-    <selenium-devtools-v118.version>${selenium.version}</selenium-devtools-v118.version>
+    <selenium-devtools-v119.version>${selenium.version}</selenium-devtools-v119.version>
     <java.version>1.8</java.version>
     <gson.version>2.8.9</gson.version>
   </properties>
@@ -65,6 +65,10 @@
       <artifactId>selenium-java</artifactId>
       <version>${selenium.version}</version>
       <exclusions>
+        <exclusion>
+          <groupId>org.seleniumhq.selenium</groupId>
+          <artifactId>selenium-devtools-v118</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.seleniumhq.selenium</groupId>
           <artifactId>selenium-devtools-v117</artifactId>
@@ -161,8 +165,8 @@
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-devtools-v118</artifactId>
-      <version>${selenium-devtools-v118.version}</version>
+      <artifactId>selenium-devtools-v119</artifactId>
+      <version>${selenium-devtools-v119.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
