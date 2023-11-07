@@ -33,9 +33,9 @@ public class BrowserDownloadCdpTest extends BaseCdpTest {
 	// including "application/pdf"
 	private final static String url = "https://scholar.harvard.edu/files/torman_personal/files/samplepptx.pptx";
 	private final static String filename = url.replaceAll("^.*/", "");
-	private static String downloadPath = null;
+	private static String tempDownloadDirectory = null;
 
-	private static String command = "Browser.setDownloadBehavior";
+	private static String command = null;
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> params = new HashMap<>();
 
@@ -43,6 +43,7 @@ public class BrowserDownloadCdpTest extends BaseCdpTest {
 	public void after() {
 		// Arrange
 		params = new HashMap<>();
+		command = "Browser.setDownloadBehavior";
 		params.put("behavior", "default");
 		result = driver.executeCdpCommand(command, params);
 		assertThat(result, notNullValue());
@@ -51,12 +52,13 @@ public class BrowserDownloadCdpTest extends BaseCdpTest {
 
 	@Test
 	public void test1() {
-		downloadPath = getTempDownloadDir();
+		tempDownloadDirectory = getTempDownloadDirectory();
 		// Arrange
+		command = "Browser.setDownloadBehavior";
 		params = new HashMap<>();
 		params.put("behavior", "allow");
 		// NOTE: the "allowAndName" will randomly name the downloaded file
-		params.put("downloadPath", downloadPath);
+		params.put("downloadPath", tempDownloadDirectory);
 
 		params.put("eventsEnabled", true);
 
@@ -70,16 +72,13 @@ public class BrowserDownloadCdpTest extends BaseCdpTest {
 			// Act
 			driver.get(url);
 			Utils.sleep(3000);
-			assertThat(new File(
-					Paths.get(downloadPath).resolve(filename).toAbsolutePath().toString())
-							.exists(),
-					is(true));
+			assertThat(new File(Paths.get(tempDownloadDirectory).resolve(filename)
+					.toAbsolutePath().toString()).exists(), is(true));
 			System.err.println(String.format("Verified downloaded file: %s in %s",
-					filename, downloadPath));
+					filename, tempDownloadDirectory));
 			// remove the file
-			new File(
-					Paths.get(downloadPath).resolve(filename).toAbsolutePath().toString())
-							.delete();
+			new File(Paths.get(tempDownloadDirectory).resolve(filename)
+					.toAbsolutePath().toString()).delete();
 		} catch (WebDriverException e) {
 			System.err.println("Web Driver exception in " + command + " (ignored): "
 					+ Utils.processExceptionMessage(e.getMessage()));
@@ -91,10 +90,11 @@ public class BrowserDownloadCdpTest extends BaseCdpTest {
 
 	@Test
 	public void test2() {
-		final String downloadPath = createTempDownloadDir();
+		final String downloadPath = createTempDownloadDirectory();
 		// Arrange
 		params = new HashMap<>();
 		// Browser will randomly name the downloaded file
+		command = "Browser.setDownloadBehavior";
 		params.put("behavior", "allowAndName");
 		params.put("downloadPath", downloadPath);
 
@@ -129,28 +129,29 @@ public class BrowserDownloadCdpTest extends BaseCdpTest {
 	// https://stackoverflow.com/questions/57780426/selenium-headless-chrome-how-to-query-status-of-downloads
 
 	// http://www.java2s.com/example/java-utility-method/temp-directory-get/gettempdir-466ee.html
-	public static String getTempDownloadDir() {
-		String tmpdir = System.getProperty("java.io.tmpdir");
-		return (tmpdir != null && new File(tmpdir).exists()) ? tmpdir
-				: Paths.get(System.getProperty("user.home")).resolve("Downloads")
-						.toAbsolutePath().toString();
+	public static String getTempDownloadDirectory() {
+		String tempDownloadDirectory = System.getProperty("java.io.tmpdir");
+		return (tempDownloadDirectory != null
+				&& new File(tempDownloadDirectory).exists()) ? tempDownloadDirectory
+						: Paths.get(System.getProperty("user.home")).resolve("Downloads")
+								.toAbsolutePath().toString();
 	}
 
 	// http://www.java2s.com/Code/Java/JDK-7/Createtempfileanddirectory.htm
-	public static String createTempDownloadDir() {
+	public static String createTempDownloadDirectory() {
 
-		String tempDownloadDirPath = null;
+		String tempDownloadDirectory = null;
 
 		try {
-			Path tempDirectory = Files.createTempDirectory(
-					FileSystems.getDefault().getPath(getTempDownloadDir()), "");
+			Path tempDownloadDirectoryPath = Files.createTempDirectory(
+					FileSystems.getDefault().getPath(getTempDownloadDirectory()), "");
 			System.err.println("Temporary Download directory created");
-			tempDownloadDirPath = tempDirectory.toString();
+			tempDownloadDirectory = tempDownloadDirectoryPath.toString();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 
-		return tempDownloadDirPath;
+		return tempDownloadDirectory;
 
 	}
 

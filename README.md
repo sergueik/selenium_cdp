@@ -964,7 +964,44 @@ the `apt` has the warning:
 ```text
 W: Repository is broken: google-chrome-stable:amd64 (= 114.0.5735.133-1) has no Size information
 ```
+### File Download Browser Behavior
 
+one may configure
+``
+and subscribe to events `Browser.downloadWillBegin` and `Browser.downloadProgress` via CDP:
+
+```java
+chromeDevTools.addListener(Browser.downloadWillBegin(),
+	(DownloadWillBegin o) -> {
+		System.err.println("in Browser.downloadWillBegin listener. url: " + o.getUrl() + "\tfilename: " + o.getSuggestedFilename());
+});
+List<DownloadProgress.State> states = new ArrayList<>();
+chromeDevTools.addListener(Browser.downloadProgress(),
+	(DownloadProgress o) -> {
+		DownloadProgress.State state = o.getState();
+		System.err.println("in Browser.downloadProgress listener. state: " + state.toString());
+		states.add(state);
+});
+
+```
+```text
+in Browser.downloadWillBegin listener. url: https://scholar.harvard.edu/files/torman_personal/files/samplepptx.pptx     filename: samplepptx.pptx
+in Browser.downloadProgress listener. state: inProgress
+in Browser.downloadProgress listener. state: inProgress
+in Browser.downloadProgress listener. state: inProgress
+in Browser.downloadProgress listener. state: inProgress
+in Browser.downloadProgress listener. state: inProgress
+in Browser.downloadProgress listener. state: inProgress
+in Browser.downloadProgress listener. state: inProgress
+in Browser.downloadProgress listener. state: inProgress
+in Browser.downloadProgress listener. state: inProgress
+in Browser.downloadProgress listener. state: inProgress
+in Browser.downloadProgress listener. state: completed
+in Browser.downloadProgress listener. state: completed
+Inspecting downloaded filename: f5a83cbd-97fb-451e-8651-618f63c1ec59
+Verified downloaded file: f5a83cbd-97fb-451e-8651-618f63c1ec59 in /tmp
+
+```
 ### Note
 
 Starting with version __115__ the Chrome browser and ChromeDriver
