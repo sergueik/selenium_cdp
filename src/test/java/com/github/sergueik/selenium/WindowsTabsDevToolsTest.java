@@ -18,6 +18,17 @@ import org.openqa.selenium.devtools.v119.target.model.SessionID;
 import org.openqa.selenium.devtools.v119.target.model.TargetID;
 import org.openqa.selenium.devtools.v119.target.model.TargetInfo;
 
+/**
+ * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
+ * see:
+ * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-createTarget
+ * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-attachToTarget
+ * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-getTargets
+ * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-getTargetInfo
+ * https://chromedevtools.github.io/devtools-protocol/tot/Target/#type-TargetInfo
+ * https://chromedevtools.github.io/devtools-protocol/tot/Target/#type-SessionID
+ * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-attachToBrowserTarget
+ */
 public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 
 	private TargetID targetId = null;
@@ -29,15 +40,19 @@ public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 	public void before() throws Exception {
 	}
 
-	// @Ignore
 	@Test
 	public void test1() {
 		// Arrange
-		// Act
 		baseURL = "https://en.wikipedia.org/wiki/Main_Page";
-		targetId = chromeDevTools.send(Target.createTarget(baseURL,
-				Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-				Optional.of(true), Optional.of(false), Optional.of(false)));
+		// NOTE: method signature change between 109 and 119:
+		// required:
+		// java.lang.String,java.util.Optional<java.lang.Integer>,java.util.Optional<java.lang.Integer>,java.util.Optional<org.openqa.selenium.devtools.v109.browser.model.BrowserContextID>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>
+		// found:
+		// java.lang.String,java.util.Optional<java.lang.Integer>,java.util.Optional<java.lang.Integer>,java.util.Optional<java.lang.Object>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>,java.util.Optiona<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>
+		// Act
+		targetId = chromeDevTools.send(Target.createTarget(baseURL, Optional.of(0),
+				Optional.of(0), Optional.empty(), Optional.of(false), Optional.of(true),
+				Optional.of(false), Optional.of(false)));
 		Utils.sleep(1000);
 		System.err.println("TargetID: " + targetId);
 		sessionId = chromeDevTools
@@ -45,43 +60,30 @@ public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 		System.err.println("SessionId: " + sessionId);
 		targetInfo = chromeDevTools
 				.send(Target.getTargetInfo(Optional.of(targetId)));
-		System.err.println("TargetInfo: ");
-		System.err.println("TargetId: " + targetInfo.getTargetId());
-		System.err.println("Title: " + targetInfo.getTitle());
-		System.err.println("Type: " + targetInfo.getType());
-		System.err.println("Url: " + targetInfo.getUrl());
-		System.err.println("Attached: " + targetInfo.getAttached());
-
-		targetInfos = chromeDevTools.send(Target.getTargets(Optional.empty()));
-		System.err.println("TargetInfos: " + targetInfos.toString());
-		targetInfos.stream()
-				.forEach(o -> System.err.println("TargetInfo:" + "\n" + "TargetId: "
-						+ o.getTargetId() + "\n" + "Title: " + o.getTitle() + "\n"
-						+ "Type: " + o.getType() + "\n" + "Url: " + o.getUrl() + "\n"
-						+ "Attached: " + o.getAttached()));
+		System.err.println("TargetInfo: " + "\n" + "TargetId: "
+				+ targetInfo.getTargetId() + "\n" + "Title: " + targetInfo.getTitle()
+				+ "\n" + "Type: " + targetInfo.getType() + "\n" + "Url: "
+				+ targetInfo.getUrl() + "\n" + "Attached: " + targetInfo.getAttached());
 
 	}
 
-	// @Ignore
 	@Test
 	public void test2() {
 		// Arrange
 		// Act
-		try {
-			targetInfo = chromeDevTools.send(Target.getTargetInfo(Optional.empty()));
-			System.err.println("TargetInfo: ");
-			System.err.println("TargetId: " + targetInfo.getTargetId());
-			System.err.println("Title: " + targetInfo.getTitle());
-			System.err.println("Type: " + targetInfo.getType());
-			System.err.println("Url: " + targetInfo.getUrl());
-			System.err.println("Attached: " + targetInfo.getAttached());
-		} catch (DevToolsException e) {
-			System.err.println("DevToolsException exception " + "in test2"
-					+ " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
-		}
+		targetInfo = chromeDevTools.send(Target.getTargetInfo(Optional.empty()));
+		System.err.println("TargetInfo: " + "\n" + "TargetId: "
+				+ targetInfo.getTargetId() + "\n" + "Title: " + targetInfo.getTitle()
+				+ "\n" + "Type: " + targetInfo.getType() + "\n" + "Url: "
+				+ targetInfo.getUrl() + "\n" + "Attached: " + targetInfo.getAttached());
 
 		targetInfos = chromeDevTools.send(Target.getTargets(Optional.empty()));
 		System.err.println("TargetInfos: " + targetInfos.toString());
+		targetInfos.stream()
+				.forEach(o -> System.err.println("TargetInfo: " + "\n" + "TargetId: "
+						+ o.getTargetId() + "\n" + "Title: " + o.getTitle() + "\n"
+						+ "Type: " + o.getType() + "\n" + "Url: " + o.getUrl() + "\n"
+						+ "Attached: " + o.getAttached() + "\n" + "\n"));
 	}
 
 	@Test
