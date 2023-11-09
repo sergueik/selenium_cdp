@@ -29,12 +29,20 @@ import org.openqa.selenium.devtools.v119.target.model.TargetInfo;
  * https://chromedevtools.github.io/devtools-protocol/tot/Target/#type-SessionID
  * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-attachToBrowserTarget
  */
+
+// NOTE: the "Target.createTarget" method signature change between 109 and 119:
+// 109:
+// java.lang.String,java.util.Optional<java.lang.Integer>,java.util.Optional<java.lang.Integer>,java.util.Optional<org.openqa.selenium.devtools.v109.browser.model.BrowserContextID>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>
+// 119:
+// java.lang.String,java.util.Optional<java.lang.Integer>,java.util.Optional<java.lang.Integer>,java.util.Optional<org.openqa.selenium.devtools.v119.browser.model.BrowserContextID>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>,java.util.Optiona<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>
+
 public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 
 	private TargetID targetId = null;
 	private SessionID sessionId = null;
 	private TargetInfo targetInfo = null;
 	private List<TargetInfo> targetInfos = new ArrayList<>();
+	private final String baseURL = "https://en.wikipedia.org/wiki/Main_Page";
 
 	@Before
 	public void before() throws Exception {
@@ -43,12 +51,7 @@ public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 	@Test
 	public void test1() {
 		// Arrange
-		baseURL = "https://en.wikipedia.org/wiki/Main_Page";
-		// NOTE: method signature change between 109 and 119:
-		// required:
-		// java.lang.String,java.util.Optional<java.lang.Integer>,java.util.Optional<java.lang.Integer>,java.util.Optional<org.openqa.selenium.devtools.v109.browser.model.BrowserContextID>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>
-		// found:
-		// java.lang.String,java.util.Optional<java.lang.Integer>,java.util.Optional<java.lang.Integer>,java.util.Optional<java.lang.Object>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>,java.util.Optiona<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>
+
 		// Act
 		targetId = chromeDevTools.send(Target.createTarget(baseURL, Optional.of(0),
 				Optional.of(0), Optional.empty(), Optional.of(false), Optional.of(true),
@@ -70,13 +73,13 @@ public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 	@Test
 	public void test2() {
 		// Arrange
-		// Act
 		targetInfo = chromeDevTools.send(Target.getTargetInfo(Optional.empty()));
 		System.err.println("TargetInfo: " + "\n" + "TargetId: "
 				+ targetInfo.getTargetId() + "\n" + "Title: " + targetInfo.getTitle()
 				+ "\n" + "Type: " + targetInfo.getType() + "\n" + "Url: "
 				+ targetInfo.getUrl() + "\n" + "Attached: " + targetInfo.getAttached());
 
+		// Act
 		targetInfos = chromeDevTools.send(Target.getTargets(Optional.empty()));
 		System.err.println("TargetInfos: " + targetInfos.toString());
 		targetInfos.stream()
@@ -89,7 +92,7 @@ public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 	@Test
 	public void test3() {
 		// Arrange
-		baseURL = "https://www.google.com";
+
 		driver.get(baseURL);
 		Utils.sleep(1000);
 		// Act
@@ -102,4 +105,22 @@ public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 		}
 
 	}
+
+	@Test()
+	public void test4() {
+		// Arrange
+		chromeDevTools.addListener(Target.targetCreated(),
+				(TargetInfo o) -> System.err.println("TargetInfo: " + "\n"
+						+ "TargetId: " + o.getTargetId() + "\n" + "Title: " + o.getTitle()
+						+ "\n" + "Type: " + o.getType() + "\n" + "Url: " + o.getUrl() + "\n"
+						+ "Attached: " + o.getAttached() + "\n" + "\n"));
+
+		// Act
+		targetId = chromeDevTools.send(Target.createTarget(baseURL, Optional.of(0),
+				Optional.of(0), Optional.empty(), Optional.of(false), Optional.of(true),
+				Optional.of(false), Optional.of(false)));
+		Utils.sleep(1000);
+	}
+
 }
+
