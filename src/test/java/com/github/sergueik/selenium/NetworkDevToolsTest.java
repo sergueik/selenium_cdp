@@ -1,10 +1,8 @@
 package com.github.sergueik.selenium;
 
-
 /**
  * Copyright 2020-2023 Serguei Kouzmine
  */
-
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -45,6 +43,7 @@ import org.openqa.selenium.devtools.v119.network.model.DataReceived;
 import org.openqa.selenium.devtools.v119.network.model.Headers;
 import org.openqa.selenium.devtools.v119.network.model.RequestId;
 import org.openqa.selenium.devtools.v119.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v119.network.model.ResourceTiming;
 import org.openqa.selenium.devtools.v119.network.model.Response;
 import org.openqa.selenium.devtools.v119.network.model.ResponseReceived;
 
@@ -57,6 +56,11 @@ import org.openqa.selenium.devtools.v119.network.model.ResponseReceived;
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setCacheDisabled
  * https://chromedevtools.github.io/devtools-protocol/tot/Console#method-enable
  * https://chromedevtools.github.io/devtools-protocol/tot/Log#method-enable
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-responseReceived
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ResourceType
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-Response
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ResourceTiming
+ * 
  * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
@@ -305,5 +309,36 @@ public class NetworkDevToolsTest {
 
 	}
 
-}
+	// evaluate timing of requests made by the browser
+	// https://github.com/Vipinvwarrier/selenium_cdp_profiler/blob/main/selenium_cdp_profiler/cdp/network_profiler.py
+	@Test
+	public void test7() {
+		chromeDevTools.addListener(Network.responseReceived(),
+				(ResponseReceived event) -> {
+					Response response = event.getResponse();
+					Optional<ResourceTiming> responseTiming = response.getTiming();
+					if (responseTiming.isPresent()) {
+						ResourceTiming timing = responseTiming.get();
+						Number requestTime = timing.getRequestTime();
+						// baseline in seconds
+						Number sendStart = timing.getSendStart();
+						// Started sending request
+						Number receiveHeadersEnd = timing.getReceiveHeadersEnd();
+						// finished receiving response headers
+						System.err.println(String.format(
+								"Network request of %s timing is %8.2f", response.getUrl(),
+								receiveHeadersEnd.doubleValue() - sendStart.doubleValue()));
+					} else {
+						System.err.println(
+								String.format("Network request of %s has no timing information",
+										response.getUrl()));
 
+					}
+
+				});
+
+		driver.get("https://fakeresponder.com?sleep=500");
+		driver.get("https://fakeresponder.com?sleep=1500");
+	}
+
+}
