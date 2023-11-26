@@ -24,15 +24,13 @@ import org.openqa.selenium.devtools.v119.dom.model.Node;
 
 public class PageSourceDevToolsTest extends BaseDevToolsTest {
 
-	private final static String url = "http://www.wikipedia.org";
-
-	private static final String selector = "*[id^='js-link-box'] > strong";
+	private String url = null;
 
 	@Before
 	public void before() {
 		chromeDevTools
 				.send(DOM.enable(Optional.of(DOM.EnableIncludeWhitespace.ALL)));
-		driver.get(url);
+
 	}
 
 	@After
@@ -41,7 +39,21 @@ public class PageSourceDevToolsTest extends BaseDevToolsTest {
 	}
 
 	@Test
-	public void test() {
+	public void test1() {
+		url = "http://www.wikipedia.org";
+		driver.get(url);
+		Node result = chromeDevTools
+				.send(DOM.getDocument(Optional.of(1), Optional.of(false)));
+		String pageSource = chromeDevTools.send(DOM.getOuterHTML(
+				Optional.of(result.getNodeId()), Optional.empty(), Optional.empty()));
+		System.err.println("page source: " + pageSource);
+	}
+
+	@Test
+	public void test2() {
+		// Arrange
+		String page = "call_ajax.html";
+		driver.get(Utils.getPageContent(page));
 		Node result = chromeDevTools
 				.send(DOM.getDocument(Optional.of(1), Optional.of(false)));
 		String pageSource = chromeDevTools.send(DOM.getOuterHTML(

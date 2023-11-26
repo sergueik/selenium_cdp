@@ -1,0 +1,23 @@
+<html>
+<!-- origin: https://codepedia.info/editor-example?id=26 -->
+<head><script src="angular.js"></script>
+ <link rel='stylesheet' href='https://codepedia.info/wp-content/themes/themevicky/css/editor.css' type='text/css' />
+ </head>
+<body ng-app="myapp" ng-controller="myController" ng-init='init()' >
+<h2>GitHub JSON Data </h2><br/>
+<p>{{myData}}<p>
+
+<script type="text/javascript">
+ var app = angular.module("myapp", []);
+ app.controller("myController", ['$scope','$http', function ($scope,$http) {
+    $scope.init = function () {
+       $http.get("https://api.github.com/users/isatindersingh/repos")
+       .then(function(response) {
+          $scope.myData = response.data;
+      });
+   }
+}]);
+</script>
+</body> 
+</html>
+                                

@@ -21,33 +21,54 @@ import org.openqa.selenium.WebDriverException;
  */
 
 // https://github.com/estromenko/driverless-selenium/blob/init-project/driverless_selenium/webdriver.py#L183
+@SuppressWarnings("unchecked")
 public class PageSourceCdpTest extends BaseCdpTest {
 
 	private static String command = "Browser.setDownloadBehavior";
-	private static String url = "https://www.wikipedia.org";
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> params = new HashMap<>();
-	public static Long nodeId = (long) -1;
 
 	@Before
 	public void before() {
 		command = "DOM.enable";
 		driver.executeCdpCommand(command, new HashMap<>());
-		driver.get(url);
 	}
 
+
 	@Test
-	public void test() {
+	public void test1() {
 
 		// Arrange
-		baseURL = "https://www.wikipedia.org";
-		driver.get(baseURL);
-		String command = "DOM.getDocument";
+		String url = "http://www.wikipedia.org";
+		driver.get(url);
+		command = "DOM.getDocument";
 		params = new HashMap<>();
 		params.put("pierce", false);
 		params.put("depth", 1);
 		result = driver.executeCdpCommand(command, params);
-		nodeId = Long.parseLong(
+		Long nodeId = Long.parseLong(
+				((Map<String, Object>) result.get("root")).get("nodeId").toString());
+		command = "DOM.getOuterHTML";
+		params.clear();
+		params.put("nodeId", nodeId);
+		// Act
+		result = driver.executeCdpCommand(command, params);
+		String pageSource = (String) result.get("outerHTML");
+		System.err.println("page source: " + pageSource);
+	}
+
+	@Test
+	public void test2() {
+
+		// Arrange
+		String page = "call_ajax.html";
+		driver.get(Utils.getPageContent(page));
+		command = "DOM.getDocument";
+		params = new HashMap<>();
+		params.put("pierce", false);
+		params.put("depth", 1);
+		result = driver.executeCdpCommand(command, params);
+		Long nodeId = Long.parseLong(
 				((Map<String, Object>) result.get("root")).get("nodeId").toString());
 		command = "DOM.getOuterHTML";
 		params.clear();
