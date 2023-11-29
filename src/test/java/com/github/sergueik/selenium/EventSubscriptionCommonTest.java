@@ -35,7 +35,7 @@ public class EventSubscriptionCommonTest extends BaseDevToolsTest {
 
 	protected static WebDriverWait wait;
 	public final static int flexibleWait = 10; // NOTE: 60 is quite long
-	public final static Duration duration = Duration.ofSeconds(flexibleWait);;
+	public final static Duration duration = Duration.ofSeconds(flexibleWait);
 	public final static int implicitWait = 1;
 	public final static int pollingInterval = 500;
 	protected Alert alert = null;
@@ -48,7 +48,6 @@ public class EventSubscriptionCommonTest extends BaseDevToolsTest {
 	// loading
 	@Before
 	public void before() {
-
 		wait = new WebDriverWait(driver, duration);
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 	}
