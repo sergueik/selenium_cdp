@@ -18,6 +18,9 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.google.gson.Gson;
 
@@ -28,14 +31,16 @@ import com.google.gson.Gson;
  * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-navigateToHistoryEntry
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
+@SuppressWarnings("unchecked")
 public class PageNavigationHistoryCDPTest extends BaseCdpTest {
 
-	private List<String> urls = new ArrayList<>();
-
-	private static Gson gson = new Gson();
-	private static String command = "Page.getNavigationHistory";
+	private static String command = null;
 	private static Map<String, Object> result = new HashMap<>();
 	private static Map<String, Object> params = new HashMap<>();
+	private List<String> urls = new ArrayList<>();
+	private static Gson gson = new Gson();
+	private final String cssSelector = "#ca-nstab-main > a";
+	private WebElement element;
 
 	@Before
 	public void before() {
@@ -61,48 +66,57 @@ public class PageNavigationHistoryCDPTest extends BaseCdpTest {
 
 	@Test
 	public void test1() {
-		command = "Page.getNavigationHistory";
-		result = driver.executeCdpCommand(command, new HashMap<String, Object>());
-		System.err.println(
-				command + " result: " + new ArrayList<String>(result.keySet()));
-		System.err.print(
-				"History entries : " + gson.toJson(result.get("entries")).toString());
-	}
-
-	@SuppressWarnings("unchecked")
-	@Test
-	public void test2() {
 		// Act
 		command = "Page.getNavigationHistory";
 		result = driver.executeCdpCommand(command, new HashMap<>());
-		System.err.println(result);
 		// Assert
 		assertThat(result, notNullValue());
-		assertThat(result.containsKey("currentIndex"), is(true));
-		assertThat(result.containsKey("entries"), is(true));
+		System.err.println(
+				command + " result keys: " + new ArrayList<String>(result.keySet()));
+		for (String key : Arrays.asList("currentIndex", "entries")) {
+			assertThat(result.containsKey(key), is(true));
+		}
 		assertThat(result.get("entries") instanceof List<?>, is(true));
-		assertThat(((List<Object>) result.get("entries")).size(), greaterThan(1));
+		final int size = ((List<Object>) result.get("entries")).size();
+		assertThat(size, greaterThan(1));
+		System.err.println("History entries size: " + size);
+		// NOTE: index 0 will be special:
+		// History entry :
+		// {"id":2,"url":"data:,","userTypedURL":"data:,","title":"","transitionType":"AUTO_TOPLEVEL"}
+
 		Object result2 = ((List<Object>) result.get("entries")).get(1);
 		assertThat(result2 instanceof Map<?, ?>, is(true));
 		for (String key : Arrays.asList("id", "url", "title", "userTypedURL",
 				"transitionType")) {
 			assertThat(((Map<String, ?>) result2).containsKey(key), is(true));
 		}
-		int entryId = Math.toIntExact(((Map<String, Long>) result2).get("id"));
+		System.err.println("History entry : " + gson.toJson(result2));
+	}
 
+	@Test
+	public void test2() {
+		// Act
+		command = "Page.getNavigationHistory";
+		result = driver.executeCdpCommand(command, new HashMap<>());
+		// Assert
 		((List<Object>) result.get("entries")).stream().forEach(o -> {
 			Map<String, Object> entry = (Map<String, Object>) o;
 			if (entry.get("url").toString().indexOf("https://en.wikipedia.org/wiki",
 					0) == 0) {
-				final int entryId2 = Math
+				// https://stackoverflow.com/questions/4355303/how-can-i-convert-a-long-to-int-in-java
+				final int entryId = Math
 						.toIntExact(Long.parseLong(entry.get("id").toString()));
 				command = "Page.navigateToHistoryEntry";
 				params.clear();
-				params.put("entryId", entryId2);
+				params.put("entryId", entryId);
 				result = driver.executeCdpCommand(command, params);
+
 			}
 		});
-		// https://stackoverflow.com/questions/4355303/how-can-i-convert-a-long-to-int-in-java
 
+		element = wait.until(ExpectedConditions
+				.visibilityOfElementLocated(By.cssSelector(cssSelector)));
+		assertThat(element.getText(), is("Main Page"));
+		Utils.highlight(element);
 	}
 }
