@@ -5,18 +5,20 @@ package com.github.sergueik.selenium;
  */
 
 import static org.hamcrest.CoreMatchers.is;
+
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Duration;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.devtools.v119.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -24,18 +26,28 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
  * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-setBypassCSP
  */
 
-public class BypassCSPCdpTest extends BaseCdpTest {
+public class BypassCSPDevToolsTest extends BaseDevToolsTest {
 	private WebElement element;
-	private static String command = null;
-	private static Map<String, Object> params = new HashMap<>();
 	private static String page = null;
 	private static int delay = 3000;
+	protected static WebDriverWait wait;
+	public final static int flexibleWait = 10; // NOTE: 60 is quite long
+	public final static Duration duration = Duration.ofSeconds(flexibleWait);
+	public final static int implicitWait = 1;
+	public final static int pollingInterval = 500;
+
+	@Before
+	public void before() throws Exception {
+		chromeDevTools.send(Page.enable());
+		wait = new WebDriverWait(driver, duration);
+		wait.pollingEvery(Duration.ofMillis(pollingInterval));
+
+	}
 
 	@After
 	public void afterTest() {
-		command = "Page.setBypassCSP";
-		params.clear();
-		params.put("enabled", false);
+		chromeDevTools.send(Page.setBypassCSP(false));
+		chromeDevTools.clearListeners();
 		driver.get("about:blank");
 	}
 
@@ -68,10 +80,7 @@ public class BypassCSPCdpTest extends BaseCdpTest {
 
 	@Test
 	public void test3() {
-		command = "Page.setBypassCSP";
-		params.clear();
-		params.put("enabled", true);
-		driver.executeCdpCommand(command, params);
+		chromeDevTools.send(Page.setBypassCSP(true));
 		page = "test1.html";
 		driver.get(Utils.getPageContent(page));
 		element = wait.until(
@@ -81,7 +90,6 @@ public class BypassCSPCdpTest extends BaseCdpTest {
 		// to take screen shot uncommend pause
 		// Utils.sleep(delay);
 		assertThat(element.getRect().getWidth(), is(100));
-
 	}
 
 }

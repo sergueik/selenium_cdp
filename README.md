@@ -1071,8 +1071,8 @@ The attempt to build with JDK __1.8__ fails with
   * overview of [DevTools access offered by Selenium 4](https://applitools.com/blog/selenium-4-chrome-devtools/)
   * [Libraries.io](https://libraries.io/maven/org.seleniumhq.selenium:selenium-devtools-v93) - monitors over 2 million open source libraries/packages from 36 package managers
  * [collection of Selenium 4 CDP-specific tests](https://github.com/rookieInTraining)
- * https://medium.com/codex/selenium4-a-peek-into-chrome-devtools-92bca6de55e0
-  * BiDirectional WebDriver Protocol w3c [s[ec](https://w3c.github.io/webdriver-bidi/)
+  * https://medium.com/codex/selenium4-a-peek-into-chrome-devtools-92bca6de55e0
+  * BiDirectional WebDriver Protocol [w3c spec](https://w3c.github.io/webdriver-bidi/)
   * BiDi - The future of cross-browser automation [blog](https://developer.chrome.com/blog/webdriver-bidi/)
   * BiDirectional functionality [official documentation](https://www.selenium.dev/documentation/webdriver/bidirectional/)
   * list of bidi APIs [examples](https://www.selenium.dev/documentation/webdriver/bidirectional/bidi_api)
@@ -1088,6 +1088,12 @@ The attempt to build with JDK __1.8__ fails with
   * [replacing request url, postdata and headers](https://github.com/premsundarraj/SeleniumCDP)
   * [getting connection information and cookies from chrome dev tools and use with curl](https://github.com/fipso/ccurl.sh)
   * [How to Install Google Chrome Web Browser on Ubuntu 18.04](https://linuxize.com/post/how-to-install-google-chrome-web-browser-on-ubuntu-18-04/)
+  * [Content Security Policy (CSP) Evaluator](https://csp-evaluator.withgoogle.com/)
+   * [Testing for Content Security Policy](https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/12-Test_for_Content_Security_Policy)
+   * [Enable page Content Security Policy by-passing](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-setBypassCSP)
+   * [Content Security Policy Examples](https://content-security-policy.com/examples/)
+ 
+
 
 ### License
 This project is licensed under the terms of the MIT license.
