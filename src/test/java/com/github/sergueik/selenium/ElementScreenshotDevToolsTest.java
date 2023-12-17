@@ -24,15 +24,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v119.page.Page;
-import org.openqa.selenium.devtools.v119.page.model.Viewport;
+import org.openqa.selenium.devtools.v120.page.Page;
+import org.openqa.selenium.devtools.v120.page.model.Viewport;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
  * by https://toster.ru/q/c653249?e=7897302#comment_1962398
- *
+ * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot
+ * https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-Viewport
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 

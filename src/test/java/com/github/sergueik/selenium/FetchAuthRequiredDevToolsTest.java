@@ -15,9 +15,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v119.fetch.Fetch;
-import org.openqa.selenium.devtools.v119.fetch.model.AuthChallengeResponse;
-import org.openqa.selenium.devtools.v119.fetch.model.AuthChallengeResponse.Response;
+import org.openqa.selenium.devtools.v120.fetch.Fetch;
+import org.openqa.selenium.devtools.v120.fetch.model.AuthChallengeResponse;
+import org.openqa.selenium.devtools.v120.fetch.model.AuthChallengeResponse.Response;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

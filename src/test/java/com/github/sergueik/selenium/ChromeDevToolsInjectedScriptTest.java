@@ -18,8 +18,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v119.page.Page;
-import org.openqa.selenium.devtools.v119.page.model.ScriptIdentifier;
+import org.openqa.selenium.devtools.v120.page.Page;
+import org.openqa.selenium.devtools.v120.page.model.ScriptIdentifier;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -81,6 +81,17 @@ public class ChromeDevToolsInjectedScriptTest {
 	}
 
 	// https://github.com/SeleniumHQ/selenium/blob/0f197cbd4fa9acdd2ac3ddebbe0cc9b4ca26bff8/rb/spec/integration/selenium/webdriver/chrome/driver_spec.rb
+	// see also:
+	// https://qna.habr.com/q/1324590 (in Russian)
+	/*
+	 driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+        'source': '''
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+            })
+        '''
+    })
+	 */ 
 	@SuppressWarnings("deprecation")
 	@Ignore
 	@Test
