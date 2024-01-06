@@ -1,14 +1,17 @@
 package com.github.sergueik.selenium;
 
 /* Copyright 2023,2024 Serguei Kouzmine */
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -21,8 +24,6 @@ import org.openqa.selenium.devtools.v120.emulation.Emulation;
 import org.openqa.selenium.devtools.v120.emulation.model.UserAgentMetadata;
 import org.openqa.selenium.devtools.v120.emulation.model.UserAgentBrandVersion;
 
-// import org.openqa.selenium.devtools.Console;
-// import org.openqa.selenium.devtools.Log;
 import org.openqa.selenium.devtools.v120.network.Network;
 
 /**
@@ -41,19 +42,7 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 
 	private static WebElement element = null;
 	private static List<WebElement> elements = new ArrayList<>();
-	private static final By locator2 = By.xpath(
-			"//*[@id=\"content-base\"]//table//th[contains(text(),\"USER-AGENT\")]/../td");
-	private static final By locator3 = By.xpath(
-			"//*[@id=\"content-base\"]//table//th[contains(text(),\"SEC-CH-UA-PLATFORM\")]/../td");
-	private static final By locator4 = By.xpath(
-			"//*[@id=\"content-base\"]//table//th[contains(text(),\"SEC-CH-UA-PLATFORM-VERSION\")]/../td");
-	private static final By locator1 = By
-			.cssSelector("#content-base div.content-block-main");
-
-	private static String baseURL = "https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending";
-
-	private final static int id = (int) (java.lang.Math.random() * 1_000_000);
-	public final static String consoleMessage = "message from test id #" + id;
+	private static By locator;
 
 	@Before
 	public void before() throws Exception {
@@ -66,6 +55,20 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 						Optional.empty() // userAgentMetadata
 				));
 		// @formatter:on
+		// @formatter:off
+		chromeDevTools.send(
+				Network.setUserAgentOverride(
+						"", // userAgent 
+						Optional.empty(), // acceptLanguage
+						Optional.empty(), // platform
+						Optional.empty()) // userAgentMetadatas
+				);
+		// @formatter:on
+	}
+
+	@After
+	public void clearPage() {
+		driver.get("about:blank");
 	}
 
 	// @Ignore
@@ -75,14 +78,18 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 		// pingHost() does not work reliably yet
 		// Assume.assumeTrue(pingHost("www.whoishostingthis.com", 443, 3));
 		// Arrange
-		driver.get(baseURL);
-		elements = driver.findElements(locator1);
+		driver.get("https://www.whoishostingthis.com/tools/user-agent/");
+
+		locator = By.cssSelector("#content-base div.content-block-main");
+		elements = driver.findElements(locator);
+
 		if (elements.size() == 0) {
 			// You have been blocked ?
 			return;
 		}
 
-		element = driver.findElement(locator2);
+		locator = By.cssSelector("div.info-box.user-agent");
+		element = driver.findElement(locator);
 		Utils.highlight(element);
 		Utils.sleep(100);
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
@@ -112,7 +119,7 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 		driver.navigate().refresh();
 		Utils.sleep(1000);
 
-		element = driver.findElement(locator2);
+		element = driver.findElement(locator);
 		assertThat(element.isDisplayed(), is(true));
 		assertThat(element.getAttribute("innerText"), is("python 2.7"));
 		System.err
@@ -121,22 +128,17 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 
 	@Test
 	public void test2() {
-		// the site may be down, and it can also reject autoated browsing
-		// pingHost() does not work reliably yet
-		// Assume.assumeTrue(pingHost("www.whoishostingthis.com", 443, 3));
 		// Arrange
 		String brand = "Chrome";
 		String version = "120";
 		String platform = "windows";
 		String platformVersion = "NT 6.0";
-		driver.get(baseURL);
-		elements = driver.findElements(locator1);
-		if (elements.size() == 0) {
-			// You have been blocked ?
-			return;
-		}
+		driver.get(
+				"https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending");
 
-		element = driver.findElement(locator2);
+		locator = By.xpath(
+				"//*[@id=\"content-base\"]//table//th[contains(text(),\"USER-AGENT\")]/../td");
+		element = driver.findElement(locator);
 		Utils.highlight(element);
 		Utils.sleep(100);
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
@@ -188,41 +190,56 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 		}
 		driver.navigate().refresh();
 		Utils.sleep(1000);
+		/*
+				for (String entry : Arrays.asList(new String[] { "USER-AGENT" })) {
+					locator = By.xpath(String.format(
+							"//*[@id=\"content-base\"]//table//th[contains(text(),\"%s\")]/../td",
+							entry));
+					element = driver.findElement(locator);
+					assertThat(element.isDisplayed(), is(true));
+					assertThat(element.getAttribute("innerText"), is(brand));
+					System.err
+							.println("Updated USER-AGENT: " + element.getAttribute("innerText"));
+		
+				}
+		*/
+		locator = By.xpath(
+				"//*[@id=\"content-base\"]//table//th[contains(text(),\"USER-AGENT\")]/../td");
 
-		element = driver.findElement(locator2);
+		element = driver.findElement(locator);
 		assertThat(element.isDisplayed(), is(true));
 		assertThat(element.getAttribute("innerText"), is(brand));
 		System.err
 				.println("Updated USER-AGENT: " + element.getAttribute("innerText"));
-		element = driver.findElement(locator3);
+		locator = By.xpath(
+				"//*[@id=\"content-base\"]//table//th[contains(text(),\"SEC-CH-UA-PLATFORM\")]/../td");
+		element = driver.findElement(locator);
 		assertThat(element.isDisplayed(), is(true));
-		assertThat(element.getAttribute("innerText"), is(String.format("\"%s\"", platform)));
-		System.err
-				.println("Updated SEC-CH-UA-PLATFORM: " + element.getAttribute("innerText"));
-		element = driver.findElement(locator4);
+		assertThat(element.getAttribute("innerText"),
+				is(String.format("\"%s\"", platform)));
+		System.err.println(
+				"Updated SEC-CH-UA-PLATFORM: " + element.getAttribute("innerText"));
+		locator = By.xpath(
+				"//*[@id=\"content-base\"]//table//th[contains(text(),\"SEC-CH-UA-PLATFORM-VERSION\")]/../td");
+		element = driver.findElement(locator);
 		assertThat(element.isDisplayed(), is(true));
-		assertThat(element.getAttribute("innerText"), containsString(platformVersion));
-		System.err
-				.println("Updateda SEC-CH-UA-PLATFORM-VERSION: " + element.getAttribute("innerText"));
+		assertThat(element.getAttribute("innerText"),
+				containsString(platformVersion));
+		System.err.println("Updated SEC-CH-UA-PLATFORM-VERSION: "
+				+ element.getAttribute("innerText"));
 	}
 
 	// @Ignore
 	@Test
 	public void test3() {
-		// the site may be down, and it can also reject autoated browsing
-		// pingHost() does not work reliably yet
-		// Trying to connect to host www.whoishostingthis.com port 443
-		// timeout or unreachable or failed DNS lookup.
-		// Assume.assumeTrue(pingHost("www.whoishostingthis.com", 443, 3));
 		// Arrange
-		driver.get(baseURL);
-		elements = driver.findElements(locator1);
-		if (elements.size() == 0) {
-			// You have been blocked ?
-			return;
-		}
+		String userAgentString = "python 3.8";
+		driver.get(
+				"https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending");
 
-		element = driver.findElement(locator2);
+		locator = By.xpath(
+				"//*[@id=\"content-base\"]//table//th[contains(text(),\"USER-AGENT\")]/../td");
+		element = driver.findElement(locator);
 		Utils.highlight(element);
 		Utils.sleep(100);
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
@@ -231,7 +248,7 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 
 		// Act
 		try {
-			UserAgent userAgent = new UserAgent("python 3.8");
+			UserAgent userAgent = new UserAgent(userAgentString);
 			userAgent.platform("windows");
 			// @formatter:off
 			chromeDevTools.send(
@@ -252,9 +269,9 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 		driver.navigate().refresh();
 		Utils.sleep(1000);
 
-		element = driver.findElement(locator2);
+		element = driver.findElement(locator);
 		assertThat(element.isDisplayed(), is(true));
-		assertThat(element.getAttribute("innerText"), is("python 3.8"));
+		assertThat(element.getAttribute("innerText"), is(userAgentString));
 		System.err
 				.println("Updated USER-AGENT: " + element.getAttribute("innerText"));
 	}

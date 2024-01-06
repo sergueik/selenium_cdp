@@ -1,5 +1,7 @@
 package com.github.sergueik.selenium;
 
+/* Copyright 2023,2024 Serguei Kouzmine */
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -11,16 +13,21 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
+// import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
 /**
- * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
- * by https://toster.ru/q/653249?e=7897302#comment_1962398
+ * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
+ * 
+ * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setUserAgentOverride
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setUserAgentOverride
+ * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#type-UserAgentMetadata
+ * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#type-UserAgentBrandVersion
+ * https://wicg.github.io/ua-client-hints/
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -30,13 +37,26 @@ public class UserAgentOverrideCdpTest extends BaseCdpTest {
 	private static List<WebElement> elements = new ArrayList<>();
 	private static By locator = null;
 	private static Map<String, Object> params = new HashMap<>();
-
+	private static String baseURL = "https://www.whoishostingthis.com/tools/user-agent/";
 	static {
 		{
 			params.put("userAgent", "python 2.7");
 			params.put("platform", "Windows");
 		}
 	};
+
+	@Before
+	public void beforeTest() throws Exception {
+		// new HashMap<>() => org.openqa.selenium.InvalidArgumentException
+		params.put("userAgent", "");
+		params.put("platform", "");
+
+		driver.executeCdpCommand("Network.setUserAgentOverride", params);
+		driver.executeCdpCommand("Emulation.setUserAgentOverride", params);
+		params.clear();
+		params.put("userAgent", "python 2.7");
+		params.put("platform", "Windows");
+	}
 
 	@After
 	public void clearPage() {
@@ -51,16 +71,18 @@ public class UserAgentOverrideCdpTest extends BaseCdpTest {
 	// https://stackoverflow.com/questions/29916054/change-user-agent-for-selenium-driver
 	// @Ignore
 
-	@Test(expected = NoSuchElementException.class)
+	@Test
+//	@Test(expected = NoSuchElementException.class)
 	public void test1() {
-		// the site may be down, and it can also reject autoated browsing
+		// the site may be down, and it can also reject automated browsing
 		// pingHost() does not work reliably yet
 		// Assume.assumeTrue(pingHost("www.whoishostingthis.com", 443, 3));
+		// Assume.assumeTrue(pingHost("www.whoishostingthis.com", 80, 10));
 		// Arrange
 		driver.get("https://www.whoishostingthis.com/tools/user-agent/");
 		locator = By.cssSelector("#content-base div.content-block-main");
 		elements = driver.findElements(locator);
-		if (elements.size() > 0) {
+		if (elements.size() == 0) {
 			// You have been blocked
 			return;
 		}
@@ -90,8 +112,6 @@ public class UserAgentOverrideCdpTest extends BaseCdpTest {
 
 	@Test
 	public void test2() {
-		// the site may be down, and it can also reject autoated browsing
-		Assume.assumeTrue(pingHost("www.whoishostingthis.com", 80, 10));
 		// Arrange
 		driver.get(
 				"https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending");
@@ -127,8 +147,40 @@ public class UserAgentOverrideCdpTest extends BaseCdpTest {
 
 	@Test
 	public void test3() {
-		// the site may be down, and it can also reject autoated browsing
-		Assume.assumeTrue(pingHost("www.whoishostingthis.com", 80, 10));
+		// Arrange
+		driver.get(
+				"https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending");
+		locator = By.xpath(
+				"//*[@id=\"content-base\"]//table//th[contains(text(),\"USER-AGENT\")]/../td");
+		element = driver.findElement(locator);
+		Utils.highlight(element);
+		Utils.sleep(100);
+		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
+		System.err
+				.println("Vanilla USER-AGENT: " + element.getAttribute("innerText"));
+
+		// Act
+		try {
+			driver.executeCdpCommand("Emulation.setUserAgentOverride", params);
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			System.err.println("Exception " + e.toString());
+			throw (new RuntimeException(e));
+		}
+		driver.navigate().refresh();
+		Utils.sleep(1000);
+
+		element = driver.findElement(locator);
+		assertThat(element.isDisplayed(), is(true));
+		assertThat(element.getAttribute("innerText"), is("python 2.7"));
+		System.err
+				.println("Updated USER-AGENT: " + element.getAttribute("innerText"));
+	}
+
+	@Test
+	public void test4() {
 		// Arrange
 		driver.get(
 				"https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending");
