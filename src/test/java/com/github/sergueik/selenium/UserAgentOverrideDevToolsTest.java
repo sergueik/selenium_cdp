@@ -41,9 +41,13 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 
 	private static WebElement element = null;
 	private static List<WebElement> elements = new ArrayList<>();
-	private static final By locator = By.xpath(
+	private static final By locator2 = By.xpath(
 			"//*[@id=\"content-base\"]//table//th[contains(text(),\"USER-AGENT\")]/../td");
-	private static final By locator2 = By
+	private static final By locator3 = By.xpath(
+			"//*[@id=\"content-base\"]//table//th[contains(text(),\"SEC-CH-UA-PLATFORM\")]/../td");
+	private static final By locator4 = By.xpath(
+			"//*[@id=\"content-base\"]//table//th[contains(text(),\"SEC-CH-UA-PLATFORM-VERSION\")]/../td");
+	private static final By locator1 = By
 			.cssSelector("#content-base div.content-block-main");
 
 	private static String baseURL = "https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending";
@@ -72,13 +76,13 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 		// Assume.assumeTrue(pingHost("www.whoishostingthis.com", 443, 3));
 		// Arrange
 		driver.get(baseURL);
-		elements = driver.findElements(locator2);
+		elements = driver.findElements(locator1);
 		if (elements.size() == 0) {
-			// // You have been blocked ?
+			// You have been blocked ?
 			return;
 		}
 
-		element = driver.findElement(locator);
+		element = driver.findElement(locator2);
 		Utils.highlight(element);
 		Utils.sleep(100);
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
@@ -108,7 +112,7 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 		driver.navigate().refresh();
 		Utils.sleep(1000);
 
-		element = driver.findElement(locator);
+		element = driver.findElement(locator2);
 		assertThat(element.isDisplayed(), is(true));
 		assertThat(element.getAttribute("innerText"), is("python 2.7"));
 		System.err
@@ -124,14 +128,15 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 		String brand = "Chrome";
 		String version = "120";
 		String platform = "windows";
+		String platformVersion = "NT 6.0";
 		driver.get(baseURL);
-		elements = driver.findElements(locator2);
+		elements = driver.findElements(locator1);
 		if (elements.size() == 0) {
 			// You have been blocked ?
 			return;
 		}
 
-		element = driver.findElement(locator);
+		element = driver.findElement(locator2);
 		Utils.highlight(element);
 		Utils.sleep(100);
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
@@ -154,7 +159,7 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 					Optional.empty(), // fullVersionList 
 					Optional.empty(), // fullVersion 
 					platform, 
-					"NT 6.0", //  platformVersion 
+					platformVersion, //  platformVersion 
 					"amd64", // architecture 
 					"", // model cannot be null (java.lang.NullPointerException)
 					false, // mobile 
@@ -162,6 +167,7 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 					Optional.of(false) // wow64
 					);
 			// @formatter:on
+
 			UserAgent userAgent = new UserAgent(brand);
 			userAgent.platform(platform);
 			// @formatter:off
@@ -183,11 +189,21 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 		driver.navigate().refresh();
 		Utils.sleep(1000);
 
-		element = driver.findElement(locator);
+		element = driver.findElement(locator2);
 		assertThat(element.isDisplayed(), is(true));
 		assertThat(element.getAttribute("innerText"), is(brand));
 		System.err
 				.println("Updated USER-AGENT: " + element.getAttribute("innerText"));
+		element = driver.findElement(locator3);
+		assertThat(element.isDisplayed(), is(true));
+		assertThat(element.getAttribute("innerText"), is(String.format("\"%s\"", platform)));
+		System.err
+				.println("Updated SEC-CH-UA-PLATFORM: " + element.getAttribute("innerText"));
+		element = driver.findElement(locator4);
+		assertThat(element.isDisplayed(), is(true));
+		assertThat(element.getAttribute("innerText"), containsString(platformVersion));
+		System.err
+				.println("Updateda SEC-CH-UA-PLATFORM-VERSION: " + element.getAttribute("innerText"));
 	}
 
 	// @Ignore
@@ -200,13 +216,13 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 		// Assume.assumeTrue(pingHost("www.whoishostingthis.com", 443, 3));
 		// Arrange
 		driver.get(baseURL);
-		elements = driver.findElements(locator2);
+		elements = driver.findElements(locator1);
 		if (elements.size() == 0) {
 			// You have been blocked ?
 			return;
 		}
 
-		element = driver.findElement(locator);
+		element = driver.findElement(locator2);
 		Utils.highlight(element);
 		Utils.sleep(100);
 		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
@@ -236,7 +252,7 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 		driver.navigate().refresh();
 		Utils.sleep(1000);
 
-		element = driver.findElement(locator);
+		element = driver.findElement(locator2);
 		assertThat(element.isDisplayed(), is(true));
 		assertThat(element.getAttribute("innerText"), is("python 3.8"));
 		System.err
