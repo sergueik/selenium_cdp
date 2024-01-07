@@ -7,6 +7,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-// import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
@@ -37,7 +38,8 @@ public class UserAgentOverrideCdpTest extends BaseCdpTest {
 	private static List<WebElement> elements = new ArrayList<>();
 	private static By locator = null;
 	private static Map<String, Object> params = new HashMap<>();
-	private static String baseURL = "https://www.whoishostingthis.com/tools/user-agent/";
+	private static Map<String, Object> data = new HashMap<>();
+	private static Map<String, Object> data2 = new HashMap<>();
 	static {
 		{
 			params.put("userAgent", "python 2.7");
@@ -71,8 +73,7 @@ public class UserAgentOverrideCdpTest extends BaseCdpTest {
 	// https://stackoverflow.com/questions/29916054/change-user-agent-for-selenium-driver
 	// @Ignore
 
-	@Test
-//	@Test(expected = NoSuchElementException.class)
+	@Test(/* expected = NoSuchElementException.class */)
 	public void test1() {
 		// the site may be down, and it can also reject automated browsing
 		// pingHost() does not work reliably yet
@@ -213,5 +214,67 @@ public class UserAgentOverrideCdpTest extends BaseCdpTest {
 				.println("Updated USER-AGENT: " + element.getAttribute("innerText"));
 	}
 
+	@Test
+	public void test5() {
+		String brand = "Chrome";
+		String version = "120";
+		String platform = "windows";
+		String platformVersion = "NT 6.0";
+
+		// Arrange
+		driver.get(
+				"https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending");
+		locator = By.xpath(
+				"//*[@id=\"content-base\"]//table//th[contains(text(),\"USER-AGENT\")]/../td");
+		element = driver.findElement(locator);
+		Utils.highlight(element);
+		Utils.sleep(100);
+		assertThat(element.getAttribute("innerText"), containsString("Mozilla"));
+		System.err
+				.println("Vanilla USER-AGENT: " + element.getAttribute("innerText"));
+
+		// Act
+		try {
+			data2.put("brand", brand);
+			data2.put("version", version);
+			List<Map<String, Object>> brands = new ArrayList<>();
+			brands.add(data2);
+			data.put("brands", brands);
+			data.put("fullVersionList", new ArrayList<>());
+			data.put("platform", platform);
+			data.put("platformVersion", platformVersion);
+			data.put("architecture", "amd64");
+			data.put("model", "");
+			data.put("mobile", false);
+			data.put("bitness", "");
+			params.put("userAgentMetadata", data);
+			driver.executeCdpCommand("Emulation.setUserAgentOverride", params);
+		} catch (WebDriverException e) {
+			System.err.println("Web Driver exception (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
+		} catch (Exception e) {
+			System.err.println("Exception " + e.toString());
+			throw (new RuntimeException(e));
+		}
+		driver.navigate().refresh();
+		Utils.sleep(1000);
+
+		element = driver.findElement(locator);
+		assertThat(element.isDisplayed(), is(true));
+		assertThat(element.getAttribute("innerText"), is("python 2.7"));
+		System.err
+				.println("Updated USER-AGENT: " + element.getAttribute("innerText"));
+		locator = By.xpath(
+				"//*[@id=\"content-base\"]//table//th[contains(text(),\"SEC-CH-UA-PLATFORM-VERSION\")]/../td");
+		element = driver.findElement(locator);
+		assertThat(element.isDisplayed(), is(true));
+		assertThat(element.getAttribute("innerText"),
+				containsString(platformVersion));
+		System.err.println("Updated SEC-CH-UA-PLATFORM-VERSION: "
+				+ element.getAttribute("innerText"));
+
+	}
+
+	//
 }
 
