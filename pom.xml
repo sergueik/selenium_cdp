@@ -16,7 +16,7 @@
     <commons-io.version>2.7</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <junit.version>4.13.1</junit.version>
-    <json.version>20211205</json.version>
+    <json.version>20231013</json.version>
     <json.version>20230227</json.version>
     <!-- 
     <json.version>20211205</json.version>
