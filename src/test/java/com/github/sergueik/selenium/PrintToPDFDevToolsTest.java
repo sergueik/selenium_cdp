@@ -41,8 +41,8 @@ import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v120.page.Page;
-import org.openqa.selenium.devtools.v120.page.Page.PrintToPDFResponse;
+import org.openqa.selenium.devtools.v121.page.Page;
+import org.openqa.selenium.devtools.v121.page.Page.PrintToPDFResponse;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -136,9 +136,14 @@ public class PrintToPDFDevToolsTest {
 		// Allowed Values: ReturnAsBase64, ReturnAsStream
 		transferMode = Page.PrintToPDFTransferMode.RETURNASBASE64;
 		// Act
-		response = chromeDevTools.send(Page.printToPDF(Optional.of(landscape),
-				Optional.of(displayHeaderFooter), Optional.of(printBackground),
-				Optional.of(scale), Optional.empty(), // paperWidth
+		// @formatter:off
+
+		response = chromeDevTools.send(Page.printToPDF(
+				Optional.of(landscape),
+				Optional.of(displayHeaderFooter), 
+				Optional.of(printBackground),
+				Optional.of(scale), 
+				Optional.empty(), // paperWidth
 				Optional.empty(), // paperHeight
 				Optional.empty(), // marginTop
 				Optional.empty(), // marginBottom
@@ -148,8 +153,12 @@ public class PrintToPDFDevToolsTest {
 				Optional.empty(), // headerTemplate
 				Optional.empty(), // footerTemplate
 				Optional.of(true), // preferCSSPageSize
-				Optional.of(transferMode), Optional.of(true) // generateTaggedPDF
+				Optional.of(transferMode),
+				Optional.of(false), // generateTaggedPDF
+				Optional.of(false) // generateDocumentOutline
 		));
+		// @formatter:on
+
 		assertThat(response, notNullValue());
 		try {
 			body = new String(
@@ -210,7 +219,7 @@ public class PrintToPDFDevToolsTest {
 
 	@Ignore
 	// Unable to create instance of class
-	// org.openqa.selenium.devtools.v120.page.Page$PrintToPDFResponse
+	// org.openqa.selenium.devtools.v121.page.Page$PrintToPDFResponse
 	// Caused by: org.openqa.selenium.json.JsonException: Expected to read a
 	// START_MAP
 	// but instead have: STRING. Last 26 characters read:
@@ -250,17 +259,27 @@ public class PrintToPDFDevToolsTest {
 				"Page.printToPDF", ImmutableMap.of("landscape", landscape),
 				o -> o.read(PrintToPDFResponse.class)));
 		filename = "result6.pdf";
-		response = chromeDevTools.send(Page.printToPDF(Optional.of(landscape),
-				Optional.of(displayHeaderFooter), Optional.of(printBackground),
-				Optional.of(scale), Optional.of(8.27), Optional.of(11.69),
-				Optional.of(1.0), Optional.of(1.44), Optional.of(0.75),
-				Optional.of(0.52), Optional.empty(), // pageRanges
+		// @formatter:off
+		response = chromeDevTools.send(
+				Page.printToPDF(Optional.of(landscape),
+				Optional.of(displayHeaderFooter), 
+				Optional.of(printBackground),
+				Optional.of(scale), 
+				Optional.of(8.27), 
+				Optional.of(11.69),
+				Optional.of(1.0), 
+				Optional.of(1.44), 
+				Optional.of(0.75),
+				Optional.of(0.52), 
+				Optional.empty(), // pageRanges
 				Optional.empty(), // headerTemplate
 				Optional.empty(), // footerTemplate
 				Optional.of(true), // preferCSSPageSize
-				Optional.of(transferMode), Optional.of(true) // generateTaggedPDF
+				Optional.of(transferMode), 
+				Optional.of(false), // generateTaggedPDF
+				Optional.of(false) // generateDocumentOutline
 		));
-
+		// @formatter:on
 		assertThat(response, notNullValue());
 
 		try {

@@ -15,9 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v120.dom.model.Rect;
-import org.openqa.selenium.devtools.v120.emulation.Emulation;
-import org.openqa.selenium.devtools.v120.page.Page;
+import org.openqa.selenium.devtools.v121.dom.model.Rect;
+import org.openqa.selenium.devtools.v121.emulation.Emulation;
+import org.openqa.selenium.devtools.v121.page.Page;
 import org.openqa.selenium.interactions.Actions;
 
 /**
@@ -77,9 +77,10 @@ public class DeviceMetricsOverrideDevToolsTest extends BaseDevToolsTest {
 					Optional.empty(), // dontSetVisibleSize
 					Optional.empty(), // screenOrientation
 					Optional.empty(), // viewport 
-					Optional.empty()  // displayFeature
+					Optional.empty(),  // displayFeature
+					Optional.empty() // devicePosture
 				)
-				// @formatter:on
+				// @formatter:on	
 			);
 			driver.get(baseURL);
 			result = chromeDevTools.send(Page.getLayoutMetrics());

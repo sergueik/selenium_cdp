@@ -20,11 +20,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v120.css.CSS;
-import org.openqa.selenium.devtools.v120.dom.DOM;
-import org.openqa.selenium.devtools.v120.dom.model.Rect;
-import org.openqa.selenium.devtools.v120.emulation.Emulation;
-import org.openqa.selenium.devtools.v120.page.Page;
+import org.openqa.selenium.devtools.v121.css.CSS;
+import org.openqa.selenium.devtools.v121.dom.DOM;
+import org.openqa.selenium.devtools.v121.dom.model.Rect;
+import org.openqa.selenium.devtools.v121.emulation.Emulation;
+import org.openqa.selenium.devtools.v121.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -78,6 +78,7 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 					Optional.empty(),
 					Optional.empty(), 
 					Optional.empty(), 
+					Optional.empty(),
 					Optional.empty()
 				)
 				// @formatter:on
@@ -159,6 +160,7 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 					Optional.empty(), 
 					Optional.empty(), 
 					Optional.empty(),
+					Optional.empty(), 
 					Optional.empty(), 
 					Optional.empty(), 
 					Optional.empty()

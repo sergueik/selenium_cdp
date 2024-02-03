@@ -20,11 +20,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.idealized.Network.UserAgent;
-import org.openqa.selenium.devtools.v120.emulation.Emulation;
-import org.openqa.selenium.devtools.v120.emulation.model.UserAgentMetadata;
-import org.openqa.selenium.devtools.v120.emulation.model.UserAgentBrandVersion;
+import org.openqa.selenium.devtools.v121.emulation.Emulation;
+import org.openqa.selenium.devtools.v121.emulation.model.UserAgentMetadata;
+import org.openqa.selenium.devtools.v121.emulation.model.UserAgentBrandVersion;
 
-import org.openqa.selenium.devtools.v120.network.Network;
+import org.openqa.selenium.devtools.v121.network.Network;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
