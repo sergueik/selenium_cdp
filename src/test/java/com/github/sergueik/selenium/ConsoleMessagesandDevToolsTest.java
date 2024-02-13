@@ -1,4 +1,5 @@
 package com.github.sergueik.selenium;
+
 /**
  * Copyright 2024 Serguei Kouzmine
  */
@@ -7,11 +8,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.v121.console.Console;
 import org.openqa.selenium.devtools.v121.console.model.ConsoleMessage;
-import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogEntry;
-import org.openqa.selenium.logging.LogType;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -25,9 +24,10 @@ import org.openqa.selenium.logging.LogType;
  */
 
 @SuppressWarnings("deprecation")
-public class ConsoleMessagesandLegacyLoggingDevToolsTest extends BaseDevToolsTest {
+public class ConsoleMessagesandDevToolsTest extends BaseDevToolsTest {
 
 	private final static String baseURL = "https://rahulshettyacademy.com/angularAppdemo/";
+	private WebElement element;
 
 	@Before
 	public void beforeTest() throws Exception {
@@ -47,16 +47,18 @@ public class ConsoleMessagesandLegacyLoggingDevToolsTest extends BaseDevToolsTes
 	@Test
 	public void test1() {
 		driver.get(baseURL);
-		driver.findElement(By.linkText("Browse Products")).click();
-		driver.findElement(By.partialLinkText("Selenium")).click();
-		driver.findElement(By.cssSelector(".add-to-cart")).click();
-		driver.findElement(By.linkText("Cart")).click();
-		driver.findElement(By.id("exampleInputEmail1")).clear();
-		driver.findElement(By.id("exampleInputEmail1")).sendKeys("2");
+		element = driver.findElement(By.linkText("Browse Products"));
+		element.click();
+		element = driver.findElement(By.partialLinkText("Selenium"));
+		element.click();
+		element = driver.findElement(By.cssSelector(".add-to-cart"));
+		element.click();
+		element = driver.findElement(By.linkText("Cart"));
+		element.click();
+		element = driver.findElement(By.id("exampleInputEmail1"));
+		element.clear();
+		element.sendKeys("2");
 
-		LogEntries entries = driver.manage().logs().get(LogType.BROWSER);
-		for (LogEntry e : entries)
-			System.out.println(e.getMessage());
 	}
 
 	@After
