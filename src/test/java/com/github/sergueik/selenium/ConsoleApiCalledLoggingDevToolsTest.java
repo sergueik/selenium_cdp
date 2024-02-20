@@ -4,7 +4,14 @@ package com.github.sergueik.selenium;
  * Copyright 2024 Serguei Kouzmine
  */
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
+
 import java.time.Duration;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.junit.After;
@@ -19,8 +26,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.devtools.v121.runtime.Runtime;
 import org.openqa.selenium.devtools.v121.runtime.model.StackTrace;
 import org.openqa.selenium.devtools.v121.runtime.model.ConsoleAPICalled;
+import org.openqa.selenium.devtools.v121.runtime.model.ExceptionDetails;
+import org.openqa.selenium.devtools.v121.runtime.model.ExceptionThrown;
+import org.openqa.selenium.devtools.v121.runtime.model.Timestamp;
 // NOTE: import org.openqa.selenium.bidi.log.StackTrace;
 import org.openqa.selenium.devtools.v121.runtime.model.RemoteObject;
+
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -90,6 +101,47 @@ public class ConsoleApiCalledLoggingDevToolsTest extends BaseDevToolsTest {
 		System.err.println(String.format("test2 logs: %d", logs.size()));
 		logs.stream().forEach(System.err::println);
 	}
+
+	// NOTE: apparently fails with Chrome 109 (the last version available for Windows older than 10
+	@Test
+	public void test3() {
+
+		chromeDevTools.addListener(Runtime.exceptionThrown(),
+				(ExceptionThrown event) -> {
+					System.err.println("Processing exception");
+					ExceptionDetails exceptionDetails = event.getExceptionDetails();
+					RemoteObject exception = exceptionDetails.getException().get();
+					traces.add(event.getExceptionDetails().getStackTrace().get());
+					logs.add(String.format(
+							"time stamp: %s line number: %s url: \"%s\" text: %s exception: %s",
+							formatTimestamp(event.getTimestamp()),
+							exceptionDetails.getLineNumber(),
+							(exceptionDetails.getUrl().isPresent()
+									? exceptionDetails.getUrl().get() : ""),
+							exceptionDetails.getText(), exception.getDescription().get()));
+				});
+
+		element = wait.until(ExpectedConditions
+				.visibilityOfElementLocated(By.id("logWithStacktrace")));
+		element.click();
+		Utils.sleep(1000);
+		System.err.println(String.format("test3 logs: %d", logs.size()));
+		logs.stream().forEach(System.err::println);
+		System.err.println(String.format("test3 traces: %d", traces.size()));
+		traces.stream().map(o -> o.getDescription()).forEach(System.err::println);
+	}
+
+	private String formatTimestamp(Timestamp timestamp) {
+		final DateFormat gmtFormat = new SimpleDateFormat(
+				"E, dd-MMM-yyyy hh:mm:ss");
+		final TimeZone timeZone = TimeZone.getDefault();
+		gmtFormat.setTimeZone(timeZone);
+		long time = Double.valueOf(timestamp.toString()).longValue();
+		return gmtFormat.format(new Date(time)) + " "
+				+ timeZone.getDisplayName(false, TimeZone.SHORT);
+
+	}
+
 
 	@After
 	public void afterTest() throws Exception {
