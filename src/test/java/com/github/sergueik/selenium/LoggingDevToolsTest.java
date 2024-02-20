@@ -1,4 +1,5 @@
 package com.github.sergueik.selenium;
+
 /**
  * Copyright 2020,2021 Serguei Kouzmine
  */
@@ -23,7 +24,7 @@ import org.openqa.selenium.devtools.v121.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
-
+ * 
  * https://chromedevtools.github.io/devtools-protocol/tot/Log#method-enable
  * https://chromedevtools.github.io/devtools-protocol/tot/Log/#event-entryAdded
  * https://chromedevtools.github.io/devtools-protocol/1-3/Page/#method-navigate
@@ -42,12 +43,9 @@ public class LoggingDevToolsTest extends BaseDevToolsTest {
 		chromeDevTools.addListener(Log.entryAdded(),
 
 				(LogEntry event) -> System.err.println(String.format(
-						"time stamp: %s line number: %s url: \"%s\" text: %s",
-						formatTimestamp(event.getTimestamp()),
-						(event.getLineNumber().isPresent() ? event.getLineNumber().get()
-								: ""),
-						(event.getUrl().isPresent() ? event.getUrl().get() : ""),
-						event.getText())));
+						"time stamp: %s line number: %s url: \"%s\" text: %s", formatTimestamp(event.getTimestamp()),
+						(event.getLineNumber().isPresent() ? event.getLineNumber().get() : ""),
+						(event.getUrl().isPresent() ? event.getUrl().get() : ""), event.getText())));
 	}
 
 	@Test
@@ -66,17 +64,29 @@ public class LoggingDevToolsTest extends BaseDevToolsTest {
 		// org.openqa.selenium.devtools.v121.log.model.LogEntry@5e77d702
 
 		driver.get(baseURL);
-		chromeDevTools.send(Page.navigate(baseURL, Optional.empty(),
-				Optional.empty(), Optional.empty(), Optional.empty()));
+		chromeDevTools
+				.send(Page.navigate(baseURL, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
 	}
 
 	@Test
 	public void test2() {
 		final String consoleMessage = "Lorem ipsum";
 		chromeDevTools.addListener(Log.entryAdded(),
-				(LogEntry event) -> assertThat(event.getText(),
-						containsString(consoleMessage)));
+				(LogEntry event) -> assertThat(event.getText(), containsString(consoleMessage)));
 		driver.executeScript("console.log(arguments[0]);", consoleMessage);
+	}
+
+	// origin:
+	// https://github.com/SaraMohamed2022/Selenium4_CDPPracticing/blob/main/src/test/java/selenium4_SelfPracticing/CDPLogs.java
+	@Test
+	public void test3() {
+		chromeDevTools.addListener(Log.entryAdded(), logEntry -> {
+			System.err.println(
+					String.format("-----------" + "\n" + "Level: %s" + "\n" + "Text: %s" + "\n" + "Broken URL: %s",
+							logEntry.getLevel(), logEntry.getText(), logEntry.getUrl()));
+		});
+		String url = "https://the-internet.herokuapp.com/broken_images";
+		driver.get(url);
 	}
 
 	@After
@@ -85,14 +95,13 @@ public class LoggingDevToolsTest extends BaseDevToolsTest {
 		chromeDevTools.send(Log.disable());
 	}
 
-	private final DateFormat gmtFormat = new SimpleDateFormat(
-			"E, dd-MMM-yyyy hh:mm:ss");
-	private final TimeZone timeZone = TimeZone.getDefault();
-
 	private String formatTimestamp(Timestamp timestamp) {
+		final DateFormat gmtFormat = new SimpleDateFormat("E, dd-MMM-yyyy hh:mm:ss");
+		final TimeZone timeZone = TimeZone.getDefault();
 		gmtFormat.setTimeZone(timeZone);
 		long time = Double.valueOf(timestamp.toString()).longValue();
 		return gmtFormat.format(new Date(time)) + " " + timeZone.getDisplayName(false, TimeZone.SHORT);
 
 	}
+
 }
