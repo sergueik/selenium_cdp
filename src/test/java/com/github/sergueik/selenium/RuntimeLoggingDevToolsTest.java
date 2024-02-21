@@ -45,7 +45,7 @@ import org.openqa.selenium.devtools.v121.runtime.model.RemoteObject;
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-public class ConsoleApiCalledLoggingDevToolsTest extends BaseDevToolsTest {
+public class RuntimeLoggingDevToolsTest extends BaseDevToolsTest {
 
 	private final static String baseURL = "https://www.selenium.dev/selenium/web/bidi/logEntryAdded.html";
 
