@@ -15,8 +15,8 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v121.emulation.Emulation;
-import org.openqa.selenium.devtools.v121.emulation.model.DisabledImageType;
+import org.openqa.selenium.devtools.v122.emulation.Emulation;
+import org.openqa.selenium.devtools.v122.emulation.model.DisabledImageType;
 import org.openqa.selenium.interactions.Actions;
 
 /**

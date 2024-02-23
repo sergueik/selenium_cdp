@@ -10,17 +10,17 @@ import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v121.network.Network;
-import org.openqa.selenium.devtools.v121.network.model.BlockedReason;
-import org.openqa.selenium.devtools.v121.network.model.Headers;
-import org.openqa.selenium.devtools.v121.network.model.InterceptionStage;
-import org.openqa.selenium.devtools.v121.network.model.LoadingFailed;
-import org.openqa.selenium.devtools.v121.network.model.RequestIntercepted;
-import org.openqa.selenium.devtools.v121.network.model.RequestPattern;
-import org.openqa.selenium.devtools.v121.network.model.RequestWillBeSent;
-import org.openqa.selenium.devtools.v121.network.model.ResourceType;
-import org.openqa.selenium.devtools.v121.network.model.ResponseReceived;
-import org.openqa.selenium.devtools.v121.page.Page;
+import org.openqa.selenium.devtools.v122.network.Network;
+import org.openqa.selenium.devtools.v122.network.model.BlockedReason;
+import org.openqa.selenium.devtools.v122.network.model.Headers;
+import org.openqa.selenium.devtools.v122.network.model.InterceptionStage;
+import org.openqa.selenium.devtools.v122.network.model.LoadingFailed;
+import org.openqa.selenium.devtools.v122.network.model.RequestIntercepted;
+import org.openqa.selenium.devtools.v122.network.model.RequestPattern;
+import org.openqa.selenium.devtools.v122.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v122.network.model.ResourceType;
+import org.openqa.selenium.devtools.v122.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v122.page.Page;
 
 import com.google.common.collect.ImmutableList;
 

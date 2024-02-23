@@ -20,9 +20,9 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v121.page.Page;
-import org.openqa.selenium.devtools.v121.page.model.NavigationEntry;
-import org.openqa.selenium.devtools.v121.page.model.TransitionType;
+import org.openqa.selenium.devtools.v122.page.Page;
+import org.openqa.selenium.devtools.v122.page.model.NavigationEntry;
+import org.openqa.selenium.devtools.v122.page.model.TransitionType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
