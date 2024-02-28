@@ -1036,6 +1036,49 @@ The attempt to build with JDK __1.8__ fails with
 [ERROR] class file has wrong version 55.0, should be 52.0
 ```
 
+### Note
+
+if seeing the version mismatch error in every test:
+```sh
+mvn test
+```
+```text
+org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. Message: session not created: This version of ChromeDriver only supports Chrome version 122
+Current browser version is 121.0.6167.85 with binary path /opt/google/chrome/chrome 
+```
+
+
+make sure to have the google repository  added:
+
+
+
+```sh
+echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+```
+
+and the error is cleared:
+```text
+apt-get install google-chrome-stable
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+Package google-chrome-stable is not available, but is referred to by another package.
+This may mean that the package is missing, has been obsoleted, or
+is only available from another source
+
+E: Package 'google-chrome-stable' has no installation candidate
+```
+```text
+dpkg-reconfigure google-chrome-stable
+/usr/sbin/dpkg-reconfigure: google-chrome-stable is broken or not fully installed
+
+```
+the install the chrome:
+```sh
+apt-get install google-chrome-stable
+```
+and confirm the test to pass
+
 ### See Also
 
   * [chrome devtools](https://github.com/ChromeDevTools/awesome-chrome-devtools) project

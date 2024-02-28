@@ -8,16 +8,23 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+
 import org.openqa.selenium.devtools.v122.fetch.Fetch;
+import org.openqa.selenium.devtools.v122.fetch.model.HeaderEntry;
 import org.openqa.selenium.devtools.v122.fetch.model.AuthChallengeResponse;
 import org.openqa.selenium.devtools.v122.fetch.model.AuthChallengeResponse.Response;
+
+import org.openqa.selenium.WebDriverException;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -26,6 +33,8 @@ import org.openqa.selenium.devtools.v122.fetch.model.AuthChallengeResponse.Respo
  * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest
  * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth
  * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#type-AuthChallengeResponse
+ * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#type-HeaderEntry
+ * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#type-RequestId
  *  
  * based on:
  * https://stackoverflow.com/questions/50834002/chrome-headless-browser-with-corporate-proxy-authetication-not-working/67321556#67321556
@@ -67,6 +76,8 @@ public class FetchAuthRequiredDevToolsTest extends BaseDevToolsTest {
 
 	@Test
 	public void test1() {
+		// Fetch.continueResponse(requestId, responseCode, responsePhrase,
+		// responseHeaders, binaryResponseHeaders)
 		// @formatter:off
 		chromeDevTools.addListener(Fetch.requestPaused(),
 			requestPaused -> chromeDevTools.send(
@@ -80,6 +91,7 @@ public class FetchAuthRequiredDevToolsTest extends BaseDevToolsTest {
 				)
 			)
 		);
+
 		// @formatter:on
 		// @formatter:off
 		chromeDevTools.addListener(Fetch.authRequired(),
@@ -103,4 +115,33 @@ public class FetchAuthRequiredDevToolsTest extends BaseDevToolsTest {
 
 	}
 
+	@Ignore("hanging")
+	@Test
+	public void test3() {
+		// Fetch.continueResponse(requestId, responseCode, responsePhrase,
+		// responseHeaders, binaryResponseHeaders)
+		// @formatter:off
+		chromeDevTools.addListener(Fetch.requestPaused(),
+			requestPaused ->
+					{
+						List<HeaderEntry> headers = new ArrayList<>();
+						headers.add(new HeaderEntry(username, password));
+						try {
+							 chromeDevTools.send(
+									 	Fetch.continueResponse(
+										requestPaused.getRequestId(), // requestId 
+										requestPaused.getResponseStatusCode(), // responseCode 
+										requestPaused.getResponseStatusText(), // responsePhrase
+										Optional.of(headers), // responseHeaders
+										Optional.empty()
+								));
+						} catch (WebDriverException e) { 
+							// Cannot override only status or headers, both should be provided
+								System.err.println(e.getMessage());
+						 }
+					}
+		);
+		// @formatter:on
+		driver.get(baseURL);
+	}
 }
