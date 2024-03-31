@@ -1,5 +1,10 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2022,2024 Serguei Kouzmine
+ */
+
+
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -20,11 +25,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v122.css.CSS;
-import org.openqa.selenium.devtools.v122.dom.DOM;
-import org.openqa.selenium.devtools.v122.dom.model.Rect;
-import org.openqa.selenium.devtools.v122.emulation.Emulation;
-import org.openqa.selenium.devtools.v122.page.Page;
+import org.openqa.selenium.devtools.v123.css.CSS;
+import org.openqa.selenium.devtools.v123.dom.DOM;
+import org.openqa.selenium.devtools.v123.dom.model.Rect;
+import org.openqa.selenium.devtools.v123.emulation.Emulation;
+import org.openqa.selenium.devtools.v123.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

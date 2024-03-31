@@ -1,6 +1,6 @@
 package com.github.sergueik.selenium;
 /**
- * Copyright 2021,2022 Serguei Kouzmine
+ * Copyright 2021,2022,2024 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.notNullValue;

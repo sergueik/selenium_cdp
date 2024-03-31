@@ -1,5 +1,10 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2023,2024 Serguei Kouzmine
+ */
+
+
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;

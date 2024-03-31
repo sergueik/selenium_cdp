@@ -1,5 +1,10 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2022-2024 Serguei Kouzmine
+ */
+
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
 
@@ -12,8 +17,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chromium.ChromiumNetworkConditions;
 import org.openqa.selenium.chromium.HasNetworkConditions;
-import org.openqa.selenium.devtools.v122.network.Network;
-import org.openqa.selenium.devtools.v122.network.model.ConnectionType;
+import org.openqa.selenium.devtools.v123.network.Network;
+import org.openqa.selenium.devtools.v123.network.model.ConnectionType;
 import org.openqa.selenium.remote.Augmenter;
 
 /**

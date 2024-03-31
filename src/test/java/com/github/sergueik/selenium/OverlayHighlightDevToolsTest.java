@@ -1,6 +1,6 @@
 package com.github.sergueik.selenium;
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2024 Serguei Kouzmine
  */
 
 import java.util.List;
@@ -9,12 +9,12 @@ import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v122.dom.DOM;
-import org.openqa.selenium.devtools.v122.dom.model.Node;
-import org.openqa.selenium.devtools.v122.dom.model.NodeId;
-import org.openqa.selenium.devtools.v122.dom.model.RGBA;
-import org.openqa.selenium.devtools.v122.overlay.Overlay;
-import org.openqa.selenium.devtools.v122.overlay.model.HighlightConfig;
+import org.openqa.selenium.devtools.v123.dom.DOM;
+import org.openqa.selenium.devtools.v123.dom.model.Node;
+import org.openqa.selenium.devtools.v123.dom.model.NodeId;
+import org.openqa.selenium.devtools.v123.dom.model.RGBA;
+import org.openqa.selenium.devtools.v123.overlay.Overlay;
+import org.openqa.selenium.devtools.v123.overlay.model.HighlightConfig;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

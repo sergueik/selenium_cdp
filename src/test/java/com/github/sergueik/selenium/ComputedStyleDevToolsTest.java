@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2024 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -19,12 +19,12 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v122.css.CSS;
-import org.openqa.selenium.devtools.v122.css.model.CSSComputedStyleProperty;
-import org.openqa.selenium.devtools.v122.dom.DOM;
-import org.openqa.selenium.devtools.v122.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v122.dom.model.Node;
-import org.openqa.selenium.devtools.v122.dom.model.NodeId;
+import org.openqa.selenium.devtools.v123.css.CSS;
+import org.openqa.selenium.devtools.v123.css.model.CSSComputedStyleProperty;
+import org.openqa.selenium.devtools.v123.dom.DOM;
+import org.openqa.selenium.devtools.v123.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v123.dom.model.Node;
+import org.openqa.selenium.devtools.v123.dom.model.NodeId;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge

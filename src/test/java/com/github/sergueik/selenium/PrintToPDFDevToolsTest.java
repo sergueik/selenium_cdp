@@ -1,6 +1,6 @@
 package com.github.sergueik.selenium;
 /**
- * Copyright 2022,2023 Serguei Kouzmine
+ * Copyright 2022-2024 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -41,8 +41,8 @@ import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v122.page.Page;
-import org.openqa.selenium.devtools.v122.page.Page.PrintToPDFResponse;
+import org.openqa.selenium.devtools.v123.page.Page;
+import org.openqa.selenium.devtools.v123.page.Page.PrintToPDFResponse;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -219,7 +219,7 @@ public class PrintToPDFDevToolsTest {
 
 	@Ignore
 	// Unable to create instance of class
-	// org.openqa.selenium.devtools.v122.page.Page$PrintToPDFResponse
+	// org.openqa.selenium.devtools.v123.page.Page$PrintToPDFResponse
 	// Caused by: org.openqa.selenium.json.JsonException: Expected to read a
 	// START_MAP
 	// but instead have: STRING. Last 26 characters read:

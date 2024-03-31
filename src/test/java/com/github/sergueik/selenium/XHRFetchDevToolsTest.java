@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2021,2023 Serguei Kouzmine
+ * Copyright 2021,2023,2024 Serguei Kouzmine
  */
 
 import java.io.UnsupportedEncodingException;
@@ -23,12 +23,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v122.fetch.Fetch;
-import org.openqa.selenium.devtools.v122.fetch.model.HeaderEntry;
-import org.openqa.selenium.devtools.v122.fetch.model.RequestPattern;
-import org.openqa.selenium.devtools.v122.fetch.model.RequestPaused;
-import org.openqa.selenium.devtools.v122.fetch.model.RequestStage;
-import org.openqa.selenium.devtools.v122.network.model.ResourceType;
+import org.openqa.selenium.devtools.v123.fetch.Fetch;
+import org.openqa.selenium.devtools.v123.fetch.model.HeaderEntry;
+import org.openqa.selenium.devtools.v123.fetch.model.RequestPattern;
+import org.openqa.selenium.devtools.v123.fetch.model.RequestPaused;
+import org.openqa.selenium.devtools.v123.fetch.model.RequestStage;
+import org.openqa.selenium.devtools.v123.network.model.ResourceType;
 
 import com.google.gson.Gson;
 

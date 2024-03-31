@@ -1,5 +1,10 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2023,2024 Serguei Kouzmine
+ */
+
+
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -15,10 +20,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v122.dom.DOM;
-import org.openqa.selenium.devtools.v122.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v122.dom.model.Node;
-import org.openqa.selenium.devtools.v122.dom.model.NodeId;
+import org.openqa.selenium.devtools.v123.dom.DOM;
+import org.openqa.selenium.devtools.v123.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v123.dom.model.Node;
+import org.openqa.selenium.devtools.v123.dom.model.NodeId;
 
 import com.google.gson.Gson;
 

@@ -1,5 +1,10 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2023,2024 Serguei Kouzmine
+ */
+
+
 import java.util.List;
 import java.util.Optional;
 
@@ -7,11 +12,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v122.dom.DOM;
-import org.openqa.selenium.devtools.v122.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v122.dom.DOM.PerformSearchResponse;
-import org.openqa.selenium.devtools.v122.dom.model.Node;
-import org.openqa.selenium.devtools.v122.dom.model.NodeId;
+import org.openqa.selenium.devtools.v123.dom.DOM;
+import org.openqa.selenium.devtools.v123.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v123.dom.DOM.PerformSearchResponse;
+import org.openqa.selenium.devtools.v123.dom.model.Node;
+import org.openqa.selenium.devtools.v123.dom.model.NodeId;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge

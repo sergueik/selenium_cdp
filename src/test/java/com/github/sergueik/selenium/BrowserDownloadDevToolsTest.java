@@ -1,5 +1,9 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2023,2024 Serguei Kouzmine
+ */
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -17,9 +21,9 @@ import org.openqa.selenium.WebDriverException;
 // NOTE: will need to switch to v113 for Java 1.8 testing (later releases of Selenium are compiled to a later jar format
 // this will lead to ignorable warning:
 // Unable to find an exact match for CDP version 119, so returning the closest version found: 115
-import org.openqa.selenium.devtools.v122.browser.Browser;
-import org.openqa.selenium.devtools.v122.browser.model.DownloadProgress;
-import org.openqa.selenium.devtools.v122.browser.model.DownloadWillBegin;
+import org.openqa.selenium.devtools.v123.browser.Browser;
+import org.openqa.selenium.devtools.v123.browser.model.DownloadProgress;
+import org.openqa.selenium.devtools.v123.browser.model.DownloadWillBegin;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

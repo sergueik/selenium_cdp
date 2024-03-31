@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023-2024 Serguei Kouzmine
  */
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -19,9 +19,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v122.page.Page;
-import org.openqa.selenium.devtools.v122.page.model.JavascriptDialogClosed;
-import org.openqa.selenium.devtools.v122.page.model.JavascriptDialogOpening;
+import org.openqa.selenium.devtools.v123.page.Page;
+import org.openqa.selenium.devtools.v123.page.model.JavascriptDialogClosed;
+import org.openqa.selenium.devtools.v123.page.model.JavascriptDialogOpening;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -67,13 +67,14 @@ public class AlertDevToolsLocalTest extends BaseDevToolsTest {
 		// Arrange
 		// register to alert events
 		chromeDevTools.addListener(Page.javascriptDialogOpening(),
-				(JavascriptDialogOpening event) -> System.err
-						.println(String.format("Page has dialog %s of type %s opening (%s)", event.getMessage(),
-								event.getType(), event.getHasBrowserHandler().booleanValue())));
+				(JavascriptDialogOpening event) -> System.err.println(String.format(
+						"Page has dialog %s of type %s opening (%s)", event.getMessage(),
+						event.getType(), event.getHasBrowserHandler().booleanValue())));
 		// assert
 		// Whether dialog was confirmed
 		chromeDevTools.addListener(Page.javascriptDialogClosed(),
-				(JavascriptDialogClosed event) -> assertThat(event.getResult(), is(true)));
+				(JavascriptDialogClosed event) -> assertThat(event.getResult(),
+						is(true)));
 		// Act
 		if (debug)
 			System.err.println("Started local test 1 - accept alert.");
@@ -102,13 +103,14 @@ public class AlertDevToolsLocalTest extends BaseDevToolsTest {
 		// Arrange
 		// register to alert events
 		chromeDevTools.addListener(Page.javascriptDialogOpening(),
-				(JavascriptDialogOpening event) -> System.err
-						.println(String.format("Page has dialog %s of type %s opening (%s)", event.getMessage(),
-								event.getType(), event.getHasBrowserHandler().booleanValue())));
+				(JavascriptDialogOpening event) -> System.err.println(String.format(
+						"Page has dialog %s of type %s opening (%s)", event.getMessage(),
+						event.getType(), event.getHasBrowserHandler().booleanValue())));
 		chromeDevTools.addListener(Page.javascriptDialogClosed(),
 				// NOTE: fragile. Also, The result is true for this alert, despite that
 				// "dismiss" is called
-				(JavascriptDialogClosed event) -> assertThat(event.getResult(), is(false)));
+				(JavascriptDialogClosed event) -> assertThat(event.getResult(),
+						is(false)));
 		// Act
 		if (debug)
 			System.err.println("Started local test 2 - dismiss alert.");
@@ -138,16 +140,19 @@ public class AlertDevToolsLocalTest extends BaseDevToolsTest {
 		// Arrange
 		// register to dialog events
 		chromeDevTools.addListener(Page.javascriptDialogOpening(),
-				(JavascriptDialogOpening event) -> System.err.println(String
-						.format("Dialog of type: %s opening with message: %s", event.getType(), event.getMessage())));
-		chromeDevTools.addListener(Page.javascriptDialogClosed(), (JavascriptDialogClosed event) -> {
-			assertThat(event.getUserInput(), notNullValue());
-			assertThat(event.getUserInput(), is(text));
-			System.err.println("Dialog user input was: " + event.getUserInput());
-		});
+				(JavascriptDialogOpening event) -> System.err.println(
+						String.format("Dialog of type: %s opening with message: %s",
+								event.getType(), event.getMessage())));
+		chromeDevTools.addListener(Page.javascriptDialogClosed(),
+				(JavascriptDialogClosed event) -> {
+					assertThat(event.getUserInput(), notNullValue());
+					assertThat(event.getUserInput(), is(text));
+					System.err.println("Dialog user input was: " + event.getUserInput());
+				});
 		// assert that dialog was accepted
 		chromeDevTools.addListener(Page.javascriptDialogClosed(),
-				(JavascriptDialogClosed event) -> assertThat(event.getResult(), is(true)));
+				(JavascriptDialogClosed event) -> assertThat(event.getResult(),
+						is(true)));
 		// Act
 		if (debug)
 			System.err.println("Started local test 3 - javascript prompt.");

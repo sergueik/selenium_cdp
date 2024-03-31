@@ -1,6 +1,6 @@
 package com.github.sergueik.selenium;
 /**
- * Copyright 2022,2023 Serguei Kouzmine
+ * Copyright 2022-2024 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.is;
@@ -21,9 +21,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.devtools.v122.page.Page;
-import org.openqa.selenium.devtools.v122.page.model.DownloadProgress;
-import org.openqa.selenium.devtools.v122.page.model.DownloadWillBegin;
+import org.openqa.selenium.devtools.v123.page.Page;
+import org.openqa.selenium.devtools.v123.page.model.DownloadProgress;
+import org.openqa.selenium.devtools.v123.page.model.DownloadWillBegin;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

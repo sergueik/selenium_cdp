@@ -1,5 +1,10 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2023,2024 Serguei Kouzmine
+ */
+
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -16,8 +21,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v122.performance.Performance;
-import org.openqa.selenium.devtools.v122.performance.model.Metric;
+import org.openqa.selenium.devtools.v123.performance.Performance;
+import org.openqa.selenium.devtools.v123.performance.model.Metric;
 
 
 /**

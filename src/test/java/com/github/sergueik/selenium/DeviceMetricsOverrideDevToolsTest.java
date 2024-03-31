@@ -1,6 +1,6 @@
 package com.github.sergueik.selenium;
 
-/* Copyright 2023 Serguei Kouzmine */
+/* Copyright 2023,2024 Serguei Kouzmine */
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -15,9 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v122.dom.model.Rect;
-import org.openqa.selenium.devtools.v122.emulation.Emulation;
-import org.openqa.selenium.devtools.v122.page.Page;
+import org.openqa.selenium.devtools.v123.dom.model.Rect;
+import org.openqa.selenium.devtools.v123.emulation.Emulation;
+import org.openqa.selenium.devtools.v123.page.Page;
 import org.openqa.selenium.interactions.Actions;
 
 /**

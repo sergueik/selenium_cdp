@@ -1,5 +1,9 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2022,2024 Serguei Kouzmine
+ */
+
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -8,8 +12,8 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
-import org.openqa.selenium.devtools.v122.browser.Browser;
-import org.openqa.selenium.devtools.v122.browser.Browser.GetVersionResponse;
+import org.openqa.selenium.devtools.v123.browser.Browser;
+import org.openqa.selenium.devtools.v123.browser.Browser.GetVersionResponse;
 import org.openqa.selenium.json.Json;
 import org.openqa.selenium.json.JsonInput;
 

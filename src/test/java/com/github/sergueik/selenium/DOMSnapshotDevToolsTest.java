@@ -1,5 +1,10 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2022,2024 Serguei Kouzmine
+ */
+
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -8,9 +13,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v122.domsnapshot.DOMSnapshot;
-import org.openqa.selenium.devtools.v122.domsnapshot.model.DocumentSnapshot;
-import org.openqa.selenium.devtools.v122.domsnapshot.model.StringIndex;
+import org.openqa.selenium.devtools.v123.domsnapshot.DOMSnapshot;
+import org.openqa.selenium.devtools.v123.domsnapshot.model.DocumentSnapshot;
+import org.openqa.selenium.devtools.v123.domsnapshot.model.StringIndex;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -44,12 +49,12 @@ public class DOMSnapshotDevToolsTest extends BaseDevToolsTest {
 	}
 
 	// @Ignore("Unable to create instance of class
-	// org.openqa.selenium.devtools.v122.domsnapshot.DOMSnapshot$CaptureSnapshotResponse")
+	// org.openqa.selenium.devtools.v123.domsnapshot.DOMSnapshot$CaptureSnapshotResponse")
 	// NOTE: pom.xml
 	// org.openqa.selenium.devtools.DevToolsException: Unable to create instance
 	// of
 	// class
-	// org.openqa.selenium.devtools.v122.domsnapshot.DOMSnapshot$CaptureSnapshotResponse
+	// org.openqa.selenium.devtools.v123.domsnapshot.DOMSnapshot$CaptureSnapshotResponse
 	// Exception in thread "CDP Connection"
 	// org.openqa.selenium.devtools.DevToolsException:
 	// Expected to read a NAME but instead have: START_COLLECTION. Last 128

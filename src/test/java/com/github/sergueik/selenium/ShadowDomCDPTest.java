@@ -1,5 +1,10 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2023,2024 Serguei Kouzmine
+ */
+
+
 import static java.lang.System.err;
 import static org.hamcrest.CoreMatchers.is;
 

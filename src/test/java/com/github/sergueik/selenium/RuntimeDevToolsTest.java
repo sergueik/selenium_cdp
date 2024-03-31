@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2024 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.is;
@@ -22,11 +22,11 @@ import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v122.runtime.Runtime;
-import org.openqa.selenium.devtools.v122.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.v122.runtime.model.ExecutionContextId;
-import org.openqa.selenium.devtools.v122.runtime.model.RemoteObject;
-import org.openqa.selenium.devtools.v122.runtime.model.TimeDelta;
+import org.openqa.selenium.devtools.v123.runtime.Runtime;
+import org.openqa.selenium.devtools.v123.runtime.Runtime.EvaluateResponse;
+import org.openqa.selenium.devtools.v123.runtime.model.ExecutionContextId;
+import org.openqa.selenium.devtools.v123.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.v123.runtime.model.TimeDelta;
 import org.openqa.selenium.json.JsonException;
 
 /**

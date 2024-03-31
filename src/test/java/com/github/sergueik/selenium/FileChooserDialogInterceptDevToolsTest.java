@@ -1,5 +1,10 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2021,2024 Serguei Kouzmine
+ */
+
+
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -8,9 +13,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v122.page.Page;
-import org.openqa.selenium.devtools.v122.page.model.FileChooserOpened;
-import org.openqa.selenium.devtools.v122.page.model.FrameId;
+import org.openqa.selenium.devtools.v123.page.Page;
+import org.openqa.selenium.devtools.v123.page.model.FileChooserOpened;
+import org.openqa.selenium.devtools.v123.page.model.FrameId;
 import org.openqa.selenium.interactions.Actions;
 
 /**

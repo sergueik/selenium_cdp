@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2024 Serguei Kouzmine
  */
 
 import java.nio.file.Paths;
@@ -17,8 +17,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v122.input.Input;
-import org.openqa.selenium.devtools.v122.input.Input.DispatchKeyEventType;
+import org.openqa.selenium.devtools.v123.input.Input;
+import org.openqa.selenium.devtools.v123.input.Input.DispatchKeyEventType;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

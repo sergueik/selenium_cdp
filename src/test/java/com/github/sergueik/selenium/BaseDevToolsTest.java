@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2021-2023 Serguei Kouzmine
+ * Copyright 2021-2024 Serguei Kouzmine
  */
 
 import java.io.IOException;

@@ -1,5 +1,10 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2022,2024 Serguei Kouzmine
+ */
+
+
 import static java.lang.System.err;
 
 import java.util.Arrays;

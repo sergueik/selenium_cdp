@@ -1,6 +1,6 @@
 package com.github.sergueik.selenium;
 /**
- * Copyright 2022 Serguei Kouzmine
+ * Copyright 2022,2024 Serguei Kouzmine
  */
 
 import java.util.HashMap;

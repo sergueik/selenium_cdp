@@ -1,6 +1,6 @@
 package com.github.sergueik.selenium;
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2024 Serguei Kouzmine
  */
 
 import org.junit.After;
@@ -8,9 +8,9 @@ import org.junit.Before;
 // import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v122.network.model.TimeSinceEpoch;
-import org.openqa.selenium.devtools.v122.storage.Storage;
-import org.openqa.selenium.devtools.v122.storage.model.SharedStorageMetadata;
+import org.openqa.selenium.devtools.v123.network.model.TimeSinceEpoch;
+import org.openqa.selenium.devtools.v123.storage.Storage;
+import org.openqa.selenium.devtools.v123.storage.model.SharedStorageMetadata;
 import org.openqa.selenium.json.JsonException;
 
 /**

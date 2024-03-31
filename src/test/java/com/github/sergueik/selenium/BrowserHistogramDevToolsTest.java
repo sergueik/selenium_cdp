@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2022 Serguei Kouzmine
+ * Copyright 2022,2024 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
-import org.openqa.selenium.devtools.v122.browser.Browser;
-import org.openqa.selenium.devtools.v122.browser.model.Histogram;
+import org.openqa.selenium.devtools.v123.browser.Browser;
+import org.openqa.selenium.devtools.v123.browser.model.Histogram;
 
 /**
  * 

@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2024 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -19,10 +19,10 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.openqa.selenium.devtools.v122.fetch.Fetch;
-import org.openqa.selenium.devtools.v122.fetch.model.HeaderEntry;
-import org.openqa.selenium.devtools.v122.fetch.model.AuthChallengeResponse;
-import org.openqa.selenium.devtools.v122.fetch.model.AuthChallengeResponse.Response;
+import org.openqa.selenium.devtools.v123.fetch.Fetch;
+import org.openqa.selenium.devtools.v123.fetch.model.HeaderEntry;
+import org.openqa.selenium.devtools.v123.fetch.model.AuthChallengeResponse;
+import org.openqa.selenium.devtools.v123.fetch.model.AuthChallengeResponse.Response;
 
 import org.openqa.selenium.WebDriverException;
 

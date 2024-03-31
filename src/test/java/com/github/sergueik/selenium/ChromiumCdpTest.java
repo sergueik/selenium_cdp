@@ -1,4 +1,8 @@
 package com.github.sergueik.selenium;
+/**
+ * Copyright 2021,2024 Serguei Kouzmine
+ */
+
 
 import static java.lang.System.err;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -44,6 +48,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge inspired
