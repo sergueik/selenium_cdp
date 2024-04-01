@@ -22,12 +22,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.devtools.v123.page.Page;
+// NOTE: org.openqa.selenium.devtools.v123.page.model.DownloadProgress has been deprecated
+// one is advised to use Browser.downloadProgress instead
 import org.openqa.selenium.devtools.v123.page.model.DownloadProgress;
+// NOTE: org.openqa.selenium.devtools.v123.page.model.DownloadWillBegin has been deprecated
+// one advised to use Browser.downloadWillBegin instead
+
 import org.openqa.selenium.devtools.v123.page.model.DownloadWillBegin;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * see:
+ * 
  * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-setDownloadBehavior
  * https://chromedevtools.github.io/devtools-protocol/tot/Page/#event-downloadWillBegin
  * https://chromedevtools.github.io/devtools-protocol/tot/Page/#event-downloadProgres
@@ -48,6 +54,7 @@ public class PageDownloadDevToolsTest extends BaseDevToolsTest {
 
 	@After
 	public void afterTest() throws Exception {
+		// NOTE: Allowed Values: deny, allow, default
 		chromeDevTools.send(Page.setDownloadBehavior(
 				Page.SetDownloadBehaviorBehavior.DEFAULT, Optional.empty()));
 		try {
@@ -106,7 +113,8 @@ public class PageDownloadDevToolsTest extends BaseDevToolsTest {
 					Paths.get(downloadPath).resolve(filename).toAbsolutePath().toString())
 							.exists(),
 					is(true));
-			// The events are not fired. Expect AssertionError
+			// If the event is not fired, will encounter AssertionError
+			// Allowed Values: inProgress, completed, canceled
 			assertThat("Looking for COMPLETED events",
 					states.indexOf(DownloadProgress.State.COMPLETED), greaterThan(-1));
 		} catch (AssertionError e) {

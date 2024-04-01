@@ -4,7 +4,7 @@
   <groupId>com.github.sergueik.selenium</groupId>
   <artifactId>selenium_cdp</artifactId>
   <packaging>jar</packaging>
-  <version>0.78.1-SNAPSHOT</version>
+  <version>0.79.0-SNAPSHOT</version>
   <name>selenum_cdp</name>
   <description>testing new Chrome Dev Tools bridge offered by Selenium 4.x </description>
   <url>http://maven.apache.org</url>
@@ -247,6 +247,33 @@
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
+          <encoding>${encoding}</encoding>
+          <!-- On windows one needs to update console code page outside of maven
+to work with cyrillic pages:
+chcp 65001
+set JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
+rem ${encoding}
+ -->
+          <compilerArgument>-Xlint:all</compilerArgument>
+          <compilerArgument>-Xlint:deprecation</compilerArgument>
+          <compilerArgument>-Xlint:-processing</compilerArgument>
+		  <!-- NOTE: some compiler optimizatino flags not recognized on JDK 1.8.0.101 and were added in later builds e.g. 1.8.0.151:  
+                  Fatal error compiling: 
+                  invalid flag: -XX:+AggressiveUnboxing
+                  invalid flag: -XX:+AggressiveOpts
+                  invalid flag: -XX:+UnlockExperimentalVMOptions
+                  -->
+          <!--
+          <compilerArgument>-XX:+UnlockExperimentalVMOptions</compilerArgument>
+          <compilerArgument>-XX:+AggressiveOpts</compilerArgument>
+	  <compilerArgument>-XX:+AggressiveUnboxing</compilerArgument>
+	  -->
+          <!--
+   <compilerArgument>-Dfile.encoding=${encoding}</compilerArgument>
+Fatal error compiling: invalid flag: -Dfile.encoding=UTF-8 -> [Help 1]
+-->
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
         </configuration>
       </plugin>
       <plugin>
