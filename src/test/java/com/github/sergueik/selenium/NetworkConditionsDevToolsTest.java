@@ -17,8 +17,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chromium.ChromiumNetworkConditions;
 import org.openqa.selenium.chromium.HasNetworkConditions;
-import org.openqa.selenium.devtools.v123.network.Network;
-import org.openqa.selenium.devtools.v123.network.model.ConnectionType;
+import org.openqa.selenium.devtools.v124.network.Network;
+import org.openqa.selenium.devtools.v124.network.model.ConnectionType;
 import org.openqa.selenium.remote.Augmenter;
 
 /**
@@ -41,7 +41,7 @@ public class NetworkConditionsDevToolsTest extends BaseDevToolsTest {
 		offline = false;
 		chromeDevTools
 				.send(Network.emulateNetworkConditions(offline, new Long(100L),
-						new Long(-1), new Long(-1), Optional.of(ConnectionType.ETHERNET)));
+						new Long(-1), new Long(-1), Optional.of(ConnectionType.ETHERNET), Optional.of(0.0), Optional.of(0), Optional.empty()));
 
 		driver.get("about:blank");
 	}
@@ -52,7 +52,7 @@ public class NetworkConditionsDevToolsTest extends BaseDevToolsTest {
 		offline = true;
 		chromeDevTools
 				.send(Network.emulateNetworkConditions(offline, new Long(100L),
-						new Long(-1), new Long(-1), Optional.of(ConnectionType.ETHERNET)));
+						new Long(-1), new Long(-1), Optional.of(ConnectionType.ETHERNET), Optional.of(0.0), Optional.of(0), Optional.empty()));
 		try {
 			driver.get(baseURL);
 		} catch (WebDriverException e) {
@@ -64,7 +64,7 @@ public class NetworkConditionsDevToolsTest extends BaseDevToolsTest {
 			offline = false;
 			chromeDevTools
 					.send(Network.emulateNetworkConditions(offline, new Long(100L),
-							new Long(-1), new Long(-1), Optional.of(ConnectionType.NONE)));
+							new Long(-1), new Long(-1), Optional.of(ConnectionType.NONE), Optional.of(0.0), Optional.of(0), Optional.empty()));
 
 		}
 	}

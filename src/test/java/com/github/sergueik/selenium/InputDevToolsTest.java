@@ -7,9 +7,9 @@ import java.util.Optional;
 import java.lang.NullPointerException;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v123.input.Input;
-import org.openqa.selenium.devtools.v123.input.Input.DispatchKeyEventType;
-import org.openqa.selenium.devtools.v123.input.model.TimeSinceEpoch;
+import org.openqa.selenium.devtools.v124.input.Input;
+import org.openqa.selenium.devtools.v124.input.Input.DispatchKeyEventType;
+import org.openqa.selenium.devtools.v124.input.model.TimeSinceEpoch;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -98,6 +98,9 @@ public class InputDevToolsTest extends BaseDevToolsTest {
 		// String keyIdentifier = null;
 		String keyIdentifier = "";
 		String text = "a";
+		// This method emulates inserting text that doesn't come from a key press, for example an emoji keyboard or an IME.
+		// Input.insertText(text)
+		// https://stackoverflow.com/questions/51706256/sending-emojis-with-seleniums-send-keys
 		chromeDevTools.send(Input.dispatchKeyEvent(type,
 				// Type of the key event. Allowed Values: keyDown, keyUp,
 				// rawKeyDown, char
