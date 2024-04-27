@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2020-2024 Serguei Kouzmine
+ * Copyright 2024 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -12,7 +12,6 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItems;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,52 +20,35 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.HasDevTools;
 import org.openqa.selenium.devtools.v124.network.Network;
+import org.openqa.selenium.devtools.v124.network.model.Request;
+import org.openqa.selenium.devtools.v124.network.model.Headers;
 import org.openqa.selenium.devtools.v124.network.model.RequestWillBeSent;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
+import org.openqa.selenium.interactions.Actions;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-
- * setExtraHTTPHeaders
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-
- * getResponseBody
- * https://chromedevtools.github.io/devtools-protocol/tot/Network#method-enable
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-
- * dataReceived
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-
- * setCacheDisabled
- * https://chromedevtools.github.io/devtools-protocol/tot/Console#method-enable
- * https://chromedevtools.github.io/devtools-protocol/tot/Log#method-enable
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-
- * responseReceived
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-
- * ResourceType
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-Response
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-
- * ResourceTiming
- * 
- * 
+ * https://chromedevtools.github.io/devtools-protocol/1-3/Network#method-enable
+ * https://chromedevtools.github.io/devtools-protocol/1-3/Network/#event-requestWillBeSent
+ * https://chromedevtools.github.io/devtools-protocol/1-3/Network/#type-Request
+ * https://chromedevtools.github.io/devtools-protocol/1-3/Network/#type-Headers
+ * https://chromedevtools.github.io/devtools-protocol/1-3/Network/#method-setCacheDisabled
+ * https://chromedevtools.github.io/devtools-protocol/1-3/Network/#method-clearBrowserCache
+ *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-public class FileUploadNetworkDevToolsTest {
+public class FileUploadNetworkDevToolsTest extends BaseDevToolsTest {
 
 	private int cnt = 0;
 	private static String baseURL = "about:blank";
@@ -74,60 +56,15 @@ public class FileUploadNetworkDevToolsTest {
 	private static String url2 = null;
 	private static final String filename = "temp.png";
 	private static final File dummy = new File(System.getProperty("user.dir") + "/" + filename);
-	private static boolean runHeadless = false;
-	private static String osName = Utils.getOSName();
-	private static ChromiumDriver driver;
-	private static DevTools chromeDevTools;
-
 
 	private static WebElement element = null;
-
 	private static WebDriverWait wait;
 	private static int flexibleWait = 60;
 	private static int pollingInterval = 500;
+
+	public Actions actions;
 	private Map<String, Map<String, Object>> capturedRequests = new HashMap<>();
 	private final Gson gson = new Gson();
-
-	@BeforeClass
-	public static void setUp() throws Exception {
-
-		if (System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
-			runHeadless = true;
-		}
-		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY"))) {
-			runHeadless = true;
-		}
-		System.setProperty("webdriver.chrome.driver", Paths.get(System.getProperty("user.home")).resolve("Downloads")
-				.resolve(osName.equals("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath().toString());
-
-		if (runHeadless) {
-			ChromeOptions options = new ChromeOptions();
-			options.addArguments("--headless", "--disable-gpu");
-			driver = new ChromeDriver(options);
-		} else {
-			driver = new ChromeDriver();
-		}
-		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
-		wait.pollingEvery(Duration.ofMillis(pollingInterval));
-		Utils.setDriver(driver);
-
-		chromeDevTools = ((HasDevTools) driver).getDevTools();
-
-		chromeDevTools.createSession();
-	}
-
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		driver.get(baseURL);
-	}
-
-	@AfterClass
-	public static void tearDown() {
-		if (driver != null) {
-			driver.quit();
-		}
-	}
 
 	@After
 	public void after() {
@@ -150,33 +87,55 @@ public class FileUploadNetworkDevToolsTest {
 		chromeDevTools.addListener(Network.requestWillBeSent(), (RequestWillBeSent event) -> {
 			capturedRequests.put(event.getRequest().getUrl(), event.getRequest().getHeaders().toJson());
 		});
+		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
+		wait.pollingEvery(Duration.ofMillis(pollingInterval));
+		actions = new Actions(driver);
+
 	}
 
-	// based on: https://www.browserstack.com/docs/automate/selenium/test-file-upload
-	@Ignore("Element <input type=\"checkbox\" id=\"readTermsOfUse\" is not clickable")
+	// based on:
+	// https://www.browserstack.com/docs/automate/selenium/test-file-upload
+	// @Ignore("Element <input type=\"checkbox\" id=\"readTermsOfUse\" is not
+	// clickable")
 	@Test
 	public void test2() {
 		url = "https://www.fileconvoy.com/";
-
+		url2 = "https://www.fileconvoy.com/index.php?Section=25681";
 		driver.get(url);
+		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("readTermsOfUse")));
+		assertThat(element, notNullValue());
+		actions.moveToElement(element).build().perform();
+		assertThat(element.isDisplayed(), is(true));
+		Utils.highlight(element);
+		// element.click();
+		element.sendKeys(Keys.SPACE);
+
 		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("upfile_0")));
 		assertThat(element, notNullValue());
 		assertThat(element.isDisplayed(), is(true));
 		Utils.highlight(element);
 
 		element.sendKeys(dummy.getAbsolutePath());
-		element = driver.findElement(By.id("readTermsOfUse"));
-		assertThat(element, notNullValue());
-		Utils.highlight(element);
-		element.click();
+
 		element = driver.findElement(By.name("upload_button"));
 		assertThat(element, notNullValue());
 		Utils.highlight(element);
 		capturedRequests.clear();
 		element.submit();
+		Utils.sleep(1000);
 
+		System.err.println("Captured: ");
+		capturedRequests.keySet().stream().forEach(System.err::println);
+		assertThat(capturedRequests.keySet(), hasItems(new String[] { url2 }));
+		String headers = capturedRequests.get(url2).toString();
+		System.err.println("Headers: " + headers);
+		/*
+		 Headers: {Content-Type=multipart/form-data; boundary=----WebKitFormBoundaryH01BYawNWdMKtpuG, Origin=https://www.fileconvoy.com, Referer=https://www.fileconvoy.com/, Upgrade-Insecure-Requests=1, User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20120101 Firefox/33.0, sec-ch-ua="Not_A Brand";v="99", "Google Chrome";v="124", "Chromium";v="109", sec-ch-ua-mobile=?0, sec-ch-ua-platform="Windows"} 
+		 */
+		assertThat(headers, containsString("Content-Type=multipart/form-data"));
 	}
 
+	// @Ignore
 	@Test
 	@SuppressWarnings("unchecked")
 	public void test1() {
