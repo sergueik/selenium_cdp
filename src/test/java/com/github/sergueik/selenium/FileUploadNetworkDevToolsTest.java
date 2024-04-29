@@ -51,7 +51,6 @@ import com.google.gson.JsonSyntaxException;
 public class FileUploadNetworkDevToolsTest extends BaseDevToolsTest {
 
 	private int cnt = 0;
-	private static String baseURL = "about:blank";
 	private static String url = null;
 	private static String url2 = null;
 	private static final String filename = "temp.png";
@@ -95,8 +94,6 @@ public class FileUploadNetworkDevToolsTest extends BaseDevToolsTest {
 
 	// based on:
 	// https://www.browserstack.com/docs/automate/selenium/test-file-upload
-	// @Ignore("Element <input type=\"checkbox\" id=\"readTermsOfUse\" is not
-	// clickable")
 	@Test
 	public void test2() {
 		url = "https://www.fileconvoy.com/";
@@ -130,22 +127,38 @@ public class FileUploadNetworkDevToolsTest extends BaseDevToolsTest {
 		String headers = capturedRequests.get(url2).toString();
 		System.err.println("Headers: " + headers);
 		/*
-		 Headers: {Content-Type=multipart/form-data; boundary=----WebKitFormBoundaryH01BYawNWdMKtpuG, Origin=https://www.fileconvoy.com, Referer=https://www.fileconvoy.com/, Upgrade-Insecure-Requests=1, User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20120101 Firefox/33.0, sec-ch-ua="Not_A Brand";v="99", "Google Chrome";v="124", "Chromium";v="109", sec-ch-ua-mobile=?0, sec-ch-ua-platform="Windows"} 
+		 * Headers: {Content-Type=multipart/form-data;
+		 * boundary=----WebKitFormBoundaryH01BYawNWdMKtpuG,
+		 * Origin=https://www.fileconvoy.com,
+		 * Referer=https://www.fileconvoy.com/, Upgrade-Insecure-Requests=1,
+		 * User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0)
+		 * Gecko/20120101 Firefox/33.0, sec-ch-ua="Not_A Brand";v="99",
+		 * "Google Chrome";v="124", "Chromium";v="109", sec-ch-ua-mobile=?0,
+		 * sec-ch-ua-platform="Windows"}
 		 */
 		assertThat(headers, containsString("Content-Type=multipart/form-data"));
 	}
 
-	// @Ignore
 	@Test
-	@SuppressWarnings("unchecked")
 	public void test1() {
 		url = "https://ps.uci.edu/~franklin/doc/file_upload.html";
 		url2 = "https://www.oac.uci.edu/indiv/franklin/cgi-bin/values";
 		driver.get(url);
 		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='userfile']")));
+
 		assertThat(element.isDisplayed(), is(true));
 		Utils.highlight(element);
 		element.sendKeys(dummy.getAbsolutePath());
+
+		element = driver.findElement(By.tagName("form"));
+		assertThat(element, notNullValue());
+		assertThat(element.getAttribute("action"), notNullValue());
+		// NOTE:
+		// Expected: is "https://www.oac.uci.edu/indiv/franklin/cgi-bin/values"
+		// but: was "http://www.oac.uci.edu/indiv/franklin/cgi-bin/values"
+		// assertThat(element.getAttribute("action"), is(url2));
+		// url2 = element.getAttribute("action");
+
 		element = driver.findElement(By.cssSelector("input[type='submit']"));
 		assertThat(element, notNullValue());
 		Utils.highlight(element);
@@ -166,13 +179,18 @@ public class FileUploadNetworkDevToolsTest extends BaseDevToolsTest {
 		}
 		assertThat(cnt, greaterThan(1));
 		assertThat(capturedRequests.keySet(), hasItems(new String[] { url2 }));
-		String headers = capturedRequests.get(url2).toString();
-		System.err.println("Headers: " + headers);
-		assertThat(headers, containsString("Content-Type=multipart/form-data"));
+		String data = capturedRequests.get(url2).toString();
+		System.err.println("Headers: " + data);
+		assertThat(data, containsString("Content-Type=multipart/form-data"));
 		try {
-			Map<String, Object> data = gson.fromJson(headers, Map.class);
-			data.keySet().stream().forEach(System.err::println);
+			Headers headers = gson.fromJson(data, Headers.class);
+			// Assert
+			assertThat(headers, notNullValue());
+			//
+			System.err.println("Headers (2): ");
+			headers.keySet().stream().forEach(System.err::println);
 		} catch (JsonSyntaxException e) {
+			System.err.println("Exception: " + e.toString());
 			// com.google.gson.JsonSyntaxException:
 			// com.google.gson.stream.MalformedJsonException:
 			// Unterminated object at line 1 column 25 path $.
