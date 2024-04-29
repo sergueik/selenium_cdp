@@ -73,7 +73,7 @@ public void test() {
 });
 // he mouse hover actions to follow
 ```
-This allows capture every Ajax request response headers, 
+This allows capture every Ajax request response headers,
 ```java
 List<HeaderEntry> headerEntries = event.getResponseHeaders().isPresent() ? event.getResponseHeaders().get() : new ArrayList<>();
 List<String> headers = headerEntries.stream().map(entry -> String.format("%s: %s", entry.getName(), entry.getValue())) .collect(Collectors.toList());
@@ -102,9 +102,9 @@ finally the test continues default processing  of the request:
 chromeDevTools.send(Fetch.continueRequest(
 	event.getRequestId(),
 	Optional.empty(),
-	Optional.empty(), 
-	Optional.empty(), 
-	Optional.empty(), 
+	Optional.empty(),
+	Optional.empty(),
+	Optional.empty(),
 	Optional.empty()));
 ```
 
@@ -172,21 +172,21 @@ public void test1() {
 
 	// Act
 	response = chromeDevTools.send(Page.printToPDF(
-	Optional.of(landscape), 
+	Optional.of(landscape),
 	Optional.of(displayHeaderFooter),
-	Optional.of(printBackground), 
-	Optional.of(scale), 
-	Optional.empty(), 
-	Optional.empty(), 
-	Optional.empty(),
-	Optional.empty(), 
-	Optional.empty(), 
-	Optional.empty(), 
-	Optional.empty(), 
+	Optional.of(printBackground),
+	Optional.of(scale),
 	Optional.empty(),
 	Optional.empty(),
-	Optional.empty(), 
-	Optional.empty(), 
+	Optional.empty(),
+	Optional.empty(),
+	Optional.empty(),
+	Optional.empty(),
+	Optional.empty(),
+	Optional.empty(),
+	Optional.empty(),
+	Optional.empty(),
+	Optional.empty(),
 	Optional.of(transferMode)));
 	assertThat(response, notNullValue());
 	String body = new String(Base64.decodeBase64(response.getData().getBytes("UTF8")));
@@ -210,7 +210,7 @@ response = chromeDevTools.send(new Command<PrintToPDFResponse>("Page.printToPDF"
 ```
 #### Zoom the Browser window
 
-in additon to *legacy*-like keyboard zoom, the CDP supports `Page.setDeviceMetricsOverride` [method](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-setDeviceMetricsOverride) and `Emulation.setDeviceMetricsOverride` [method](https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setDeviceMetricsOverride): 
+in additon to *legacy*-like keyboard zoom, the CDP supports `Page.setDeviceMetricsOverride` [method](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-setDeviceMetricsOverride) and `Emulation.setDeviceMetricsOverride` [method](https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setDeviceMetricsOverride):
 
 ```java
   @Before
@@ -233,18 +233,18 @@ in additon to *legacy*-like keyboard zoom, the CDP supports `Page.setDeviceMetri
       chromeDevTools.send(
         // @formatter:off
         Emulation.setDeviceMetricsOverride(
-          rect.getWidth().intValue(), 
+          rect.getWidth().intValue(),
           rect.getHeight().intValue(),
-          deviceScaleFactor, 
-          false, 
-          Optional.empty(), 
+          deviceScaleFactor,
+          false,
           Optional.empty(),
-          Optional.empty(), 
-          Optional.empty(), 
-          Optional.empty(), 
           Optional.empty(),
-          Optional.empty(), 
-          Optional.empty(), 
+          Optional.empty(),
+          Optional.empty(),
+          Optional.empty(),
+          Optional.empty(),
+          Optional.empty(),
+          Optional.empty(),
           Optional.empty()
         )
         // @formatter:on
@@ -252,10 +252,10 @@ in additon to *legacy*-like keyboard zoom, the CDP supports `Page.setDeviceMetri
       String dataString = chromeDevTools.send(
         // @formatter:off
         Page.captureScreenshot(
-            Optional.of(Page.CaptureScreenshotFormat.JPEG), 
+            Optional.of(Page.CaptureScreenshotFormat.JPEG),
             Optional.of(100),
-            Optional.empty(), 
-            Optional.of(true), 
+            Optional.empty(),
+            Optional.of(true),
             Optional.of(true)
         )
         // @formatter:off
@@ -387,7 +387,7 @@ driver.get("http://arngren.net");
 
 one can also log the `*.css`, `*.jpg` `*.png` and  `*.ico` blocking in action:
 ```java
-// verify that 
+// verify that
 chromeDevTools.addListener(Network.loadingFailed(),
 	(LoadingFailed event) -> {
 		ResourceType resourceType = event.getType();
@@ -522,7 +522,7 @@ and low level "commands":
 
 To test one can e.g. fire a tomcat server with request header logging and
 send the `GET` request
-```java    
+```java
 driver.get("http://127.0.0.1:8080/demo/Demo");
 ```
 The actual validation will be done through console logs inspection of the server
@@ -680,11 +680,11 @@ This will log:
 Command DOM.querySelector returned  nodeId: 162
 ```
 ```html
-Command DOM.getOuterHTML return outerHTML: 
+Command DOM.getOuterHTML return outerHTML:
 <img alt="Google" height="92" id="hplogo"  src="/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"  style="padding-top:109px" width="272" onload="typeof google==='object'&amp;&amp;google.aft&amp;&amp;google.aft(this)" data-iml="1576602836994" data-atf="1">
 ```
 
-collapsing multiple command calls together will lead to somewhat bloated test method 
+collapsing multiple command calls together will lead to somewhat bloated test method
 ```java
 	@Test
 	public void multiCommandTest() {
@@ -841,7 +841,7 @@ the usual classpath scan reveals the jar containing the class in question, to be
 ```sh
 find ~/.m2/repository/ -iname 'selenium*jar' |xargs -IX sh -c "echo X; jar tvf X" | tee a
 ```
-and method signature exception 
+and method signature exception
 ```sh
 java.lang.NoSuchMethodError: java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/charset/Charset;)V
   at org.openqa.selenium.net.LinuxEphemeralPortRangeDetector.getInstance(LinuxEphemeralPortRangeDetector.java:36)
@@ -858,7 +858,7 @@ the method the exception is complainign was [added](https://docs.oracle.com/en/j
 * When Chromium browser installed via snapd on Ubuntu __20.04__, all tests are failing with
 
 ```text
-org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. Message: unknown error: DevToolsActivePort file doesn't exist 
+org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. Message: unknown error: DevToolsActivePort file doesn't exist
 Host info: host: 'lenovoy40-1', ip: '127.0.1.1'
 Build info: version: '4.10.0', revision: 'c14d967899'
 System info: os.name: 'Linux', os.arch: 'amd64', os.version: '5.4.0-150-generic', java.version: '1.8.0_161'
@@ -880,7 +880,7 @@ Command: [null, newSession {capabilities=[Capabilities {browserName: chrome, goo
 	at com.github.sergueik.selenium.BaseCdpTest.beforeClass(BaseCdpTest.java:124)
 
 ```
-* when Chromium browser installed [via apt](https://askubuntu.com/questions/1204571/how-to-install-chromium-without-snap), from 
+* when Chromium browser installed [via apt](https://askubuntu.com/questions/1204571/how-to-install-chromium-without-snap), from
 ```sh
 sudo add-apt-repository ppa:system76/pop
 sudo apt update
@@ -899,9 +899,9 @@ NOTE: will have to download a few packages to be able to install `chromium-brows
 
 and install them in specific order:
 ```sh
-dpkg -i chromium-codecs-ffmpeg_112.0.5615.49-0ubuntu0.18.04.1_amd64.deb 
-dpkg -i chromium-codecs-ffmpeg-extra_112.0.5615.49-0ubuntu0.18.04.1_amd64.deb 
-dpkg -i chromium-browser_112.0.5615.49-0ubuntu0.18.04.1_amd64.deb 
+dpkg -i chromium-codecs-ffmpeg_112.0.5615.49-0ubuntu0.18.04.1_amd64.deb
+dpkg -i chromium-codecs-ffmpeg-extra_112.0.5615.49-0ubuntu0.18.04.1_amd64.deb
+dpkg -i chromium-browser_112.0.5615.49-0ubuntu0.18.04.1_amd64.deb
 ```
 
 Since the version mismatch the test log will contain plenty of
@@ -1005,9 +1005,9 @@ Verified downloaded file: f5a83cbd-97fb-451e-8651-618f63c1ec59 in /tmp
 ### Note
 
 Starting with version __115__ the Chrome browser and ChromeDriver
-information is located on 
+information is located on
 __Chrome for Testing availability__
-[dashboard page](https://googlechromelabs.github.io/chrome-for-testing/). 
+[dashboard page](https://googlechromelabs.github.io/chrome-for-testing/).
 A broader listing of Chrome versions can be found in `https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json`:
 ```sh
 
@@ -1027,7 +1027,7 @@ jq '.versions[] | select(.version | contains( "114.")) ' known-good-versions-wit
 
 The instructions of version lookup are provided on [version selection hint page](https://chromedriver.chromium.org/downloads/version-selection). Prior to that the `chromedriver` download links were posted on Chromedriver Downloads [page](https://chromedriver.chromium.org/downloads)
 
-* With Selenium version __4.14.0__ onwards one has to build it on JDK __11___ or later, even if targeting Java __1.8__ in `pom.xml`  - `* Require Java 11 (#12843)` is noted in the [Selenium Changelog](https://github.com/SeleniumHQ/selenium/commit/a0e04e15f17ed3f12373f61c363a296d4e06a976#diff-44f582ea3c01561650edeea2771d241bf19ceb93eb8f96bc3d199bcd7ca30d3e).  
+* With Selenium version __4.14.0__ onwards one has to build it on JDK __11___ or later, even if targeting Java __1.8__ in `pom.xml`  - `* Require Java 11 (#12843)` is noted in the [Selenium Changelog](https://github.com/SeleniumHQ/selenium/commit/a0e04e15f17ed3f12373f61c363a296d4e06a976#diff-44f582ea3c01561650edeea2771d241bf19ceb93eb8f96bc3d199bcd7ca30d3e).
 
 The attempt to build with JDK __1.8__ fails with
 
@@ -1044,7 +1044,7 @@ mvn test
 ```
 ```text
 org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. Message: session not created: This version of ChromeDriver only supports Chrome version 122
-Current browser version is 121.0.6167.85 with binary path /opt/google/chrome/chrome 
+Current browser version is 121.0.6167.85 with binary path /opt/google/chrome/chrome
 ```
 
 
@@ -1079,6 +1079,119 @@ apt-get install google-chrome-stable
 ```
 and confirm the test to pass
 
+### Debugging File Upload
+
+A textbook [File Upload Form](https://cgi-lib.berkeley.edu/ex/fup.html) looks like below
+
+![file upload page](https://github.com/sergueik/selenium_cdp/blob/master/screenshots/capture-file-upload-form.png)
+
+```html
+<html>
+<head>
+<title>File Upload Test</title>
+</head>
+
+<body>
+<h1>File Upload Test</h1>
+<form enctype = "multipart/form-data" action="upload endpoint url" method="POST">
+upload file path: <input name="upload file path" type="file">
+<input type="submit" value="send file">
+</form>
+</body>
+```
+
+The requirements for plain browser-driven file upload HTML page are:
+
+  * form must specify the `POST` method
+  * form must specify an enctype of `multipart/form-data`
+  * form must contain an `<input type="file">` element
+
+To examine the upload request genetated by the browser, subscribe to `` [event](https://chromedevtools.github.io/devtools-protocol/1-3/Network/#event-requestWillBeSent):
+```java
+Map<String, Map<String, Object>> requests = new HashMap<>();
+chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+chromeDevTools.addListener(Network.requestWillBeSent(),
+  (RequestWillBeSent event) ->
+    requests.put(event.getRequest().getUrl(), event.getRequest().getHeaders().toJson())
+);
+```
+and perform the upload:
+
+```java
+wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
+wait.pollingEvery(Duration.ofMillis(pollingInterval));
+actions = new Actions(driver);
+url = "https://ps.uci.edu/~franklin/doc/file_upload.html";
+driver.get(url);
+element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='userfile']")));
+
+assertThat(element.isDisplayed(), is(true));
+Utils.highlight(element);
+element.sendKeys(dummy.getAbsolutePath());
+
+element = driver.findElement(By.tagName("form"));
+assertThat(element, notNullValue());
+assertThat(element.getAttribute("action"), notNullValue());
+url2 = element.getAttribute("action");
+
+element = driver.findElement(By.cssSelector("input[type='submit']"));
+assertThat(element, notNullValue());
+Utils.highlight(element);
+requests.clear();
+element.submit();
+try {
+  Thread.sleep(1000);
+} catch (InterruptedException e) {
+  e.printStackTrace();
+}
+
+System.err.println("Captured: ");
+requests.keySet().stream().forEach(System.err::println);
+
+```
+
+this will print:
+```text
+data:image/png;base64,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
+data:image/png;base64,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
+data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABIAQMAAABvIyEEAAAABlBMVEUAAABTU1OoaSf/AAAAAXRSTlMAQObYZgAAAENJREFUeF7tzbEJACEQRNGBLeAasBCza2lLEGx0CxFGG9hBMDDxRy/72O9FMnIFapGylsu1fgoBdkXfUHLrQgdfrlJN1BdYBjQQm3UAAAAASUVORK5CYII=
+https://ps.uci.edu/favicon.ico
+https://www.oac.uci.edu/indiv/franklin/cgi-bin/values
+```
+the following confirms there is more than one data chunk:
+```java
+Pattern pattern = Pattern.compile("data:image/png;base64");
+System.err.println("Pattern:\n" + pattern.toString());
+cnt = 0;
+for (String x : requests.keySet()) {
+  Matcher matcher = pattern.matcher(x);
+  if (matcher.find()) {
+    cnt++;
+  }
+}
+assertThat(cnt, greaterThan(1));
+
+```
+the following prints the headers sent to file upload endpoint:
+```java
+System.err.println("Headers: " + requests.get(url2).toString());
+```
+```text
+Headers: {
+Content-Type=multipart/form-data;
+boundary=----WebKitFormBoundaryhsNWaugzUXymNUzV,
+Origin=https://ps.uci.edu,
+Referer=https://ps.uci.edu/,
+Upgrade-Insecure-Requests=1,
+User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20120101 Firefox/33.0,
+sec-ch-ua="Chromium";v="124",
+"Google Chrome";v="124",
+"Not-A.Brand";v="99",
+sec-ch-ua-mobile=?0,
+sec-ch-ua-platform="Linux"
+}
+
+```
 ### See Also
 
   * [chrome devtools](https://github.com/ChromeDevTools/awesome-chrome-devtools) project
@@ -1113,7 +1226,7 @@ and confirm the test to pass
   * [using Chrome DevTools Protocol](https://github.com/aslushnikov/getting-started-with-cdp)
   * overview of [DevTools access offered by Selenium 4](https://applitools.com/blog/selenium-4-chrome-devtools/)
   * [Libraries.io](https://libraries.io/maven/org.seleniumhq.selenium:selenium-devtools-v93) - monitors over 2 million open source libraries/packages from 36 package managers
- * [collection of Selenium 4 CDP-specific tests](https://github.com/rookieInTraining)
+  * [collection of Selenium 4 CDP-specific tests](https://github.com/rookieInTraining)
   * https://medium.com/codex/selenium4-a-peek-into-chrome-devtools-92bca6de55e0
   * BiDirectional WebDriver Protocol [w3c spec](https://w3c.github.io/webdriver-bidi/)
   * BiDi - The future of cross-browser automation [blog](https://developer.chrome.com/blog/webdriver-bidi/)
@@ -1132,10 +1245,10 @@ and confirm the test to pass
   * [getting connection information and cookies from chrome dev tools and use with curl](https://github.com/fipso/ccurl.sh)
   * [How to Install Google Chrome Web Browser on Ubuntu 18.04](https://linuxize.com/post/how-to-install-google-chrome-web-browser-on-ubuntu-18-04/)
   * [Content Security Policy (CSP) Evaluator](https://csp-evaluator.withgoogle.com/)
-   * [Testing for Content Security Policy](https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/12-Test_for_Content_Security_Policy)
-   * [Enable page Content Security Policy by-passing](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-setBypassCSP)
-   * [Content Security Policy Examples](https://content-security-policy.com/examples/)
- 
+  * [Testing for Content Security Policy](https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/12-Test_for_Content_Security_Policy)
+  * [Enable page Content Security Policy by-passing](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-setBypassCSP)
+  * [Content Security Policy Examples](https://content-security-policy.com/examples/)
+
 
 
 ### License

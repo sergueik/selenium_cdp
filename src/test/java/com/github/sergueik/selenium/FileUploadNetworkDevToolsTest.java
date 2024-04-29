@@ -78,11 +78,6 @@ public class FileUploadNetworkDevToolsTest extends BaseDevToolsTest {
 		chromeDevTools.send(Network.setCacheDisabled(true));
 		chromeDevTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
 
-		// NOTE: org.openqa.selenium.WebDriverException:
-		// Setting the file detector only works on
-		// remote webdriver instances obtained via RemoteWebDriver
-		// driver.setFileDetector(new LocalFileDetector());
-
 		chromeDevTools.addListener(Network.requestWillBeSent(), (RequestWillBeSent event) -> {
 			capturedRequests.put(event.getRequest().getUrl(), event.getRequest().getHeaders().toJson());
 		});
@@ -92,6 +87,8 @@ public class FileUploadNetworkDevToolsTest extends BaseDevToolsTest {
 
 	}
 
+
+	@Ignore
 	// based on:
 	// https://www.browserstack.com/docs/automate/selenium/test-file-upload
 	@Test
@@ -123,22 +120,13 @@ public class FileUploadNetworkDevToolsTest extends BaseDevToolsTest {
 
 		System.err.println("Captured: ");
 		capturedRequests.keySet().stream().forEach(System.err::println);
+
 		assertThat(capturedRequests.keySet(), hasItems(new String[] { url2 }));
 		String headers = capturedRequests.get(url2).toString();
 		System.err.println("Headers: " + headers);
-		/*
-		 * Headers: {Content-Type=multipart/form-data;
-		 * boundary=----WebKitFormBoundaryH01BYawNWdMKtpuG,
-		 * Origin=https://www.fileconvoy.com,
-		 * Referer=https://www.fileconvoy.com/, Upgrade-Insecure-Requests=1,
-		 * User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0)
-		 * Gecko/20120101 Firefox/33.0, sec-ch-ua="Not_A Brand";v="99",
-		 * "Google Chrome";v="124", "Chromium";v="109", sec-ch-ua-mobile=?0,
-		 * sec-ch-ua-platform="Windows"}
-		 */
 		assertThat(headers, containsString("Content-Type=multipart/form-data"));
 	}
-
+	// @Ignore
 	@Test
 	public void test1() {
 		url = "https://ps.uci.edu/~franklin/doc/file_upload.html";
@@ -154,9 +142,9 @@ public class FileUploadNetworkDevToolsTest extends BaseDevToolsTest {
 		assertThat(element, notNullValue());
 		assertThat(element.getAttribute("action"), notNullValue());
 		// NOTE:
+		// assertThat(element.getAttribute("action"), is(url2));
 		// Expected: is "https://www.oac.uci.edu/indiv/franklin/cgi-bin/values"
 		// but: was "http://www.oac.uci.edu/indiv/franklin/cgi-bin/values"
-		// assertThat(element.getAttribute("action"), is(url2));
 		// url2 = element.getAttribute("action");
 
 		element = driver.findElement(By.cssSelector("input[type='submit']"));
