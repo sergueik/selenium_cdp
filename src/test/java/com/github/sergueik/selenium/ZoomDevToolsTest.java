@@ -7,7 +7,9 @@ package com.github.sergueik.selenium;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 // import org.junit.Ignore;
 import org.junit.Test;
@@ -28,74 +30,31 @@ import org.openqa.selenium.devtools.v124.input.Input.DispatchKeyEventType;
  * https://github.com/puppeteer/puppeteer/blob/main/src/common/Input.ts#L118
  */
 
-public class ZoomDevToolsTest {
+public class ZoomDevToolsTest extends BaseDevToolsTest {
 
 	private final static int delay = 1000;
-	private static boolean runHeadless = false;
-	private static String osName = Utils.getOSName();
-	private static ChromeDriver driver;
-	private static DevTools chromeDevTools;
 	private static final int modifiers = 2;
 	// Bit field representing pressed modifier keys. Alt=1, Ctrl=2,
 	// Meta/Command=4, Shift=8 (default: 0)
 	// NOTE: 2 has no effect
 	private static String baseURL = "https://www.wikipedia.org";
 
-	@BeforeClass
-	public static void setUp() throws Exception {
-
-		if (System.getenv().containsKey("HEADLESS")
-				&& System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
-			runHeadless = true;
-		}
-		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOSName().equals("windows"))
-				&& !(System.getenv().containsKey("DISPLAY"))) {
-			runHeadless = true;
-		}
-		System
-				.setProperty("webdriver.chrome.driver",
-						Paths.get(System.getProperty("user.home"))
-								.resolve("Downloads").resolve(osName.equals("windows")
-										? "chromedriver.exe" : "chromedriver")
-								.toAbsolutePath().toString());
-
-		if (runHeadless) {
-			ChromeOptions options = new ChromeOptions();
-			options.addArguments("--headless", "--disable-gpu");
-			driver = new ChromeDriver(options);
-		} else {
-			driver = new ChromeDriver();
-		}
-		Utils.setDriver(driver);
-		chromeDevTools = ((HasDevTools) driver).getDevTools();
-		// https://www.baeldung.com/java-static-default-methods#:~:text=Why%20Default%20Methods%20in%20Interfaces,and%20they%20provide%20an%20implementation
-		chromeDevTools.createSession();
-	}
-
-	@BeforeClass
+	@Before
 	// https://chromedevtools.github.io/devtools-protocol/tot/Console#method-enable
 	// https://chromedevtools.github.io/devtools-protocol/tot/Log#method-enable
-	public static void beforeClass() throws Exception {
-		// NOTE:
-		// the github location of package org.openqa.selenium.devtools.console
-		// is uncertain
-		// enable Console
-		// chromeDevTools.send(Log.enable());
-		// add event listener to show in host console the browser console message
-		// chromeDevTools.addListener(Log.entryAdded(), System.err::println);
+	public void before() throws Exception {
 		driver.get(baseURL);
 	}
 
-	@AfterClass
-	public static void tearDown() {
+	@After
+	public void after() {
 		if (driver != null) {
 			driver.quit();
 		}
 	}
 
 	@Test
-	public void zoomTest() {
+	public void test() {
 		// Act
 		for (int cnt = 0; cnt != 5; cnt++) {
 
@@ -108,7 +67,7 @@ public class ZoomDevToolsTest {
 
 			chromeDevTools.send(Input.dispatchKeyEvent(DispatchKeyEventType.KEYUP,
 					Optional.of(modifiers), Optional.empty(), Optional.empty(),
-					Optional.empty(), Optional.empty(), Optional.empty(),
+					Optional.	empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(), Optional.empty()));
@@ -117,3 +76,4 @@ public class ZoomDevToolsTest {
 		}
 	}
 }
+
