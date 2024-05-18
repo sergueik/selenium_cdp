@@ -15,9 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v124.dom.model.Rect;
-import org.openqa.selenium.devtools.v124.emulation.Emulation;
-import org.openqa.selenium.devtools.v124.page.Page;
+import org.openqa.selenium.devtools.v125.dom.model.Rect;
+import org.openqa.selenium.devtools.v125.emulation.Emulation;
+import org.openqa.selenium.devtools.v125.page.Page;
 import org.openqa.selenium.interactions.Actions;
 
 /**

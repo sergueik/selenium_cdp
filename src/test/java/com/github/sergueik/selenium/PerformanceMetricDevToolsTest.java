@@ -21,8 +21,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v124.performance.Performance;
-import org.openqa.selenium.devtools.v124.performance.model.Metric;
+import org.openqa.selenium.devtools.v125.performance.Performance;
+import org.openqa.selenium.devtools.v125.performance.model.Metric;
 
 
 /**

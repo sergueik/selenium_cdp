@@ -13,13 +13,13 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v124.dom.DOM;
-import org.openqa.selenium.devtools.v124.input.Input;
-import org.openqa.selenium.devtools.v124.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v124.dom.DOM.PerformSearchResponse;
-import org.openqa.selenium.devtools.v124.dom.model.Node;
-import org.openqa.selenium.devtools.v124.dom.model.NodeId;
-import org.openqa.selenium.devtools.v124.dom.model.Quad;
+import org.openqa.selenium.devtools.v125.dom.DOM;
+import org.openqa.selenium.devtools.v125.input.Input;
+import org.openqa.selenium.devtools.v125.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v125.dom.DOM.PerformSearchResponse;
+import org.openqa.selenium.devtools.v125.dom.model.Node;
+import org.openqa.selenium.devtools.v125.dom.model.NodeId;
+import org.openqa.selenium.devtools.v125.dom.model.Quad;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -80,7 +80,7 @@ public class DOMElementClickDevToolsTest extends BaseDevToolsTest {
 				// NOTE: WARNING: Unable to map result for DOM.getContentQuads
 				// org.openqa.selenium.json.JsonException:
 				// Unable to create instance of class
-				// org.openqa.selenium.devtools.v124.dom.model.Quad
+				// org.openqa.selenium.devtools.v125.dom.model.Quad
 				// WARNING: Unable to process:
 				// {"id":9,"result":{"quads":[[360.5500183105469,661.1500244140625,578.3624877929688,661.1500244140625,578.3624877929688,747.1500244140625,360.5500183105469,747.1500244140625]]},"sessionId":"B816DDEDA9AEA89C97AF770D6885CD7E"}
 				// org.openqa.selenium.json.JsonException: Expected to read a END_MAP
@@ -88,9 +88,9 @@ public class DOMElementClickDevToolsTest extends BaseDevToolsTest {
 				// 9,661.1500244140625,578.3624877929688,661.1500244140625,578.3624877929688,747.1500244140625,360.5500183105469,747.1500244140625]
 				// NOTE: typing he result2 to Object does not resolve
 				// java.lang.ClassCastException: java.util.ArrayList cannot be cast to
-				// org.openqa.selenium.devtools.v124.dom.model.Quad
+				// org.openqa.selenium.devtools.v125.dom.model.Quad
 				// at
-				// org.openqa.selenium.devtools.v124.dom.model.Quad.fromJson(Quad.java:18)
+				// org.openqa.selenium.devtools.v125.dom.model.Quad.fromJson(Quad.java:18)
 				List<Quad> result2 = chromeDevTools.send(DOM.getContentQuads(
 						Optional.of(nodeId), Optional.empty(), Optional.empty()));
 				System.err.println(String.format("result: " + result2));

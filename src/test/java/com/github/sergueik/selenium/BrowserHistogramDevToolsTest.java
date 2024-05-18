@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
-import org.openqa.selenium.devtools.v124.browser.Browser;
-import org.openqa.selenium.devtools.v124.browser.model.Histogram;
+import org.openqa.selenium.devtools.v125.browser.Browser;
+import org.openqa.selenium.devtools.v125.browser.model.Histogram;
 
 /**
  * 
