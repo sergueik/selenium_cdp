@@ -10,14 +10,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v125.page.Page;
-import org.openqa.selenium.devtools.v125.page.model.FrameAttached;
-import org.openqa.selenium.devtools.v125.page.model.FrameNavigated;
+import org.openqa.selenium.devtools.v126.page.Page;
+import org.openqa.selenium.devtools.v126.page.model.FrameAttached;
+import org.openqa.selenium.devtools.v126.page.model.FrameNavigated;
+import org.openqa.selenium.devtools.v126.network.model.LoaderId;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * https://chromedevtools.github.io/devtools-protocol/1-2/Page/#event-frameAttached
  * https://chromedevtools.github.io/devtools-protocol/1-2/Page/#event-frameNavigated
+ * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-*reload
  * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
@@ -59,7 +61,7 @@ public class FrameDevToolsTest extends BaseDevToolsTest {
 		element = driver.findElement(By.tagName("iframe"));
 		driver.switchTo().frame(element);
 		driver.switchTo().defaultContent();
-		chromeDevTools.send(Page.reload(Optional.of(true), Optional.empty()));
+		chromeDevTools.send(Page.reload(Optional.of(true), Optional.empty(), Optional.empty()));
 	}
 
 }

@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
-import org.openqa.selenium.devtools.v125.browser.Browser;
-import org.openqa.selenium.devtools.v125.browser.Browser.GetVersionResponse;
+import org.openqa.selenium.devtools.v126.browser.Browser;
+import org.openqa.selenium.devtools.v126.browser.Browser.GetVersionResponse;
 import org.openqa.selenium.json.Json;
 import org.openqa.selenium.json.JsonInput;
 

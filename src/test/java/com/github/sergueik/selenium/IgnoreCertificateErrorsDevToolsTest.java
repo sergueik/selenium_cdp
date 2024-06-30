@@ -17,11 +17,11 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v125.dom.DOM;
-import org.openqa.selenium.devtools.v125.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v125.dom.model.Node;
-import org.openqa.selenium.devtools.v125.dom.model.NodeId;
-import org.openqa.selenium.devtools.v125.security.Security;
+import org.openqa.selenium.devtools.v126.dom.DOM;
+import org.openqa.selenium.devtools.v126.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v126.dom.model.Node;
+import org.openqa.selenium.devtools.v126.dom.model.NodeId;
+import org.openqa.selenium.devtools.v126.security.Security;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 

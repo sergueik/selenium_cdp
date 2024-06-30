@@ -17,8 +17,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chromium.ChromiumNetworkConditions;
 import org.openqa.selenium.chromium.HasNetworkConditions;
-import org.openqa.selenium.devtools.v125.network.Network;
-import org.openqa.selenium.devtools.v125.network.model.ConnectionType;
+import org.openqa.selenium.devtools.v126.network.Network;
+import org.openqa.selenium.devtools.v126.network.model.ConnectionType;
 import org.openqa.selenium.remote.Augmenter;
 
 /**
