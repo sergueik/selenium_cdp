@@ -5,6 +5,8 @@
 **/.gitignore
 **/work/**
 **/target/**
+**/.*.sw?
+**/*.jpg
 **/*.log
 **/*.png
 **/src/**/*.jar
@@ -15,5 +17,4 @@
 /settings.xml
 *.unc-backup~
 *.uncrustify
-**/.*.sw?
 /target/

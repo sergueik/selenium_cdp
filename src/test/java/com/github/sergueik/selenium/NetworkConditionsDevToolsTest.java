@@ -6,7 +6,7 @@ package com.github.sergueik.selenium;
 
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -17,8 +17,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chromium.ChromiumNetworkConditions;
 import org.openqa.selenium.chromium.HasNetworkConditions;
-import org.openqa.selenium.devtools.v126.network.Network;
-import org.openqa.selenium.devtools.v126.network.model.ConnectionType;
+import org.openqa.selenium.devtools.v127.network.Network;
+import org.openqa.selenium.devtools.v127.network.model.ConnectionType;
 import org.openqa.selenium.remote.Augmenter;
 
 /**

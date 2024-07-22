@@ -4,7 +4,6 @@ package com.github.sergueik.selenium;
  * Copyright 2023,2024 Serguei Kouzmine
  */
 
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,8 +28,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
- * https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#method-evaluate
- * https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#method-disable
+ * https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#method-
+ * evaluate
+ * https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#method-
+ * disable
  * https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#method-enable
  * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
@@ -84,7 +85,8 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 			// Act
 			params = new HashMap<>();
 			returnByValue = false;
-			// Whether the result is expected to be a JSON object that should be sent
+			// Whether the result is expected to be a JSON object that should be
+			// sent
 			// by value
 			// argument appears to be ignored
 			command = "Runtime.evaluate";
@@ -95,8 +97,7 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 			params.put("returnByValue", returnByValue);
 			params.put("timout", new Double(100));
 			result = driver.executeCdpCommand(command, params);
-			System.err.println(String.format("Command \"%s\" raw response: %s",
-					command, result.toString()));
+			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("result"));
 			data = (Map<String, Object>) result.get("result");
@@ -123,15 +124,15 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 		baseURL = "http://watir.com/examples/shadow_dom.html";
 		driver.get(baseURL);
 
-		element = wait.until(ExpectedConditions
-				.visibilityOfElementLocated(By.cssSelector("#shadow_host")));
+		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#shadow_host")));
 		assertThat(element, notNullValue());
 		// Act
 		try {
 			command = "Runtime.evaluate";
 			params = new HashMap<>();
 			returnByValue = false;
-			// Whether the result is expected to be a JSON object that should be sent
+			// Whether the result is expected to be a JSON object that should be
+			// sent
 			// by value
 			// argument appears to be ignored
 			expression = "document.querySelector('#shadow_host').shadowRoot.children";
@@ -139,8 +140,7 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 			params.put("returnByValue", returnByValue);
 			params.put("timout", new Double(100));
 			result = driver.executeCdpCommand(command, params);
-			System.err.println(String.format("Command \"%s\" raw response: %s",
-					command, result.toString()));
+			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("result"));
 			data = (Map<String, Object>) result.get("result");
@@ -153,8 +153,7 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 			params.put("returnByValue", returnByValue);
 			params.put("timout", new Double(100));
 			result = driver.executeCdpCommand(command, params);
-			System.err.println(String.format("Command \"%s\" raw response: %s",
-					command, result.toString()));
+			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("result"));
 			data = (Map<String, Object>) result.get("result");
@@ -165,8 +164,7 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 			params.put("returnByValue", returnByValue);
 			params.put("timout", new Double(100));
 			result = driver.executeCdpCommand(command, params);
-			System.err.println(String.format("Command \"%s\" raw response: %s",
-					command, result.toString()));
+			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
 			assertThat(result, notNullValue());
 			assertThat(result, hasKey("result"));
 			data = (Map<String, Object>) result.get("result");
@@ -196,8 +194,8 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 		// Arrange
 		baseURL = "https://podoq.ru";
 		driver.get(baseURL);
-		element = wait.until(ExpectedConditions.visibilityOfElementLocated(
-				By.cssSelector("#header > a > div.logo__title")));
+		element = wait
+				.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#header > a > div.logo__title")));
 		assertThat(element, notNullValue());
 
 		// System.err.println(driver.getPageSource());
@@ -207,11 +205,9 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 		}
 
 		elements = driver.findElements(By.xpath("//div[contains(@id, 'yandex')]"));
-		elements.stream().forEach(o -> System.err
-				.println(String.format("id:" + "\"%s\"", o.getAttribute("id"))));
+		elements.stream().forEach(o -> System.err.println(String.format("id:" + "\"%s\"", o.getAttribute("id"))));
 
-		element = driver
-				.findElement(By.xpath("//div[@id='yandex_rtb_R-A-2602770-3']"));
+		element = driver.findElement(By.xpath("//div[@id='yandex_rtb_R-A-2602770-3']"));
 		assertThat(element, notNullValue());
 		System.err.println("test3 (1): " + element.getAttribute("outerHTML"));
 
@@ -222,15 +218,17 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 		System.err.println("test3 (2): " + element.getAttribute("outerHTML"));
 
 		elements = driver.findElements(By.xpath("//div[contains(@id, 'yandex')]"));
-		elements.stream()
-				.forEach(o -> System.err.println(o.getAttribute("outerHTML")));
+		elements.stream().forEach(o -> System.err.println(o.getAttribute("outerHTML")));
 
-		// This is occasionally failing with org.openqa.selenium.TimeoutException:
-		// Expected condition failed: waiting for visibility of element located by
-		// By.cssSelector: #yandex_rtb_R-A-2602770-3 (tried for 60 second(s) with
+		// This is occasionally failing with
+		// org.openqa.selenium.TimeoutException:
+		// Expected condition failed: waiting for visibility of element located
+		// by
+		// By.cssSelector: #yandex_rtb_R-A-2602770-3 (tried for 60 second(s)
+		// with
 		// 500 milliseconds interval)
-		element = wait.until(ExpectedConditions.visibilityOfElementLocated(
-				By.cssSelector("#yandex_rtb_R-A-2602770-3")));
+		element = wait
+				.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#yandex_rtb_R-A-2602770-3")));
 		assertThat(element, notNullValue());
 
 		// Act
@@ -241,10 +239,13 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 			expression = "document.querySelector('#yandex_rtb_R-A-2602770-3').shadowRoot";
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
+			// NOTE:
+			// Double(double) in java.lang.Double has been deprecated
+			// see also:
+			// https://stackoverflow.com/questions/41289696/floating-point-literal-floating-literal-double-literal
 			params.put("timout", new Double(100));
 			result = driver.executeCdpCommand(command, params);
-			System.err.println(String.format("Command \"%s\" raw response: %s",
-					command, result.toString()));
+			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
 			// expression =
 			// "document.querySelector('#yandex_rtb_R-A-2602770-3').shadowRoot.querySelector('div[data-container=\"outer\"]').textContent"
 
@@ -258,4 +259,3 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 	}
 
 }
-

@@ -9,12 +9,12 @@ import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v126.dom.DOM;
-import org.openqa.selenium.devtools.v126.dom.model.Node;
-import org.openqa.selenium.devtools.v126.dom.model.NodeId;
-import org.openqa.selenium.devtools.v126.dom.model.RGBA;
-import org.openqa.selenium.devtools.v126.overlay.Overlay;
-import org.openqa.selenium.devtools.v126.overlay.model.HighlightConfig;
+import org.openqa.selenium.devtools.v127.dom.DOM;
+import org.openqa.selenium.devtools.v127.dom.model.Node;
+import org.openqa.selenium.devtools.v127.dom.model.NodeId;
+import org.openqa.selenium.devtools.v127.dom.model.RGBA;
+import org.openqa.selenium.devtools.v127.overlay.Overlay;
+import org.openqa.selenium.devtools.v127.overlay.model.HighlightConfig;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

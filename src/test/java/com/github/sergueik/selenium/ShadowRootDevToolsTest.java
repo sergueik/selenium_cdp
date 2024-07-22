@@ -24,11 +24,11 @@ import org.openqa.selenium.json.JsonException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import org.openqa.selenium.devtools.v126.runtime.Runtime;
-import org.openqa.selenium.devtools.v126.runtime.Runtime.EvaluateResponse;
-import org.openqa.selenium.devtools.v126.runtime.model.ExecutionContextId;
-import org.openqa.selenium.devtools.v126.runtime.model.RemoteObject;
-import org.openqa.selenium.devtools.v126.runtime.model.TimeDelta;
+import org.openqa.selenium.devtools.v127.runtime.Runtime;
+import org.openqa.selenium.devtools.v127.runtime.Runtime.EvaluateResponse;
+import org.openqa.selenium.devtools.v127.runtime.model.ExecutionContextId;
+import org.openqa.selenium.devtools.v127.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.v127.runtime.model.TimeDelta;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
