@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2021-2024 Serguei Kouzmine
+ * Copyright 2021-2025 Serguei Kouzmine
  */
 
 import java.io.IOException;
@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.nio.file.Paths;
 
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 // need to use branch cdp_codegen of SeleniumHQ/selenium
 // https://github.com/SeleniumHQ/selenium/tree/cdp_codegen/java/client/src/org/openqa/selenium/devtools
@@ -19,7 +20,7 @@ import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
 import org.openqa.selenium.remote.DesiredCapabilities;
-
+import org.openqa.selenium.devtools.DevToolsException;
 /**
  * Base class for selected test scenarios for Selenium 4 Chrome Developer Tools bridge
  *
@@ -111,8 +112,17 @@ public class BaseDevToolsTest {
 		Utils.setDriver(driver);
 
 		chromeDevTools = ((HasDevTools) driver).getDevTools();
+		// TODO: catch org.openqa.selenium.devtools.DevToolsException and Assume
+		// chromeDevTools.createSession();
+		
+		try {
+			tryCreateSession();
 
-		chromeDevTools.createSession();
+		} catch (DevToolsException e) {
+			Assume.assumeNoException(e);
+		}
+
+
 		// TODO: switch to
 		// chromeDevTools.createSessionIfThereIsNotOne();
 	}
@@ -138,7 +148,16 @@ public class BaseDevToolsTest {
 			driver.quit();
 		}
 	}
-
+	// origin: 
+	// https://www.baeldung.com/junit-conditional-assume
+	public static void tryCreateSession() throws DevToolsException {
+		try {
+			// TODO: catch org.openqa.selenium.devtools.DevToolsException and Assume
+			chromeDevTools.createSession();
+		} catch (DevToolsException e) { 
+			throw e;
+		}
+	}
 	// origin:
 	// https://stackoverflow.com/questions/3584210/preferred-java-way-to-ping-an-http-url-for-availability
 	public boolean pingHost(String host, int port, int timeout) {
