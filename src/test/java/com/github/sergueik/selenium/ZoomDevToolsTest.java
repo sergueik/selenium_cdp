@@ -9,9 +9,18 @@ import java.util.Optional;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 // import org.junit.Ignore;
+
+// import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang.SystemUtils;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.CoreMatchers.startsWith;
+
+
 import org.junit.Test;
 // https://github.com/SeleniumHQ/selenium/tree/cdp_codegen/java/client/src/org/openqa/selenium/devtools
 
@@ -43,6 +52,10 @@ public class ZoomDevToolsTest extends BaseDevToolsTest {
 	// https://chromedevtools.github.io/devtools-protocol/tot/Console#method-enable
 	// https://chromedevtools.github.io/devtools-protocol/tot/Log#method-enable
 	public void before() throws Exception {
+		// https://www.baeldung.com/junit-conditional-assume
+		Assume.assumeThat(System.getProperty("os.name"), startsWith("Windows"));
+		Assume.assumeThat(Integer.parseInt(System.getProperty("os.version").split("\\.")[0]), greaterThan(9));
+		getWindowsVersion();
 		driver.get(baseURL);
 	}
 
@@ -75,5 +88,14 @@ public class ZoomDevToolsTest extends BaseDevToolsTest {
 			Utils.sleep(delay);
 		}
 	}
+	public static void getWindowsVersion() {
+		String osName = System.getProperty("os.name");
+		String osVersion = System.getProperty("os.version");
+		System.out.println("Operating System Name: " + osName);
+		System.out.println("Operating System Version: " + osVersion);
+		String os = SystemUtils.OS_NAME;
+		System.out.println("Using SystemUtils: " + os);
+	}
+
 }
 
