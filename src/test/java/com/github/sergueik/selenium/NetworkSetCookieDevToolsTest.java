@@ -35,8 +35,8 @@ import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
 import org.openqa.selenium.devtools.v109.network.Network;
-// the import org.openqa.selenium.devtools.v127.network.model.Cookie collides with another import statement
-// import org.openqa.selenium.devtools.v127.network.model.Cookie;
+// the import org.openqa.selenium.devtools.v109.network.model.Cookie collides with another import statement
+// import org.openqa.selenium.devtools.v109.network.model.Cookie;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -49,9 +49,10 @@ public class NetworkSetCookieDevToolsTest extends BaseDevToolsTest {
 
 	private static String baseURL = "https://www.selenium.dev";
 
+	private static final String domain = baseURL.replaceFirst("https://", "");
+
 	private static final String name = "cheese"; // Cookie name
 	private static final String value = "cheese"; // Cookie value
-	private static final String domain = baseURL.replaceFirst("https://", "");
 
 	@After
 	public void after() {
@@ -71,11 +72,6 @@ public class NetworkSetCookieDevToolsTest extends BaseDevToolsTest {
 	public void before() throws Exception {
 		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(), Optional.empty()));
 		driver.get(baseURL);
-	}
-
-	@Test
-	public void test1() {
-
 		chromeDevTools.send(Network.setCookie(name, // Cookie name
 				value, // Cookie value
 				Optional.empty(), // Optional: Path
@@ -91,26 +87,36 @@ public class NetworkSetCookieDevToolsTest extends BaseDevToolsTest {
 				Optional.empty(), // Optional: URL
 				Optional.empty() // Optional: Expires time
 		));
+		driver.get("about:blank");
 
-		// Verify the cookie is set
-		driver.get(baseURL);
+	}
+
+
+	@Test
+	public void test1() {
 		// Navigate to the page again to see the cookie applied
+		driver.get(baseURL);
+
 		Cookie cookie = driver.manage().getCookieNamed(name);
 		assertThat(cookie.getValue(), is(value));
-		
-				List<org.openqa.selenium.devtools.v109.network.model.Cookie>cookies = 
-				chromeDevTools.send(Network.getCookies(Optional.empty()));
+		assertThat(cookie.getDomain(), is(domain));
+	}
+
+	@Test
+	public void test2() {
+
 		// Navigate to the page again to see the cookie applied
-		
+		driver.get(baseURL);
+		// Verify the cookie is set
+		List<org.openqa.selenium.devtools.v109.network.model.Cookie> cookies = chromeDevTools
+				.send(Network.getCookies(Optional.empty()));
 		assertThat(cookies.size(), greaterThan(0));
-		// System.err.println(cookies);
-		System.err.println(cookies.size());
+		//System.err.println(cookies.size());
 
-		org.openqa.selenium.devtools.v109.network.model.Cookie cookie2 = cookies.stream()
+		org.openqa.selenium.devtools.v109.network.model.Cookie cookie = cookies.stream()
 				.filter((o) -> o.getDomain().equals(domain)).collect(Collectors.toList()).get(0);
-		assertThat(cookie2.getValue(), is(value));
-		assertThat(cookie2.getDomain(), is(domain));
-
+		assertThat(cookie.getValue(), is(value));
+		assertThat(cookie.getDomain(), is(domain));
 	}
 
 }
