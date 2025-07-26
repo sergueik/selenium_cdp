@@ -10,8 +10,8 @@ import java.util.List;
 
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.devtools.v134.systeminfo.SystemInfo;
-import org.openqa.selenium.devtools.v134.systeminfo.model.ProcessInfo;
+import org.openqa.selenium.devtools.v138.systeminfo.SystemInfo;
+import org.openqa.selenium.devtools.v138.systeminfo.model.ProcessInfo;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

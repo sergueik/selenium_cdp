@@ -19,10 +19,10 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.openqa.selenium.devtools.v134.fetch.Fetch;
-import org.openqa.selenium.devtools.v134.fetch.model.HeaderEntry;
-import org.openqa.selenium.devtools.v134.fetch.model.AuthChallengeResponse;
-import org.openqa.selenium.devtools.v134.fetch.model.AuthChallengeResponse.Response;
+import org.openqa.selenium.devtools.v138.fetch.Fetch;
+import org.openqa.selenium.devtools.v138.fetch.model.HeaderEntry;
+import org.openqa.selenium.devtools.v138.fetch.model.AuthChallengeResponse;
+import org.openqa.selenium.devtools.v138.fetch.model.AuthChallengeResponse.Response;
 
 import org.openqa.selenium.WebDriverException;
 

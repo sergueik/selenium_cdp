@@ -19,8 +19,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v134.network.Network;
-import org.openqa.selenium.devtools.v134.network.model.Headers;
+import org.openqa.selenium.devtools.v138.network.Network;
+import org.openqa.selenium.devtools.v138.network.model.Headers;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

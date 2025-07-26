@@ -38,14 +38,14 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v134.network.Network;
-import org.openqa.selenium.devtools.v134.network.model.DataReceived;
-import org.openqa.selenium.devtools.v134.network.model.Headers;
-import org.openqa.selenium.devtools.v134.network.model.RequestId;
-import org.openqa.selenium.devtools.v134.network.model.RequestWillBeSent;
-import org.openqa.selenium.devtools.v134.network.model.ResourceTiming;
-import org.openqa.selenium.devtools.v134.network.model.Response;
-import org.openqa.selenium.devtools.v134.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v138.network.Network;
+import org.openqa.selenium.devtools.v138.network.model.DataReceived;
+import org.openqa.selenium.devtools.v138.network.model.Headers;
+import org.openqa.selenium.devtools.v138.network.model.RequestId;
+import org.openqa.selenium.devtools.v138.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v138.network.model.ResourceTiming;
+import org.openqa.selenium.devtools.v138.network.model.Response;
+import org.openqa.selenium.devtools.v138.network.model.ResponseReceived;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
