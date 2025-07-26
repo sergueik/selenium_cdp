@@ -77,7 +77,7 @@ public class AuthHeadersDevToolsTest extends BaseDevToolsTest {
 	public void before() throws UnsupportedEncodingException {
 		input = String.format("%s:%s", username, password).getBytes("UTF-8");
 		authString = new String(Base64.encodeBase64(input));
-		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
+		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(), Optional.empty(),
 				Optional.empty()));
 
 		// add event listener to log custom headers requests are sending with

@@ -14,12 +14,14 @@ import java.time.Duration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.devtools.v138.page.Page;
 
+import org.openqa.selenium.devtools.v138.page.Page;
+import java.util.Optional;
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * see:
@@ -38,7 +40,9 @@ public class BypassCSPDevToolsTest extends BaseDevToolsTest {
 
 	@Before
 	public void before() throws Exception {
-		chromeDevTools.send(Page.enable());
+		chromeDevTools.send(Page.enable(
+				Optional.of(false) // enableFileChooserOpenedEvent
+				));
 		wait = new WebDriverWait(driver, duration);
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 

@@ -54,8 +54,8 @@ public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 
 		// Act
 		targetId = chromeDevTools.send(Target.createTarget(baseURL, Optional.of(0),
-				Optional.of(0), Optional.empty(), Optional.of(false), Optional.of(true),
-				Optional.of(false), Optional.of(false)));
+				Optional.of(0), Optional.empty(), null, null, null, Optional.of(false), Optional.of(true),
+				Optional.of(false), Optional.of(false), null));
 		Utils.sleep(1000);
 		System.err.println("TargetID: " + targetId);
 		sessionId = chromeDevTools
@@ -117,8 +117,8 @@ public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 
 		// Act
 		targetId = chromeDevTools.send(Target.createTarget(baseURL, Optional.of(0),
-				Optional.of(0), Optional.empty(), Optional.of(false), Optional.of(true),
-				Optional.of(false), Optional.of(false)));
+				Optional.of(0), Optional.empty(), null, null, null, Optional.of(false), Optional.of(true),
+				Optional.of(false), Optional.of(false), null));
 		Utils.sleep(1000);
 	}
 

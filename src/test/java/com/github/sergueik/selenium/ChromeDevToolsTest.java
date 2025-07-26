@@ -169,7 +169,7 @@ public class ChromeDevToolsTest {
 		}
 		// https://github.com/SeleniumHQ/selenium/issues/7369
 		chromeDevTools.send(
-				Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+				Network.enable(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
 		// https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/devtools/DevTools.java
 		// https://github.com/SeleniumHQ/selenium/blob/master/java/client/test/org/openqa/selenium/devtools/ChromeDevToolsNetworkTest.java
 		// but Browser has no events, Network has
@@ -232,7 +232,7 @@ public class ChromeDevToolsTest {
 	public void addCustomHeadersTest() {
 		// enable Network
 		chromeDevTools.send(
-				Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+				Network.enable(Optional.empty(), Optional.empty(), Optional.empty(),Optional.empty()));
 		headers = new HashMap<>();
 		headers.put("customHeaderName", "customHeaderValue");
 		headers.put("customHeaderName",

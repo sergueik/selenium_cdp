@@ -119,8 +119,18 @@ public class IndirectGeolocationOverrideDevToolsTest extends BaseDevToolsTest {
 	}
 
 	private void setLocation(Double latitude, Double longitude, long accuracy) {
-		chromeDevTools.send(Emulation.setGeolocationOverride(Optional.of(latitude),
-				Optional.of(longitude), Optional.of(accuracy)));
+		long altitudeAccuracy =  0L;
+		long altitude = 0;
+		long heading = 0L;
+		long speed = 0L;
+		chromeDevTools.send(Emulation.setGeolocationOverride(
+				Optional.of(latitude),
+				Optional.of(longitude), 
+				Optional.of(accuracy),
+				Optional.of(altitude),
+				Optional.of(altitudeAccuracy),
+				Optional.of(heading),
+				Optional.of(speed) ));
 	}
 
 	private void setLocation() {

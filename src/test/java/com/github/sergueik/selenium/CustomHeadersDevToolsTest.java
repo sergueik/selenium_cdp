@@ -54,7 +54,7 @@ public class CustomHeadersDevToolsTest extends BaseDevToolsTest {
 		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
-				Optional.empty()));
+				Optional.empty(),Optional.empty()));
 
 		// add event listener to log custom headers requests are sending with
 		chromeDevTools.addListener(Network.requestWillBeSent(), o -> {

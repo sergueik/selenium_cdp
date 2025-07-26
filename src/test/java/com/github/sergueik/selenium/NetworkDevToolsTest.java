@@ -139,7 +139,7 @@ public class NetworkDevToolsTest {
 	@Before
 	public void before() throws Exception {
 		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
-				Optional.empty()));
+				Optional.empty(),Optional.empty()));
 		chromeDevTools.send(Network.clearBrowserCache());
 		chromeDevTools.send(Network.setCacheDisabled(true));
 	}
@@ -221,7 +221,7 @@ public class NetworkDevToolsTest {
 		url = "https://www.wikipedia.org/";
 		Map<String, Map<String, Object>> capturedRequests = new HashMap<>();
 		chromeDevTools.send(
-				Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+				Network.enable(Optional.empty(),Optional.empty(), Optional.empty(), Optional.empty()));
 		chromeDevTools.addListener(Network.requestWillBeSent(),
 				(RequestWillBeSent event) -> {
 					capturedRequests.put(event.getRequest().getUrl(),

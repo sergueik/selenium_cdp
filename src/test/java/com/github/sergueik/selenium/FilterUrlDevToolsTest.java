@@ -55,7 +55,7 @@ import com.google.common.collect.ImmutableList;
  * setCacheDisabled
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-
  * clearBrowserCache
- * 
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-enable
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -63,7 +63,12 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 
 	@Before
 	public void before() throws Exception {
-		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(), Optional.empty()));
+		chromeDevTools.send(Network.enable(
+				Optional.of(100000000),  // maxTotalBufferSize
+				Optional.empty(), // maxResourceBufferSize
+				Optional.empty(), // maxPostDataSize
+				Optional.empty() // reportDirectSocketTraffic
+				));
 		chromeDevTools.send(Network.clearBrowserCache());
 		chromeDevTools.send(Network.setCacheDisabled(true));
 		baseURL = "http://arngren.net";

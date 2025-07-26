@@ -54,7 +54,7 @@ public class NetworkResponseBodyTest extends BaseDevToolsTest {
 	@Before
 	public void beforeTest() throws Exception {
 
-		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
+		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(), Optional.empty(),
 				Optional.empty()));
 		chromeDevTools.send(Network.clearBrowserCache());
 		chromeDevTools.send(Network.setCacheDisabled(true));

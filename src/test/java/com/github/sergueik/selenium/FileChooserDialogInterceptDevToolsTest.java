@@ -8,6 +8,8 @@ package com.github.sergueik.selenium;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.Optional;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,8 +26,8 @@ import org.openqa.selenium.interactions.Actions;
  * Intercept file chooser requests and transfer control to protocol clients. 
  * When file chooser interception is enabled, native file chooser dialog is not shown. 
  * Instead, a protocol event Page.fileChooserOpened is emitted
- * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-setInterceptFileChooserDialog
  * https://chromedevtools.github.io/devtools-protocol/tot/Page/#event-fileChooserOpened
+ * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-setInterceptFileChooserDialog
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -36,7 +38,7 @@ public class FileChooserDialogInterceptDevToolsTest extends BaseDevToolsTest {
 	@Before
 	public void before() throws Exception {
 		driver.get(baseURL);
-		chromeDevTools.send(Page.setInterceptFileChooserDialog(true));
+		chromeDevTools.send(Page.setInterceptFileChooserDialog(true, Optional.of(false)));
 		// listen file chooser dialog events
 		chromeDevTools.addListener(Page.fileChooserOpened(),
 				(FileChooserOpened event) -> {
@@ -48,7 +50,7 @@ public class FileChooserDialogInterceptDevToolsTest extends BaseDevToolsTest {
 	@After
 	public void after() {
 
-		chromeDevTools.send(Page.setInterceptFileChooserDialog(false));
+		chromeDevTools.send(Page.setInterceptFileChooserDialog(false, Optional.of (false)));
 		chromeDevTools.clearListeners();
 	}
 

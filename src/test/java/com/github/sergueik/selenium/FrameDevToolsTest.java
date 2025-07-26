@@ -34,7 +34,9 @@ public class FrameDevToolsTest extends BaseDevToolsTest {
 	@Before
 	public void before() throws Exception {
 		chromeDevTools.createSession();
-		chromeDevTools.send(Page.enable());
+		chromeDevTools.send(Page.enable(
+				Optional.of(false)
+						));
 
 		// register to frame events
 		chromeDevTools.addListener(Page.frameAttached(), (FrameAttached event) -> {
