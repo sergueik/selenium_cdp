@@ -29,14 +29,14 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 
-import org.openqa.selenium.Cookie;
+// NOTE import org.openqa.selenium.devtools.v138.network.model.Cookie collides with another import statement
+// import org.openqa.selenium.Cookie;
 
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
 import org.openqa.selenium.devtools.v138.network.Network;
-// the import org.openqa.selenium.devtools.v109.network.model.Cookie collides with another import statement
-// import org.openqa.selenium.devtools.v109.network.model.Cookie;
+import org.openqa.selenium.devtools.v138.network.model.Cookie;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -98,7 +98,7 @@ public class NetworkSetCookieDevToolsTest extends BaseDevToolsTest {
 		// Navigate to the page again to see the cookie applied
 		driver.get(baseURL);
 
-		Cookie cookie = driver.manage().getCookieNamed(name);
+		org.openqa.selenium.Cookie cookie = driver.manage().getCookieNamed(name);
 		assertThat(cookie.getValue(), is(value));
 		assertThat(cookie.getDomain(), is(domain));
 	}
@@ -109,12 +109,12 @@ public class NetworkSetCookieDevToolsTest extends BaseDevToolsTest {
 		// Navigate to the page again to see the cookie applied
 		driver.get(baseURL);
 		// Verify the cookie is set
-		List<org.openqa.selenium.devtools.v138.network.model.Cookie> cookies = chromeDevTools
+		List<Cookie> cookies = chromeDevTools
 				.send(Network.getCookies(Optional.empty()));
 		assertThat(cookies.size(), greaterThan(0));
 		//System.err.println(cookies.size());
 
-		org.openqa.selenium.devtools.v138.network.model.Cookie cookie = cookies.stream()
+		Cookie cookie = cookies.stream()
 				.filter((o) -> o.getDomain().equals(domain)).collect(Collectors.toList()).get(0);
 		assertThat(cookie.getValue(), is(value));
 		assertThat(cookie.getDomain(), is(domain));
