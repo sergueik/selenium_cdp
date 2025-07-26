@@ -16,11 +16,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.Command;
 import org.openqa.selenium.devtools.ConverterFunctions;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v127.browser.Browser;
-import org.openqa.selenium.devtools.v127.browser.Browser.GetWindowForTargetResponse;
-import org.openqa.selenium.devtools.v127.browser.model.Bounds;
-import org.openqa.selenium.devtools.v127.browser.model.WindowID;
-import org.openqa.selenium.devtools.v127.browser.model.WindowState;
+import org.openqa.selenium.devtools.v134.browser.Browser;
+import org.openqa.selenium.devtools.v134.browser.Browser.GetWindowForTargetResponse;
+import org.openqa.selenium.devtools.v134.browser.model.Bounds;
+import org.openqa.selenium.devtools.v134.browser.model.WindowID;
+import org.openqa.selenium.devtools.v134.browser.model.WindowState;
 
 import com.google.common.collect.ImmutableMap;
 

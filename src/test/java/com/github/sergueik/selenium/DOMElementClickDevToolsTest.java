@@ -13,15 +13,15 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v127.dom.DOM;
-import org.openqa.selenium.devtools.v127.input.Input;
+import org.openqa.selenium.devtools.v134.dom.DOM;
+import org.openqa.selenium.devtools.v134.input.Input;
 
 import com.google.gson.Gson;
 
-import org.openqa.selenium.devtools.v127.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v127.dom.model.Node;
-import org.openqa.selenium.devtools.v127.dom.model.NodeId;
-import org.openqa.selenium.devtools.v127.dom.model.Quad;
+import org.openqa.selenium.devtools.v134.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v134.dom.model.Node;
+import org.openqa.selenium.devtools.v134.dom.model.NodeId;
+import org.openqa.selenium.devtools.v134.dom.model.Quad;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -80,7 +80,7 @@ public class DOMElementClickDevToolsTest extends BaseDevToolsTest {
 				// NOTE: WARNING: Unable to map result for DOM.getContentQuads
 				// org.openqa.selenium.json.JsonException:
 				// Unable to create instance of class
-				// org.openqa.selenium.devtools.v127.dom.model.Quad
+				// org.openqa.selenium.devtools.v134.dom.model.Quad
 				// WARNING: Unable to process:
 				// {"id":9,"result":{"quads":[[360.5500183105469,661.1500244140625,578.3624877929688,661.1500244140625,578.3624877929688,747.1500244140625,360.5500183105469,747.1500244140625]]},"sessionId":"B816DDEDA9AEA89C97AF770D6885CD7E"}
 				// org.openqa.selenium.json.JsonException: Expected to read a
@@ -99,7 +99,7 @@ public class DOMElementClickDevToolsTest extends BaseDevToolsTest {
 
 				List<Double> data = (List<Double>) gson.fromJson(result3.toString(), List.class);
 				// java.lang.ClassCastException:
-				// class org.openqa.selenium.devtools.v127.dom.model.Quad
+				// class org.openqa.selenium.devtools.v134.dom.model.Quad
 				// cannot be cast to class java.util.List
 				Double x = data.get(0);
 				Double y = data.get(1);

@@ -21,18 +21,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.devtools.v127.page.Page;
+import org.openqa.selenium.devtools.v134.page.Page;
 // NOTE: 
-// org.openqa.selenium.devtools.v127.page.model.DownloadProgress 
+// org.openqa.selenium.devtools.v134.page.model.DownloadProgress 
 // has been deprecated
 // one is advised to use Browser.downloadProgress instead
-import org.openqa.selenium.devtools.v127.page.model.DownloadProgress;
+import org.openqa.selenium.devtools.v134.page.model.DownloadProgress;
 // NOTE: 
-// org.openqa.selenium.devtools.v127.page.model.DownloadWillBegin
+// org.openqa.selenium.devtools.v134.page.model.DownloadWillBegin
 // has been deprecated
 // one advised to use Browser.downloadWillBegin instead
 
-import org.openqa.selenium.devtools.v127.page.model.DownloadWillBegin;
+import org.openqa.selenium.devtools.v134.page.model.DownloadWillBegin;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

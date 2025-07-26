@@ -13,9 +13,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v127.page.Page;
-import org.openqa.selenium.devtools.v127.page.model.FileChooserOpened;
-import org.openqa.selenium.devtools.v127.page.model.FrameId;
+import org.openqa.selenium.devtools.v134.page.Page;
+import org.openqa.selenium.devtools.v134.page.model.FileChooserOpened;
+import org.openqa.selenium.devtools.v134.page.model.FrameId;
 import org.openqa.selenium.interactions.Actions;
 
 /**
