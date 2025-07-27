@@ -1,16 +1,11 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2023,2024 Serguei Kouzmine
+ * Copyright 2023-2025 Serguei Kouzmine
  */
-
 
 import static java.lang.System.err;
 import static org.hamcrest.CoreMatchers.is;
-
-/**
- * Copyright 2023 Serguei Kouzmine
- */
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,7 +26,8 @@ import org.openqa.selenium.WebElement;
 
 // based on:
 // https://github.com/diemol/selenium-4-demo/blob/master/src/test/java/com/saucelabs/demo/ShadowDomTest.java#L3
-
+// see also: https://www.geeksforgeeks.org/software-testing/shadow-dom-in-selenium-webdriver/
+// https://github.com/sukgu/shadow-automation-selenium
 public class ShadowDomCDPTest extends BaseCdpTest {
 
 	private WebElement element1;
@@ -64,6 +60,7 @@ public class ShadowDomCDPTest extends BaseCdpTest {
 		err.println(String.format("Page text: \"%s\"", element2.getText()));
 		// Act
 		shadowRoot = element1.getShadowRoot();
+		assertThat(shadowRoot, notNullValue());
 
 		element3 = shadowRoot.findElement(By.cssSelector("h3"));
 
