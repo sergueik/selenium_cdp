@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2022-2024 Serguei Kouzmine
+ * Copyright 2022-2025 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.containsString;

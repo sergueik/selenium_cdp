@@ -108,7 +108,7 @@ public class RuntimeDevToolsTest {
 							Optional.of(false), // userGesture
 							Optional.of(false), // awaitPromise
 							Optional.of(false), // throwOnSideEffect
-							Optional.of(new TimeDelta(new Double(1000))), // timeout
+							Optional.of(new TimeDelta( Double.valueOf(1000))), // timeout
 							Optional.of(false), // disableBreaks
 							Optional.of(false), // replMode
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP
@@ -209,7 +209,7 @@ public class RuntimeDevToolsTest {
 							Optional.of(false), // userGesture
 							Optional.of(false), // awaitPromise
 							Optional.of(false), // throwOnSideEffect
-							Optional.of(new TimeDelta(new Double(0))), // timeout
+							Optional.of(new TimeDelta(Double.valueOf(0))), // timeout
 							Optional.of(false), // disableBreaks
 							Optional.of(false), // replMode
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP
@@ -243,7 +243,7 @@ public class RuntimeDevToolsTest {
 							Optional.of(false), // userGesture
 							Optional.of(false), // awaitPromise
 							Optional.of(false), // throwOnSideEffect
-							Optional.of(new TimeDelta(new Double(100))), // timeout
+							Optional.of(new TimeDelta(Double.valueOf(100))), // timeout
 							Optional.of(false), // disableBreaks
 							Optional.of(false), // replMode
 							Optional.of(false), // allowUnsafeEvalBlockedByCSP

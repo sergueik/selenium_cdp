@@ -155,7 +155,7 @@ public class RuntimeCdpTest {
 					selector);
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
-			params.put("timout", new Double(100));
+			params.put("timout", Double.valueOf(100));
 			result = driver.executeCdpCommand(command, params);
 			System.err.println(String.format("Command \"%s\" raw response: %s",
 					command, result.toString()));

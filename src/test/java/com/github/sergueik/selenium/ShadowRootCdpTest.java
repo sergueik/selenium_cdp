@@ -95,7 +95,7 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 			expression = "document.querySelector('body > downloads-manager').shadowRoot.querySelector('#toolbar').shadowRoot.querySelector('#toolbar').shadowRoot.querySelector('#leftSpacer > h1').textContent";
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
-			params.put("timout", new Double(100));
+			params.put("timout", Double.valueOf(100));
 			result = driver.executeCdpCommand(command, params);
 			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
 			assertThat(result, notNullValue());
@@ -138,7 +138,7 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 			expression = "document.querySelector('#shadow_host').shadowRoot.children";
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
-			params.put("timout", new Double(100));
+			params.put("timout", Double.valueOf(100));
 			result = driver.executeCdpCommand(command, params);
 			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
 			assertThat(result, notNullValue());
@@ -151,7 +151,7 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 			expression = "document.querySelector('#shadow_host').shadowRoot.textContent";
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
-			params.put("timout", new Double(100));
+			params.put("timout", Double.valueOf(100));
 			result = driver.executeCdpCommand(command, params);
 			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
 			assertThat(result, notNullValue());
@@ -162,7 +162,7 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 			expression = "document.querySelector('#shadow_host').shadowRoot.querySelector('#shadow_content').textContent";
 			params.put("expression", expression);
 			params.put("returnByValue", returnByValue);
-			params.put("timout", new Double(100));
+			params.put("timout", Double.valueOf(100));
 			result = driver.executeCdpCommand(command, params);
 			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
 			assertThat(result, notNullValue());
@@ -243,7 +243,7 @@ public class ShadowRootCdpTest extends BaseCdpTest {
 			// Double(double) in java.lang.Double has been deprecated
 			// see also:
 			// https://stackoverflow.com/questions/41289696/floating-point-literal-floating-literal-double-literal
-			params.put("timout", new Double(100));
+			params.put("timout", Double.valueOf(100));
 			result = driver.executeCdpCommand(command, params);
 			System.err.println(String.format("Command \"%s\" raw response: %s", command, result.toString()));
 			// expression =

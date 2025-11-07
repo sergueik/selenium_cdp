@@ -40,8 +40,8 @@ public class NetworkConditionsDevToolsTest extends BaseDevToolsTest {
 	public void afterTest() {
 		offline = false;
 		chromeDevTools
-				.send(Network.emulateNetworkConditions(offline, new Long(100L),
-						new Long(-1), new Long(-1), Optional.of(ConnectionType.ETHERNET), Optional.of(0.0), Optional.of(0), Optional.empty()));
+				.send(Network.emulateNetworkConditions(offline, Long.valueOf(100L),
+						Long.valueOf(-1), Long.valueOf(-1), Optional.of(ConnectionType.ETHERNET), Optional.of(0.0), Optional.of(0), Optional.empty()));
 
 		driver.get("about:blank");
 	}
