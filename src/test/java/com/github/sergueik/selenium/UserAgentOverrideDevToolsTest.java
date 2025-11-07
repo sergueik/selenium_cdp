@@ -20,11 +20,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.idealized.Network.UserAgent;
-import org.openqa.selenium.devtools.v138.emulation.Emulation;
-import org.openqa.selenium.devtools.v138.emulation.model.UserAgentMetadata;
-import org.openqa.selenium.devtools.v138.emulation.model.UserAgentBrandVersion;
+import org.openqa.selenium.devtools.v139.emulation.Emulation;
+import org.openqa.selenium.devtools.v139.emulation.model.UserAgentMetadata;
+import org.openqa.selenium.devtools.v139.emulation.model.UserAgentBrandVersion;
 
-import org.openqa.selenium.devtools.v138.network.Network;
+import org.openqa.selenium.devtools.v139.network.Network;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -157,17 +157,18 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 			// To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
 			// EXPERIMENTAL
 			UserAgentMetadata userAgentMetadata = new UserAgentMetadata(
-					Optional.of(brands), 
-					Optional.empty(), // fullVersionList 
-					Optional.empty(), // fullVersion 
-					platform, 
-					platformVersion, //  platformVersion 
-					"amd64", // architecture 
-					"", // model cannot be null (java.lang.NullPointerException)
-					false, // mobile 
-					Optional.empty(), // bitness, 
-					Optional.of(false) // wow64
-					);
+				Optional.of(brands), 
+				Optional.empty(), // fullVersionList 
+				Optional.empty(), // fullVersion 
+				platform, 
+				platformVersion, //  platformVersion 
+				"amd64", // architecture 
+				"", // model cannot be null (java.lang.NullPointerException)
+				false, // mobile 
+				Optional.empty(), // bitness, 
+				Optional.of(false), // wow64
+                Optional.of(new ArrayList<String>()) // formFactors
+			);
 			// @formatter:on
 
 			UserAgent userAgent = new UserAgent(brand);

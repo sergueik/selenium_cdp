@@ -25,9 +25,9 @@ import org.openqa.selenium.WebDriverException;
 // NOTE: will need to switch to v113 for Java 1.8 testing (later releases of Selenium are compiled to a later jar format
 // this will lead to ignorable warning:
 // Unable to find an exact match for CDP version 119, so returning the closest version found: 115
-import org.openqa.selenium.devtools.v138.browser.Browser;
-import org.openqa.selenium.devtools.v138.browser.model.DownloadProgress;
-import org.openqa.selenium.devtools.v138.browser.model.DownloadWillBegin;
+import org.openqa.selenium.devtools.v139.browser.Browser;
+import org.openqa.selenium.devtools.v139.browser.model.DownloadProgress;
+import org.openqa.selenium.devtools.v139.browser.model.DownloadWillBegin;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
