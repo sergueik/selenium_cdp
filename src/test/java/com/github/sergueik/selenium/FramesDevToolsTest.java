@@ -15,15 +15,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v139.dom.DOM;
-import org.openqa.selenium.devtools.v139.dom.model.BackendNodeId;
-import org.openqa.selenium.devtools.v139.dom.model.NodeId;
-import org.openqa.selenium.devtools.v139.dom.model.RGBA;
-import org.openqa.selenium.devtools.v139.overlay.Overlay;
-import org.openqa.selenium.devtools.v139.page.Page;
-import org.openqa.selenium.devtools.v139.page.model.Frame;
-import org.openqa.selenium.devtools.v139.page.model.FrameId;
-import org.openqa.selenium.devtools.v139.page.model.FrameTree;
+import org.openqa.selenium.devtools.v140.dom.DOM;
+import org.openqa.selenium.devtools.v140.dom.model.BackendNodeId;
+import org.openqa.selenium.devtools.v140.dom.model.NodeId;
+import org.openqa.selenium.devtools.v140.dom.model.RGBA;
+import org.openqa.selenium.devtools.v140.overlay.Overlay;
+import org.openqa.selenium.devtools.v140.page.Page;
+import org.openqa.selenium.devtools.v140.page.model.Frame;
+import org.openqa.selenium.devtools.v140.page.model.FrameId;
+import org.openqa.selenium.devtools.v140.page.model.FrameTree;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -109,7 +109,7 @@ public class FramesDevToolsTest extends BaseDevToolsTest {
 					System.err.println("Frame owner backend node id: " + backendNodeId);
 
 					html = chromeDevTools.send(DOM.getOuterHTML(response2.getNodeId(),
-							Optional.of(response2.getBackendNodeId()), Optional.empty()));
+							Optional.of(response2.getBackendNodeId()), Optional.empty(), Optional.of(false)));
 					System.err.println("Frame owner outer HTML: " + html);
 
 				} catch (DevToolsException e) {

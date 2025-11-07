@@ -20,10 +20,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v139.dom.DOM;
-import org.openqa.selenium.devtools.v139.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v139.dom.model.Node;
-import org.openqa.selenium.devtools.v139.dom.model.NodeId;
+import org.openqa.selenium.devtools.v140.dom.DOM;
+import org.openqa.selenium.devtools.v140.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v140.dom.model.Node;
+import org.openqa.selenium.devtools.v140.dom.model.NodeId;
 
 import com.google.gson.Gson;
 
@@ -82,8 +82,17 @@ public class DescribeNodeDevToolsTest extends BaseDevToolsTest {
 				System.err.println(String.format("lang: %s", lang));
 
 				System.err.println(String.format("Id: %s", nodeId.toString()));
-				System.err.println(chromeDevTools.send(DOM.getOuterHTML(Optional.of(nodeId),
-						Optional.empty(), Optional.empty())));
+				
+				// @formatter:off
+				System.err
+						.println(chromeDevTools.send(
+								DOM.getOuterHTML(
+									Optional.of(nodeId), // nodeId
+									Optional.empty(),  // backendNodeId
+									Optional.empty(),  // objectId
+									Optional.of(false) // includeShadowDOM 
+								)));
+				// @formatter:on
 
 				result = chromeDevTools
 						.send(DOM.describeNode(Optional.of(nodeId), Optional.empty(),

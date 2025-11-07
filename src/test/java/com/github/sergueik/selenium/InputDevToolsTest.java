@@ -7,9 +7,9 @@ import java.util.Optional;
 import java.lang.NullPointerException;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v139.input.Input;
-import org.openqa.selenium.devtools.v139.input.Input.DispatchKeyEventType;
-import org.openqa.selenium.devtools.v139.input.model.TimeSinceEpoch;
+import org.openqa.selenium.devtools.v140.input.Input;
+import org.openqa.selenium.devtools.v140.input.Input.DispatchKeyEventType;
+import org.openqa.selenium.devtools.v140.input.model.TimeSinceEpoch;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge

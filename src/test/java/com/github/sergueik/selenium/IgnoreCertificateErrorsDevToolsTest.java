@@ -17,11 +17,11 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v139.dom.DOM;
-import org.openqa.selenium.devtools.v139.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v139.dom.model.Node;
-import org.openqa.selenium.devtools.v139.dom.model.NodeId;
-import org.openqa.selenium.devtools.v139.security.Security;
+import org.openqa.selenium.devtools.v140.dom.DOM;
+import org.openqa.selenium.devtools.v140.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v140.dom.model.Node;
+import org.openqa.selenium.devtools.v140.dom.model.NodeId;
+import org.openqa.selenium.devtools.v140.security.Security;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -86,7 +86,7 @@ public class IgnoreCertificateErrorsDevToolsTest extends BaseDevToolsTest {
 			nodeId = chromeDevTools
 					.send(DOM.querySelector(result.getNodeId(), selector));
 			String data = chromeDevTools.send(DOM.getOuterHTML(Optional.of(nodeId),
-					Optional.empty(), Optional.empty()));
+					Optional.empty(), Optional.empty(), Optional.of(false)));
 			assertThat(data, containsString(
 					"The certificate for this site is signed using an untrusted root."));
 

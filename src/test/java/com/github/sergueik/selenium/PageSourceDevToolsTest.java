@@ -11,8 +11,8 @@ import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v139.dom.DOM;
-import org.openqa.selenium.devtools.v139.dom.model.Node;
+import org.openqa.selenium.devtools.v140.dom.DOM;
+import org.openqa.selenium.devtools.v140.dom.model.Node;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -50,7 +50,7 @@ public class PageSourceDevToolsTest extends BaseDevToolsTest {
 		Node result = chromeDevTools
 				.send(DOM.getDocument(Optional.of(1), Optional.of(false)));
 		String pageSource = chromeDevTools.send(DOM.getOuterHTML(
-				Optional.of(result.getNodeId()), Optional.empty(), Optional.empty()));
+				Optional.of(result.getNodeId()), Optional.empty(), Optional.empty(), Optional.of(false)));
 		System.err.println("page source: " + pageSource);
 	}
 
@@ -62,7 +62,7 @@ public class PageSourceDevToolsTest extends BaseDevToolsTest {
 		Node result = chromeDevTools
 				.send(DOM.getDocument(Optional.of(1), Optional.of(false)));
 		String pageSource = chromeDevTools.send(DOM.getOuterHTML(
-				Optional.of(result.getNodeId()), Optional.empty(), Optional.empty()));
+				Optional.of(result.getNodeId()), Optional.empty(), Optional.empty(), Optional.of(false)));
 		System.err.println("page source: " + pageSource);
 	}
 

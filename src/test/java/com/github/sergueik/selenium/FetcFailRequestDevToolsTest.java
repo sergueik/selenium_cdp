@@ -18,13 +18,13 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v139.fetch.Fetch;
-import org.openqa.selenium.devtools.v139.fetch.model.RequestId;
-import org.openqa.selenium.devtools.v139.fetch.model.RequestPattern;
-import org.openqa.selenium.devtools.v139.fetch.model.RequestPaused;
-import org.openqa.selenium.devtools.v139.network.Network;
-import org.openqa.selenium.devtools.v139.network.model.ErrorReason;
-import org.openqa.selenium.devtools.v139.network.model.Request;
+import org.openqa.selenium.devtools.v140.fetch.Fetch;
+import org.openqa.selenium.devtools.v140.fetch.model.RequestId;
+import org.openqa.selenium.devtools.v140.fetch.model.RequestPattern;
+import org.openqa.selenium.devtools.v140.fetch.model.RequestPaused;
+import org.openqa.selenium.devtools.v140.network.Network;
+import org.openqa.selenium.devtools.v140.network.model.ErrorReason;
+import org.openqa.selenium.devtools.v140.network.model.Request;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**

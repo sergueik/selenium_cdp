@@ -20,7 +20,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import org.openqa.selenium.devtools.v139.page.Page;
+import org.openqa.selenium.devtools.v140.page.Page;
 import java.util.Optional;
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

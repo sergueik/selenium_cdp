@@ -19,12 +19,12 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v139.css.CSS;
-import org.openqa.selenium.devtools.v139.css.model.CSSComputedStyleProperty;
-import org.openqa.selenium.devtools.v139.dom.DOM;
-import org.openqa.selenium.devtools.v139.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v139.dom.model.Node;
-import org.openqa.selenium.devtools.v139.dom.model.NodeId;
+import org.openqa.selenium.devtools.v140.css.CSS;
+import org.openqa.selenium.devtools.v140.css.model.CSSComputedStyleProperty;
+import org.openqa.selenium.devtools.v140.dom.DOM;
+import org.openqa.selenium.devtools.v140.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v140.dom.model.Node;
+import org.openqa.selenium.devtools.v140.dom.model.NodeId;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -109,9 +109,16 @@ public class ComputedStyleDevToolsTest extends BaseDevToolsTest {
 				chromeDevTools.send(
 						CSS.setEffectivePropertyValueForNode(nodeId, propertyName, value));
 				Utils.sleep(1000);
+				// @formatter:off
 				System.err
-						.println(chromeDevTools.send(DOM.getOuterHTML(Optional.of(nodeId),
-								Optional.empty(), Optional.empty())));
+						.println(chromeDevTools.send(
+								DOM.getOuterHTML(
+									Optional.of(nodeId), // nodeId
+									Optional.empty(),  // backendNodeId
+									Optional.empty(),  // objectId
+									Optional.of(false) // includeShadowDOM 
+								)));
+				// @formatter:on
 			}
 		} catch (DevToolsException e) {
 			System.err.println("Exception (rethrown) " + e.getMessage());
