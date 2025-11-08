@@ -38,14 +38,14 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v140.network.Network;
-import org.openqa.selenium.devtools.v140.network.model.DataReceived;
-import org.openqa.selenium.devtools.v140.network.model.Headers;
-import org.openqa.selenium.devtools.v140.network.model.RequestId;
-import org.openqa.selenium.devtools.v140.network.model.RequestWillBeSent;
-import org.openqa.selenium.devtools.v140.network.model.ResourceTiming;
-import org.openqa.selenium.devtools.v140.network.model.Response;
-import org.openqa.selenium.devtools.v140.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v141.network.Network;
+import org.openqa.selenium.devtools.v141.network.model.DataReceived;
+import org.openqa.selenium.devtools.v141.network.model.Headers;
+import org.openqa.selenium.devtools.v141.network.model.RequestId;
+import org.openqa.selenium.devtools.v141.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v141.network.model.ResourceTiming;
+import org.openqa.selenium.devtools.v141.network.model.Response;
+import org.openqa.selenium.devtools.v141.network.model.ResponseReceived;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -139,7 +139,7 @@ public class NetworkDevToolsTest {
 	@Before
 	public void before() throws Exception {
 		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
-				Optional.empty(),Optional.empty()));
+				Optional.empty(),Optional.empty(), Optional.empty()));
 		chromeDevTools.send(Network.clearBrowserCache());
 		chromeDevTools.send(Network.setCacheDisabled(true));
 	}
@@ -221,7 +221,7 @@ public class NetworkDevToolsTest {
 		url = "https://www.wikipedia.org/";
 		Map<String, Map<String, Object>> capturedRequests = new HashMap<>();
 		chromeDevTools.send(
-				Network.enable(Optional.empty(),Optional.empty(), Optional.empty(), Optional.empty()));
+				Network.enable(Optional.empty(),Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
 		chromeDevTools.addListener(Network.requestWillBeSent(),
 				(RequestWillBeSent event) -> {
 					capturedRequests.put(event.getRequest().getUrl(),

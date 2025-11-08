@@ -20,8 +20,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v140.network.Network;
-import org.openqa.selenium.devtools.v140.network.model.Headers;
+import org.openqa.selenium.devtools.v141.network.Network;
+import org.openqa.selenium.devtools.v141.network.model.Headers;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -54,7 +54,7 @@ public class CustomHeadersDevToolsTest extends BaseDevToolsTest {
 		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(),
-				Optional.empty(),Optional.empty()));
+				Optional.empty(),Optional.empty(), Optional.empty()));
 
 		// add event listener to log custom headers requests are sending with
 		chromeDevTools.addListener(Network.requestWillBeSent(), o -> {

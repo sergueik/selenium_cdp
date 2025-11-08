@@ -26,10 +26,10 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v140.network.Network;
-import org.openqa.selenium.devtools.v140.network.model.Request;
-import org.openqa.selenium.devtools.v140.network.model.Headers;
-import org.openqa.selenium.devtools.v140.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v141.network.Network;
+import org.openqa.selenium.devtools.v141.network.model.Request;
+import org.openqa.selenium.devtools.v141.network.model.Headers;
+import org.openqa.selenium.devtools.v141.network.model.RequestWillBeSent;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.interactions.Actions;
@@ -73,11 +73,11 @@ public class FileUploadNetworkDevToolsTest extends BaseDevToolsTest {
 
 	@Before
 	public void before() throws Exception {
-		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(), Optional.empty(), Optional.empty()));
+		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
 		chromeDevTools.send(Network.clearBrowserCache());
 		chromeDevTools.send(Network.setCacheDisabled(true));
 		chromeDevTools.send(Network.enable(
-				Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
+				Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
 
 		chromeDevTools.addListener(Network.requestWillBeSent(), (RequestWillBeSent event) -> {
 			capturedRequests.put(event.getRequest().getUrl(), event.getRequest().getHeaders().toJson());

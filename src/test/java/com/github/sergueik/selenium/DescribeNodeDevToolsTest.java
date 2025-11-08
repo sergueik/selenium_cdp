@@ -20,10 +20,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v140.dom.DOM;
-import org.openqa.selenium.devtools.v140.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v140.dom.model.Node;
-import org.openqa.selenium.devtools.v140.dom.model.NodeId;
+import org.openqa.selenium.devtools.v141.dom.DOM;
+import org.openqa.selenium.devtools.v141.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v141.dom.model.Node;
+import org.openqa.selenium.devtools.v141.dom.model.NodeId;
 
 import com.google.gson.Gson;
 

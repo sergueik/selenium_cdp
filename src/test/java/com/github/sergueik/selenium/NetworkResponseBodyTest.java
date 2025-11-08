@@ -26,9 +26,9 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v140.network.Network;
-import org.openqa.selenium.devtools.v140.network.model.ResourceType;
-import org.openqa.selenium.devtools.v140.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v141.network.Network;
+import org.openqa.selenium.devtools.v141.network.model.ResourceType;
+import org.openqa.selenium.devtools.v141.network.model.ResponseReceived;
 import org.openqa.selenium.interactions.Actions;
 
 import com.google.gson.Gson;
@@ -55,7 +55,7 @@ public class NetworkResponseBodyTest extends BaseDevToolsTest {
 	public void beforeTest() throws Exception {
 
 		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(), Optional.empty(),
-				Optional.empty()));
+				Optional.empty(), Optional.empty()));
 		chromeDevTools.send(Network.clearBrowserCache());
 		chromeDevTools.send(Network.setCacheDisabled(true));
 

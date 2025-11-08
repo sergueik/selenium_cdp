@@ -19,12 +19,12 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v140.css.CSS;
-import org.openqa.selenium.devtools.v140.css.model.CSSComputedStyleProperty;
-import org.openqa.selenium.devtools.v140.dom.DOM;
-import org.openqa.selenium.devtools.v140.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v140.dom.model.Node;
-import org.openqa.selenium.devtools.v140.dom.model.NodeId;
+import org.openqa.selenium.devtools.v141.css.CSS;
+import org.openqa.selenium.devtools.v141.css.model.CSSComputedStyleProperty;
+import org.openqa.selenium.devtools.v141.dom.DOM;
+import org.openqa.selenium.devtools.v141.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v141.dom.model.Node;
+import org.openqa.selenium.devtools.v141.dom.model.NodeId;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -33,6 +33,8 @@ import org.openqa.selenium.devtools.v140.dom.model.NodeId;
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getAttributes
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-Node
  * https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-getContainerForNode
+ * https://chromedevtools.github.io/devtools-protocol/tot/CSS/#method-getComputedStyleForNode
+ * https://chromedevtools.github.io/devtools-protocol/tot/CSS/#type-ComputedStyleExtraFields
  * https://chromedevtools.github.io/devtools-protocol/tot/CSS/#method-setEffectivePropertyValueForNode
  *  
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
@@ -92,7 +94,7 @@ public class ComputedStyleDevToolsTest extends BaseDevToolsTest {
 				nodeId = chromeDevTools.send(DOM.querySelector(rootNodeId, selector));
 
 				List<CSSComputedStyleProperty> properties = chromeDevTools
-						.send(CSS.getComputedStyleForNode(nodeId));
+						.send(CSS.getComputedStyleForNode(nodeId)).getComputedStyle();
 				assertThat(properties.size(), greaterThan(2));
 
 				properties.stream().forEach((CSSComputedStyleProperty property) -> {

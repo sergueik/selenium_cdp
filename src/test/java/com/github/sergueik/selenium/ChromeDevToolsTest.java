@@ -29,24 +29,24 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
 
-// import org.openqa.selenium.devtools.v140.target.model.SessionID;
+// import org.openqa.selenium.devtools.v141.target.model.SessionID;
 import org.openqa.selenium.devtools.idealized.target.model.SessionID;
-import static org.openqa.selenium.devtools.v140.performance.Performance.disable;
-import static org.openqa.selenium.devtools.v140.performance.Performance.enable;
-import static org.openqa.selenium.devtools.v140.performance.Performance.getMetrics;
-import org.openqa.selenium.devtools.v140.browser.Browser;
-import org.openqa.selenium.devtools.v140.browser.Browser.GetWindowForTargetResponse;
-import org.openqa.selenium.devtools.v140.browser.model.Bounds;
-import org.openqa.selenium.devtools.v140.browser.model.WindowID;
-import org.openqa.selenium.devtools.v140.input.Input;
-import org.openqa.selenium.devtools.v140.input.Input.DispatchKeyEventType;
-import org.openqa.selenium.devtools.v140.log.Log;
-import org.openqa.selenium.devtools.v140.network.Network;
-import org.openqa.selenium.devtools.v140.network.model.Headers;
-import org.openqa.selenium.devtools.v140.page.Page;
-import org.openqa.selenium.devtools.v140.page.model.ScriptIdentifier;
-import org.openqa.selenium.devtools.v140.performance.Performance;
-import org.openqa.selenium.devtools.v140.performance.model.Metric;
+import static org.openqa.selenium.devtools.v141.performance.Performance.disable;
+import static org.openqa.selenium.devtools.v141.performance.Performance.enable;
+import static org.openqa.selenium.devtools.v141.performance.Performance.getMetrics;
+import org.openqa.selenium.devtools.v141.browser.Browser;
+import org.openqa.selenium.devtools.v141.browser.Browser.GetWindowForTargetResponse;
+import org.openqa.selenium.devtools.v141.browser.model.Bounds;
+import org.openqa.selenium.devtools.v141.browser.model.WindowID;
+import org.openqa.selenium.devtools.v141.input.Input;
+import org.openqa.selenium.devtools.v141.input.Input.DispatchKeyEventType;
+import org.openqa.selenium.devtools.v141.log.Log;
+import org.openqa.selenium.devtools.v141.network.Network;
+import org.openqa.selenium.devtools.v141.network.model.Headers;
+import org.openqa.selenium.devtools.v141.page.Page;
+import org.openqa.selenium.devtools.v141.page.model.ScriptIdentifier;
+import org.openqa.selenium.devtools.v141.performance.Performance;
+import org.openqa.selenium.devtools.v141.performance.model.Metric;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -169,7 +169,7 @@ public class ChromeDevToolsTest {
 		}
 		// https://github.com/SeleniumHQ/selenium/issues/7369
 		chromeDevTools.send(
-				Network.enable(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
+				Network.enable(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
 		// https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/devtools/DevTools.java
 		// https://github.com/SeleniumHQ/selenium/blob/master/java/client/test/org/openqa/selenium/devtools/ChromeDevToolsNetworkTest.java
 		// but Browser has no events, Network has
@@ -232,7 +232,7 @@ public class ChromeDevToolsTest {
 	public void addCustomHeadersTest() {
 		// enable Network
 		chromeDevTools.send(
-				Network.enable(Optional.empty(), Optional.empty(), Optional.empty(),Optional.empty()));
+				Network.enable(Optional.empty(), Optional.empty(), Optional.empty(),Optional.empty(), Optional.empty()));
 		headers = new HashMap<>();
 		headers.put("customHeaderName", "customHeaderValue");
 		headers.put("customHeaderName",
