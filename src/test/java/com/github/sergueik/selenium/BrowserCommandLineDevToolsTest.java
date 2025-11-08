@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import java.util.List;
 
 import org.junit.Test;
-import org.openqa.selenium.devtools.v141.browser.Browser;
+import org.openqa.selenium.devtools.v142.browser.Browser;
 
 /**
  * 

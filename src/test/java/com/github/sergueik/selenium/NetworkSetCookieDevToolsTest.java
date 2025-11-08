@@ -29,14 +29,14 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 
-// NOTE import org.openqa.selenium.devtools.v141.network.model.Cookie collides with another import statement
+// NOTE import org.openqa.selenium.devtools.v142.network.model.Cookie collides with another import statement
 // import org.openqa.selenium.Cookie;
 
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v141.network.Network;
-import org.openqa.selenium.devtools.v141.network.model.Cookie;
+import org.openqa.selenium.devtools.v142.network.Network;
+import org.openqa.selenium.devtools.v142.network.model.Cookie;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

@@ -13,10 +13,10 @@ import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
 
 // NOTE letter case in the class name 
-import org.openqa.selenium.devtools.v141.target.Target;
-import org.openqa.selenium.devtools.v141.target.model.SessionID;
-import org.openqa.selenium.devtools.v141.target.model.TargetID;
-import org.openqa.selenium.devtools.v141.target.model.TargetInfo;
+import org.openqa.selenium.devtools.v142.target.Target;
+import org.openqa.selenium.devtools.v142.target.model.SessionID;
+import org.openqa.selenium.devtools.v142.target.model.TargetID;
+import org.openqa.selenium.devtools.v142.target.model.TargetInfo;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -34,7 +34,7 @@ import org.openqa.selenium.devtools.v141.target.model.TargetInfo;
 // 109:
 // java.lang.String,java.util.Optional<java.lang.Integer>,java.util.Optional<java.lang.Integer>,java.util.Optional<org.openqa.selenium.devtools.v109.browser.model.BrowserContextID>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>
 // 119:
-// java.lang.String,java.util.Optional<java.lang.Integer>,java.util.Optional<java.lang.Integer>,java.util.Optional<org.openqa.selenium.devtools.v141.browser.model.BrowserContextID>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>,java.util.Optiona<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>
+// java.lang.String,java.util.Optional<java.lang.Integer>,java.util.Optional<java.lang.Integer>,java.util.Optional<org.openqa.selenium.devtools.v142.browser.model.BrowserContextID>,java.util.Optional<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>,java.util.Optiona<java.lang.Boolean>,java.util.Optional<java.lang.Boolean>
 
 public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 
