@@ -21,6 +21,10 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chromium.ChromiumDriver;
 
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpExchange;
+import java.net.InetSocketAddress;
+
 public class Utils {
 	private static String osName;
 	private static ChromiumDriver driver;
@@ -67,11 +71,9 @@ public class Utils {
 		highlight(element, highlightInterval, "solid yellow");
 	}
 
-	public static void highlight(WebElement element, long highlightInterval,
-			String color) {
+	public static void highlight(WebElement element, long highlightInterval, String color) {
 		try {
-			js.executeScript(
-					String.format("arguments[0].style.border='3px %s'", color), element);
+			js.executeScript(String.format("arguments[0].style.border='3px %s'", color), element);
 			Thread.sleep(highlightInterval);
 			js.executeScript("arguments[0].style.border=''", element);
 		} catch (InterruptedException e) {
@@ -79,10 +81,44 @@ public class Utils {
 		}
 	}
 
+	private static HttpServer server = null;
+
+	public static void stopLocalServer(int delay) {
+		if (delay == 0)
+			delay = 3;
+		try {
+			server.stop(delay);
+		} catch (Exception e) {
+
+		}
+	}
+
+	public static String getLocallyHostedPageContent(String pagename) {
+		try {
+
+			server = HttpServer.create(new InetSocketAddress(0), 0);
+			server.createContext("/", (HttpExchange exchange) -> {
+
+				final InputStream stream = Utils.class.getClassLoader().getResourceAsStream(pagename);
+				final byte[] bytes = new byte[stream.available()];
+				stream.read(bytes);
+				exchange.sendResponseHeaders(200, bytes.length);
+				exchange.getResponseBody().write(bytes);
+				stream.close();
+				exchange.close();
+			});
+			server.start();
+
+			int port = server.getAddress().getPort();
+			return "http://localhost:" + port + "/";
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	public static String getScriptContent(String scriptName) {
 		try {
-			final InputStream stream = Utils.class.getClassLoader()
-					.getResourceAsStream(scriptName);
+			final InputStream stream = Utils.class.getClassLoader().getResourceAsStream(scriptName);
 			final byte[] bytes = new byte[stream.available()];
 			stream.read(bytes);
 			return new String(bytes, "UTF-8");
@@ -95,6 +131,9 @@ public class Utils {
 		try {
 			URI uri = Utils.class.getClassLoader().getResource(pagename).toURI();
 			System.err.println("Testing local file: " + uri.toString());
+
+			System.err.println(
+					String.format("Raw path: %s", Utils.class.getClassLoader().getResource(pagename).getFile()));
 			return uri.toString();
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
@@ -131,8 +170,7 @@ public class Utils {
 		ImageReader reader = null;
 		Map<String, Integer> result = new HashMap<>();
 		try {
-			reader = ImageIO
-					.getImageReadersBySuffix(filename.replaceFirst(".*\\.", "")).next();
+			reader = ImageIO.getImageReadersBySuffix(filename.replaceFirst(".*\\.", "")).next();
 			reader.setInput(new FileImageInputStream(new File(filename)));
 			int index = reader.getMinIndex();
 			result.put("width", reader.getWidth(index));

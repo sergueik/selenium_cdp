@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebUSB Access Request Sample</title>
+</head>
+<body>
+    <h1>WebUSB Device Access</h1>
+    <p>Click the button below to prompt a connection to a USB device. If a compatible device is found, the browser will ask for your permission to connect.</p>
+    <button id="connect">Connect to USB Device</button>
+    <p id="status">Status: Disconnected</p>
+
+    <script>
+        document.getElementById('connect').addEventListener('click', async () => {
+            const statusArea = document.getElementById('status');
+            statusArea.textContent = 'Status: Requesting device...';
+
+            try {
+                // Prompt the user to select a device without specifying the vendor ID - for prompt testing only
+                const device = await navigator.usb.requestDevice({
+                    filters: [] 
+                });
+
+                // If a device is selected and access granted, this code runs
+                statusArea.textContent = `Status: Connected to ${device.productName || 'unknown device'}`;
+                console.log('Product name:', device.productName);
+                console.log('Manufacturer name:', device.manufacturerName);
+
+                // From here you can open the device and start communication
+                // await device.open();
+                // ... other communication logic
+
+            } catch (error) {
+                // Handle cases where the user cancels the prompt or no compatible device is found
+                statusArea.textContent = `Status: Connection failed. Error: ${error.message}`;
+                console.error('Device request error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
+

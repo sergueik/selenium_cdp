@@ -141,6 +141,8 @@ public class BaseDevToolsTest {
 				"--ignore-ssl-errors=true", "--log-level=3", "--no-proxy-server", "--no-sandbox", "--output=/dev/null",
 
 				"--ssl-protocol=any",
+				
+				 "--unsafely-treat-insecure-origin-as-secure=http://localhost",
 
 				// "--start-fullscreen",
 

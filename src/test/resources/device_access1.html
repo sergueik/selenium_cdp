@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <!-- NOTE: not selfclosing -->
+    <title>Microphone Access</title>
+  </head>
+  <body>
+    <h1>Voice Recorder Example</h1>
+    <p>This page needs access to your microphone to record audio.</p>
+    <button id="recording">Start Recording</button>
+    <div id="status"/>
+    <script type="text/javascript">
+
+	    document.getElementById('recording').addEventListener('click', async () => {
+    const statusDiv = document.getElementById('status');
+    statusDiv.textContent = 'Requesting microphone access...';
+
+    try {
+        // Request microphone access
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        statusDiv.textContent = 'Microphone access granted!';
+        console.log('Stream:', stream); // You can now use the stream for recording
+
+        // Example: Stop recording after a few seconds (optional)
+	    setTimeout(() => {
+		stream.getTracks().forEach(track => track.stop());
+            statusDiv.textContent = 'Recording stopped.';
+        }, 5000);
+
+    } catch (err) {
+        console.error('Error accessing microphone:', err);
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            statusDiv.textContent = 'Microphone access denied by user.';
+            alert('Please allow microphone access in your browser settings.');
+        } else if (err.name === 'NotFoundError') {
+            statusDiv.textContent = 'No microphone found.';
+        } else {
+            statusDiv.textContent = `Error: ${err.name}`;
+        }
+    }
+});
+
+
+    </script>
+  </body>
+</html>
