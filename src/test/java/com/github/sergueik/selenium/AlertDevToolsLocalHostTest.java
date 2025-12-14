@@ -34,13 +34,14 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-public class AlertDevToolsLocalTest extends BaseDevToolsTest {
+public class AlertDevToolsLocalHostTest extends BaseDevToolsTest {
 
 	private final String text = "Lorem ipsum";
 	protected static WebDriverWait wait;
-	public final static int flexibleWait = 10; // NOTE: 60 is quite long
+	public final static int flexibleWait = 10;
 	public final static Duration duration = Duration.ofSeconds(flexibleWait);
 	public final static int implicitWait = 1;
+	private final String page = "tryit1.html";
 	public final static int pollingInterval = 500;
 	protected Alert alert = null;
 	protected static String name = null;
@@ -56,6 +57,7 @@ public class AlertDevToolsLocalTest extends BaseDevToolsTest {
 	@After
 	public void after() {
 		chromeDevTools.clearListeners();
+		Utils.stopLocalHttpServer(1);
 		Utils.sleep(3000);
 		driver.get("about:blank");
 	}
@@ -76,7 +78,7 @@ public class AlertDevToolsLocalTest extends BaseDevToolsTest {
 						is(true)));
 		// Act
 		System.err.println("Started local test 1 - accept alert.");
-		driver.get(Utils.getPageContent("tryit1.html"));
+		driver.get(Utils.getLocallyHostedPageContent(page));
 		// System.err.println(driver.getPageSource());
 		element = driver.findElement(By.tagName("button"));
 
@@ -110,7 +112,7 @@ public class AlertDevToolsLocalTest extends BaseDevToolsTest {
 						is(false)));
 		// Act
 		System.err.println("Started local test 2 - dismiss alert.");
-		driver.get(Utils.getPageContent("tryit1.html"));
+		driver.get(Utils.getLocallyHostedPageContent(page));
 		// chromeDevTools.send(Page.reload(Optional.of(true), Optional.empty()));
 		// System.err.println(driver.getPageSource());
 		element = driver.findElement(By.tagName("button"));
@@ -121,8 +123,7 @@ public class AlertDevToolsLocalTest extends BaseDevToolsTest {
 		// Assert alert displayed
 		assertThat(alert, notNullValue());
 		Utils.sleep(3000);
-		// dismiss
-		System.err.println("dismissing alert");
+		System.err.println("dismissing alert with Selenium dismiss().");
 		alert.dismiss();
 		// TODO: assert that dialog was canceled
 		element = driver.findElement(By.id("demo"));
@@ -150,8 +151,7 @@ public class AlertDevToolsLocalTest extends BaseDevToolsTest {
 						is(true)));
 		// Act
 		System.err.println("Started local test 3 - javascript prompt.");
-		driver.get(Utils.getPageContent("tryjsref_prompt.html"));
-
+		driver.get(Utils.getLocallyHostedPageContent("tryjsref_prompt.html"));
 		// System.err.println(driver.getPageSource());
 		element = driver.findElement(By.tagName("button"));
 		// Act
@@ -166,7 +166,7 @@ public class AlertDevToolsLocalTest extends BaseDevToolsTest {
 		Utils.sleep(100);
 		// NOTE: alert.sendKeys expects a String argument not Keys
 		// alert.sendKeys(Keys.RETURN);
-		System.err.println("accepting alert with Selenium accept().");
+		System.err.println("accepting alert");
 		alert.accept();
 		element = driver.findElement(By.id("demo"));
 		System.err.println(element.getAttribute("innerHTML"));
