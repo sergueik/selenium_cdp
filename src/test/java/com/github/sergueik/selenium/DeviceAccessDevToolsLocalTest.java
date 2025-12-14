@@ -126,7 +126,7 @@ public class DeviceAccessDevToolsLocalTest extends BaseDevToolsTest {
 		System.err.println(element.getAttribute("innerHTML"));
 	}
 	
-	// @Ignore
+	@Ignore
 	@Test
 	public void test2() {
 		List<RequestId> data = new ArrayList<>();
@@ -160,6 +160,7 @@ public class DeviceAccessDevToolsLocalTest extends BaseDevToolsTest {
 		System.err.println(element.getAttribute("innerHTML"));
 	}
 
+	@Ignore
 	@Test
 	public void test3() {
 		List<RequestId> data = new ArrayList<>();

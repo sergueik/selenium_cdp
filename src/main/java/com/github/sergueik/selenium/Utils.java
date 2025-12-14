@@ -39,6 +39,8 @@ public class Utils {
 	private static long highlightInterval = 100;
 	private static boolean debug = false;
 	private static HttpServer server = null;
+	private static int port;
+	private static int localPort;
 	private static ServerSocket serverSocket = null;
 	private static Thread serverThread = null;
 
@@ -102,23 +104,28 @@ public class Utils {
 	}
 
 	public static String getLocallyServerSocketHostedPageContent(String pagename) throws IOException {
-
+		// NOTE: fixed port can be used with ServerSocket
+		
 		serverSocket = new ServerSocket(0);
-		int localPort = serverSocket.getLocalPort();
+		localPort = serverSocket.getLocalPort();
 		Thread thread = new Thread(() -> {
 			while (!serverSocket.isClosed()) {
-				try (Socket s = serverSocket.accept()) {
-					BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-					while (!in.readLine().isEmpty()) {
+				try (Socket socket = serverSocket.accept()) {
+					BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+					while (!input.readLine().isEmpty()) {
 					} // discard headers
 
-					byte[] body = Files.readAllBytes(Paths.get(pagename));
-					OutputStream out = s.getOutputStream();
-					out.write(("HTTP/1.0 200 OK\r\n" + "Content-Type: text/html\r\n" + "Content-Length: " + body.length
-							+ "\r\n\r\n").getBytes());
-					out.write(body);
-
-					out.flush();
+					final InputStream inputStream = Utils.class.getClassLoader().getResourceAsStream(pagename);
+					final byte[] body = new byte[inputStream.available()];
+					inputStream.read(body);
+					inputStream.close();
+					OutputStream outputStream = socket.getOutputStream();
+					outputStream.write(("HTTP/1.0 200 OK\r\n" + 
+							"Content-Type: text/html\r\n" + 
+							"Content-Length: " + body.length + 
+							"\r\n\r\n").getBytes());
+					outputStream.write(body);
+					outputStream.flush();
 
 				} catch (Exception e) {
 					// ignore, but exit the loop
@@ -143,23 +150,26 @@ public class Utils {
 		}
 	}
 
+	// NOTE: HttpServer is widely used in test fixtures 
+	// for classic and CDP Selenium examples, and HTTP mocks
 	public static String getLocallyHostedPageContent(String pagename) {
 		try {
-
+			// NOTE: a fixed port can be specifies when creating HTTP Server
+			// server = HttpServer.create(new InetSocketAddress(8080), 0);
 			server = HttpServer.create(new InetSocketAddress(0), 0);
+			port = server.getAddress().getPort();
 			server.createContext("/", (HttpExchange exchange) -> {
 
-				final InputStream stream = Utils.class.getClassLoader().getResourceAsStream(pagename);
-				final byte[] bytes = new byte[stream.available()];
-				stream.read(bytes);
-				exchange.sendResponseHeaders(200, bytes.length);
-				exchange.getResponseBody().write(bytes);
-				stream.close();
+				final InputStream inputStream = Utils.class.getClassLoader().getResourceAsStream(pagename);
+				final byte[] body = new byte[inputStream.available()];
+				inputStream.read(body);
+				exchange.sendResponseHeaders(200, body.length);
+				exchange.getResponseBody().write(body);
+				inputStream.close();
 				exchange.close();
 			});
 			server.start();
 
-			int port = server.getAddress().getPort();
 			return "http://localhost:" + port + "/";
 		} catch (Exception e) {
 			return null;
