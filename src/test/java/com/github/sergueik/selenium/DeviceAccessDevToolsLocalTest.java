@@ -71,7 +71,7 @@ public class DeviceAccessDevToolsLocalTest extends BaseDevToolsTest {
 		chromeDevTools.clearListeners();
 		chromeDevTools.send(DeviceAccess.disable());
 		chromeDevTools.send(Page.disable());
-		Utils.stopLocalServer(0);
+		Utils.stopLocalHttpServer(0);
 		Utils.sleep(3000);
 		driver.get("about:blank");
 	}

@@ -1,10 +1,15 @@
 package com.github.sergueik.selenium;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +29,8 @@ import org.openqa.selenium.chromium.ChromiumDriver;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Utils {
 	private static String osName;
@@ -31,6 +38,9 @@ public class Utils {
 	private static JavascriptExecutor js;
 	private static long highlightInterval = 100;
 	private static boolean debug = false;
+	private static HttpServer server = null;
+	private static ServerSocket serverSocket = null;
+	private static Thread serverThread = null;
 
 	public static void setDriver(ChromiumDriver data) {
 		Utils.driver = data;
@@ -81,15 +91,55 @@ public class Utils {
 		}
 	}
 
-	private static HttpServer server = null;
-
-	public static void stopLocalServer(int delay) {
+	public static void stopLocalHttpServer(int delay) {
 		if (delay == 0)
 			delay = 3;
 		try {
 			server.stop(delay);
 		} catch (Exception e) {
 
+		}
+	}
+
+	public static String getLocallyServerSocketHostedPageContent(String pagename) throws IOException {
+
+		serverSocket = new ServerSocket(0);
+		int localPort = serverSocket.getLocalPort();
+		Thread thread = new Thread(() -> {
+			while (!serverSocket.isClosed()) {
+				try (Socket s = serverSocket.accept()) {
+					BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+					while (!in.readLine().isEmpty()) {
+					} // discard headers
+
+					byte[] body = Files.readAllBytes(Paths.get(pagename));
+					OutputStream out = s.getOutputStream();
+					out.write(("HTTP/1.0 200 OK\r\n" + "Content-Type: text/html\r\n" + "Content-Length: " + body.length
+							+ "\r\n\r\n").getBytes());
+					out.write(body);
+
+					out.flush();
+
+				} catch (Exception e) {
+					// ignore, but exit the loop
+					if (serverSocket.isClosed())
+						break;
+				}
+			}
+		});
+		thread.setDaemon(true);
+		thread.start();
+		serverThread = thread;
+		return "http://localhost:" + localPort + "/";
+	}
+
+	public static void stopLocalServerSocket() {
+		try {
+			if (serverSocket != null)
+				serverSocket.close();
+			if (serverThread != null)
+				serverThread.join(1000);
+		} catch (IOException | InterruptedException e) {
 		}
 	}
 

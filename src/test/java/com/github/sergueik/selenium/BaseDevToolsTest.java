@@ -122,62 +122,36 @@ public class BaseDevToolsTest {
 
 		ChromeOptions options = new ChromeOptions();
 
-		for (String optionAgrument : (new String[] { "--allow-insecure-localhost", "--allow-running-insecure-content",
-
+		for (String optionAgrument : (new String[] {
+				"--allow-insecure-localhost", "--allow-running-insecure-content",
 				"--browser.download.folderList=2",
-
 				"--browser.helperApps.neverAsk.saveToDisk=image/jpg,text/csv,text/xml,application/xml,application/vnd.ms-excel,application/x-excel,application/x-msexcel,application/excel,application/pdf",
-
 				"--disable-blink-features=AutomationControlled", "--disable-default-app", "--disable-dev-shm-usage",
-
 				"--disable-extensions", "--disable-gpu", "--disable-infobars", "--disable-in-process-stack-traces",
-
 				"--disable-logging", "--disable-notifications", "--disable-popup-blocking",
-
 				"--disable-save-password-bubble", "--disable-translate", "--disable-web-security",
-
 				"--enable-local-file-accesses", "--ignore-certificate-errors", "--ignore-certificate-errors",
-
 				"--ignore-ssl-errors=true", "--log-level=3", "--no-proxy-server", "--no-sandbox", "--output=/dev/null",
-
 				"--ssl-protocol=any",
-				
-				 "--unsafely-treat-insecure-origin-as-secure=http://localhost",
-
+				"--unsafely-treat-insecure-origin-as-secure=http://localhost",
+				"--enable-experimental-web-platform-features",
+				"--enable-features=WebUSB",
 				// "--start-fullscreen",
-
 				// "--start-maximized" ,
-
 				"--user-agent=Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20120101 Firefox/33.0",
-
 				// To prevent exception in StorageDevToolsTest:
-
 				// org.openqa.selenium.devtools.DevToolsException:
-
 				// {"id":5,"error":{"code":-32000,"message":"Shared storage is
-
 				// disabled"},"sessionId":"018E331E2BEBBD1860ECDAECAD6B59C1"}
-
 				// Caused by: org.openqa.selenium.WebDriverException:
-
 				// {"id":5,"error":{"code":-32000,"message":"Shared storage is
-
 				// disabled"},"sessionId":"018E331E2BEBBD1860ECDAECAD6B59C1"}
-
-
-
 				"--enable-features=PrivacySandboxAdsAPIsOverride,OverridePrivacySandboxSettingsLocalTesting,SharedStorageAPI,FencedFrames",
-
 				// String.format("--browser.download.dir=%s", downloadFilepath)
-
 				/*
-
 				 * "--user-data-dir=/path/to/your/custom/profile",
-
 				 * "--profile-directory=name_of_custom_profile_directory",
-
 				 */
-
 		})) {
 
 			options.addArguments(optionAgrument);
