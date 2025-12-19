@@ -23,14 +23,14 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import org.openqa.selenium.devtools.v142.runtime.Runtime;
-import org.openqa.selenium.devtools.v142.runtime.model.StackTrace;
-import org.openqa.selenium.devtools.v142.runtime.model.ConsoleAPICalled;
-import org.openqa.selenium.devtools.v142.runtime.model.ExceptionDetails;
-import org.openqa.selenium.devtools.v142.runtime.model.ExceptionThrown;
-import org.openqa.selenium.devtools.v142.runtime.model.Timestamp;
+import org.openqa.selenium.devtools.v143.runtime.Runtime;
+import org.openqa.selenium.devtools.v143.runtime.model.StackTrace;
+import org.openqa.selenium.devtools.v143.runtime.model.ConsoleAPICalled;
+import org.openqa.selenium.devtools.v143.runtime.model.ExceptionDetails;
+import org.openqa.selenium.devtools.v143.runtime.model.ExceptionThrown;
+import org.openqa.selenium.devtools.v143.runtime.model.Timestamp;
 // NOTE: import org.openqa.selenium.bidi.log.StackTrace;
-import org.openqa.selenium.devtools.v142.runtime.model.RemoteObject;
+import org.openqa.selenium.devtools.v143.runtime.model.RemoteObject;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

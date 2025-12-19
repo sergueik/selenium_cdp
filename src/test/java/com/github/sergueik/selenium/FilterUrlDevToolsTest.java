@@ -1,17 +1,19 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2021,2024 Serguei Kouzmine
+ * Copyright 2021,2024,2025 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
@@ -19,43 +21,37 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v142.network.Network;
-import org.openqa.selenium.devtools.v142.network.model.BlockedReason;
-import org.openqa.selenium.devtools.v142.network.model.Headers;
-import org.openqa.selenium.devtools.v142.network.model.InterceptionStage;
-import org.openqa.selenium.devtools.v142.network.model.LoadingFailed;
-import org.openqa.selenium.devtools.v142.network.model.Request;
-import org.openqa.selenium.devtools.v142.network.model.RequestId;
-import org.openqa.selenium.devtools.v142.network.model.RequestIntercepted;
-import org.openqa.selenium.devtools.v142.network.model.RequestPattern;
-import org.openqa.selenium.devtools.v142.network.model.RequestWillBeSent;
-import org.openqa.selenium.devtools.v142.network.model.ResourceType;
-import org.openqa.selenium.devtools.v142.network.model.ResponseReceived;
-import org.openqa.selenium.devtools.v142.page.Page;
-import org.openqa.selenium.devtools.v142.network.model.AuthChallengeResponse;
-import org.openqa.selenium.devtools.v142.network.model.AuthChallengeResponse.Response;
-
+import org.openqa.selenium.devtools.v143.network.Network;
+import org.openqa.selenium.devtools.v143.network.model.BlockedReason;
+import org.openqa.selenium.devtools.v143.network.model.Headers;
+import org.openqa.selenium.devtools.v143.network.model.InterceptionStage;
+import org.openqa.selenium.devtools.v143.network.model.LoadingFailed;
+import org.openqa.selenium.devtools.v143.network.model.Request;
+import org.openqa.selenium.devtools.v143.network.model.RequestId;
+import org.openqa.selenium.devtools.v143.network.model.RequestIntercepted;
+import org.openqa.selenium.devtools.v143.network.model.RequestPattern;
+import org.openqa.selenium.devtools.v143.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v143.network.model.BlockPattern;
+import org.openqa.selenium.devtools.v143.network.model.ResourceType;
+import org.openqa.selenium.devtools.v143.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v143.page.Page;
+import org.openqa.selenium.devtools.v143.network.model.AuthChallengeResponse;
+import org.openqa.selenium.devtools.v143.network.model.AuthChallengeResponse.Response;
 import com.google.common.collect.ImmutableList;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-
- * setBlockedURLs
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-
- * loadingFailed
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-
- * requestWillBeSent
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-
- * responseReceived
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-
- * continueInterceptedRequest
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-
- * RequestPattern
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-
- * setCacheDisabled
- * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-
- * clearBrowserCache
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setBlockedURLs
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-loadingFailed
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-requestWillBeSent
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-responseReceived
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-continueInterceptedRequest
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-RequestPattern
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-BlockPattern
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setCacheDisabled
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-clearBrowserCache
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-enable
+ * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -63,13 +59,14 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 
 	@Before
 	public void before() throws Exception {
-		chromeDevTools.send(Network.enable(
-				Optional.of(100000000),  // maxTotalBufferSize
+		// @formatter:off
+		chromeDevTools.send(Network.enable(Optional.of(100000000), // maxTotalBufferSize
 				Optional.empty(), // maxResourceBufferSize
 				Optional.empty(), // maxPostDataSize
 				Optional.empty(), // reportDirectSocketTraffic
-				Optional.empty() // enableDurableMessages 
-				));
+				Optional.empty() // enableDurableMessages
+		));
+		// @formatter:on
 		chromeDevTools.send(Network.clearBrowserCache());
 		chromeDevTools.send(Network.setCacheDisabled(true));
 		baseURL = "http://arngren.net";
@@ -78,7 +75,11 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 	@After
 	public void after() {
 
-		chromeDevTools.send(Network.setBlockedURLs(new ArrayList<String>()));
+		// @formatter:off
+		chromeDevTools.send(Network.setBlockedURLs(Optional.of(new ArrayList<BlockPattern>()), // urlPatterns
+				Optional.of(new ArrayList<String>()) // urls
+		));
+		// @formatter:on
 		chromeDevTools.send(Network.disable());
 		chromeDevTools.send(Network.setCacheDisabled(false));
 		chromeDevTools.clearListeners();
@@ -89,13 +90,33 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 
 	// see also:
 	// https://github.com/adiohana/selenium-chrome-devtools-examples/blob/master/src/test/java/ChromeDevToolsTest.java
+	// NOTE: there is CDP model drift vs. Javadoc mismatch
 	@Test
 	public void test1() {
 		final Map<String, Map<String, String>> requests = new HashMap<>();
 		// Arrange
-		chromeDevTools
-				.send(Network.setBlockedURLs(ImmutableList.of("*.css", "*.png", "*.jpg", "*.gif", "*favicon.ico")));
+		// NOTE: BlockPattern::new only works for single-argument constructors
+		List<BlockPattern> blockPatterns = Arrays
+				.asList(new String[] { "*.css", "*.png", "*.jpg", "*.gif", "*favicon.ico" })
+				.stream()
+				// @formatter:off
+				.map(urlPattern -> new BlockPattern(
+						urlPattern,  // urlPattern
+						true //block
+						))
+				// @formatter:on
 
+				.collect(Collectors.toList());
+		// @formatter:off
+		chromeDevTools.send(
+				Network.setBlockedURLs(
+						Optional.of(blockPatterns), // urlPatterns
+						Optional.of(new ArrayList<String>())  // urls
+				)
+		// @formatter:on
+		);
+
+		// @formatter:on
 		// verify that css jpg and png are blocked
 		// see also:
 		// https://rahulshettyacademy.com/blog/index.php/2021/11/04/selenium-4-key-feature-network-interception/
@@ -223,7 +244,8 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 						Optional.of(new AuthChallengeResponse(Response.DEFAULT, Optional.empty(), Optional.empty())))));
 		// java.lang.NullPointerException: response is required
 		// org.openqa.selenium.devtools.DevToolsException:
-		// {"id":38,"error":{"code":-32602,"message":"authChallengeResponse not expected."},"sessionId":"B6AD0AAC5C8C4E26C8CCF82355E7D7A3"}
+		// {"id":38,"error":{"code":-32602,"message":"authChallengeResponse not
+		// expected."},"sessionId":"B6AD0AAC5C8C4E26C8CCF82355E7D7A3"}
 
 		// https://javadoc.io/doc/org.seleniumhq.selenium/selenium-devtools-v126/latest/org/openqa/selenium/devtools/v126/network/model/AuthChallengeResponse.html
 
@@ -238,7 +260,7 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 
 	// incompatible types: inference variable T has incompatible bounds:
 	// [ERROR] equality constraints:
-	// org.openqa.selenium.devtools.v142.network.model.AuthChallengeResponse
+	// org.openqa.selenium.devtools.v143.network.model.AuthChallengeResponse
 	// [ERROR] lower bounds: java.lang.Object
 	/*
 	 * @Ignore
@@ -247,9 +269,8 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 	 * 
 	 * @Test public void test4() {
 	 * 
-	 * chromeDevTools .addListener(Network.requestIntercepted(),
-	 * (RequestIntercepted event) ->
-	 * chromeDevTools.send(Network.continueInterceptedRequest(
+	 * chromeDevTools .addListener(Network.requestIntercepted(), (RequestIntercepted
+	 * event) -> chromeDevTools.send(Network.continueInterceptedRequest(
 	 * event.getInterceptionId(), Optional.empty(), Optional.empty(),
 	 * Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(new
 	 * Headers(new HashMap<String, Object>())), Optional.of(new Object()))));

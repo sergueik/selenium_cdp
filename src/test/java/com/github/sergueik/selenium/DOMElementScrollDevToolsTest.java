@@ -9,9 +9,9 @@ import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v142.dom.DOM;
-import org.openqa.selenium.devtools.v142.dom.model.Node;
-import org.openqa.selenium.devtools.v142.dom.model.NodeId;
+import org.openqa.selenium.devtools.v143.dom.DOM;
+import org.openqa.selenium.devtools.v143.dom.model.Node;
+import org.openqa.selenium.devtools.v143.dom.model.NodeId;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

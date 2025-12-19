@@ -4,7 +4,7 @@
   <groupId>com.github.sergueik.selenium</groupId>
   <artifactId>selenium_cdp</artifactId>
   <packaging>jar</packaging>
-  <version>0.102.0-SNAPSHOT</version>
+  <version>0.103.0-SNAPSHOT</version>
   <name>selenum_cdp</name>
   <description>testing new Chrome Dev Tools bridge offered by Selenium 4.x </description>
   <url>http://maven.apache.org</url>
@@ -21,8 +21,8 @@
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
     <pdfbox.version>2.0.27</pdfbox.version>
-    <selenium.version>4.38.0</selenium.version>
-    <selenium-devtools-v142.version>${selenium.version}</selenium-devtools-v142.version>
+    <selenium.version>4.39.0</selenium.version>
+    <selenium-devtools-v143.version>${selenium.version}</selenium-devtools-v143.version>
     <java.version>11</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -69,27 +69,23 @@
       <exclusions>
         <exclusion>
           <groupId>org.seleniumhq.selenium</groupId>
+          <artifactId>selenium-devtools-v142</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.seleniumhq.selenium</groupId>
           <artifactId>selenium-devtools-v141</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.seleniumhq.selenium</groupId>
           <artifactId>selenium-devtools-v140</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>org.seleniumhq.selenium</groupId>
-          <artifactId>selenium-devtools-v139</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.seleniumhq.selenium</groupId>
-          <artifactId>selenium-devtools-v138</artifactId>
-        </exclusion>
 
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-devtools-v142</artifactId>
-      <version>${selenium-devtools-v142.version}</version>
+      <artifactId>selenium-devtools-v143</artifactId>
+      <version>${selenium-devtools-v143.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>

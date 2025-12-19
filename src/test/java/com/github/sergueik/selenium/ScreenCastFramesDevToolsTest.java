@@ -14,11 +14,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v142.network.model.TimeSinceEpoch;
-import org.openqa.selenium.devtools.v142.page.Page;
-import org.openqa.selenium.devtools.v142.page.Page.StartScreencastFormat;
-import org.openqa.selenium.devtools.v142.page.model.ScreencastFrame;
-import org.openqa.selenium.devtools.v142.page.model.ScreencastFrameMetadata;
+import org.openqa.selenium.devtools.v143.network.model.TimeSinceEpoch;
+import org.openqa.selenium.devtools.v143.page.Page;
+import org.openqa.selenium.devtools.v143.page.Page.StartScreencastFormat;
+import org.openqa.selenium.devtools.v143.page.model.ScreencastFrame;
+import org.openqa.selenium.devtools.v143.page.model.ScreencastFrameMetadata;
 import org.openqa.selenium.interactions.Actions;
 
 /**
