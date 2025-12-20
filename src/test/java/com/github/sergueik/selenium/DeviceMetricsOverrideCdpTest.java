@@ -22,6 +22,7 @@ import org.openqa.selenium.interactions.Actions;
  * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setDeviceMetricsOverride
  * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-clearDeviceMetricsOverride
  *
+ * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
 public class DeviceMetricsOverrideCdpTest extends BaseCdpTest {

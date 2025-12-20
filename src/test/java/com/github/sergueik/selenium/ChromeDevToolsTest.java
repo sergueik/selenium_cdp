@@ -52,9 +52,10 @@ import org.openqa.selenium.devtools.v143.performance.model.Metric;
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * based on:
  * https://github.com/adiohana/selenium-chrome-devtools-examples/blob/master/src/test/java/ChromeDevToolsTest.java
- * https://codoid.com/selenium-4-chrome-devtools-log-entry-listeners/ etc. NOTE:
- * https://chromedevtools.github.io/devtools-protocol/tot/Console/ says The
- * Console domain is deprecated - use Runtime or Log instead.
+ * https://codoid.com/selenium-4-chrome-devtools-log-entry-listeners/ etc. 
+ * NOTE:
+ * https://chromedevtools.github.io/devtools-protocol/tot/Console/
+ * says: The Console domain is deprecated - use Runtime or Log instead.
  *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */

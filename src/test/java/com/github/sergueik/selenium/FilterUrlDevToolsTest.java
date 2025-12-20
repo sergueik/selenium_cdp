@@ -9,6 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,8 +77,9 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 	public void after() {
 
 		// @formatter:off
-		chromeDevTools.send(Network.setBlockedURLs(Optional.of(new ArrayList<BlockPattern>()), // urlPatterns
-				Optional.of(new ArrayList<String>()) // urls
+		chromeDevTools.send(Network.setBlockedURLs(
+				Optional.of(new ArrayList<BlockPattern>()), // urlPatterns
+				Optional.of(Collections.emptyList()) // urls
 		));
 		// @formatter:on
 		chromeDevTools.send(Network.disable());
@@ -111,7 +113,7 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 		chromeDevTools.send(
 				Network.setBlockedURLs(
 						Optional.of(blockPatterns), // urlPatterns
-						Optional.of(new ArrayList<String>())  // urls
+						Optional.of(Collections.emptyList())  // urls
 				)
 		// @formatter:on
 		);

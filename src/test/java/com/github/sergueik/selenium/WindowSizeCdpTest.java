@@ -44,7 +44,8 @@ import com.google.gson.JsonSyntaxException;
  * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getWindowBounds
  * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-setWindowBounds
  * https://chromedevtools.github.io/devtools-protocol/tot/Browser/#type-WindowID
- *  https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
+ * 
+ * https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 

@@ -1,6 +1,7 @@
 package com.github.sergueik.selenium;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -65,20 +66,13 @@ public class InputDevToolsTest extends BaseDevToolsTest {
 				Optional.of(""),
 				// Unique DOM defined string value describing the meaning of the
 				// key
-				Optional.of(0),
-				// Windows virtual key code (default: 0)
-				Optional.empty(),
-				// nativeVirtualKeyCode
-				Optional.of(false),
-				// autoRepeat
-				Optional.of(false),
-				// isKeypad
-				Optional.of(false),
-				// isSystemKey
-				Optional.of(0),
-				// location
-				Optional.of(new ArrayList<String>())
-		// commands
+				Optional.of(0), // Windows virtual key code (default: 0)
+				Optional.empty(), // nativeVirtualKeyCode
+				Optional.of(false), // autoRepeat
+				Optional.of(false),// isKeypad
+				Optional.of(false), // isSystemKey
+				Optional.of(0),// location
+				Optional.of(Collections.emptyList())	// commands
 		));
 		// @formatter:on
 		Utils.sleep(10000);

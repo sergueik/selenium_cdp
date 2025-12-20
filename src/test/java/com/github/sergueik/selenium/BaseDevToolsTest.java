@@ -1,14 +1,10 @@
 package com.github.sergueik.selenium;
 
-
-
 /**
 
  * Copyright 2021-2025 Serguei Kouzmine
 
  */
-
-
 
 import java.io.IOException;
 
@@ -57,18 +53,10 @@ import org.openqa.selenium.remote.http.ConnectionFailedException;
 
 
 /**
-
- * Base class for selected test scenarios for Selenium 4 Chrome Developer Tools
-
- * bridge
-
+ * Base class for selected test scenarios for Selenium 4 Chrome Developer Tools bridge
  *
-
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
-
  */
-
-
 
 public class BaseDevToolsTest {
 
@@ -176,17 +164,11 @@ public class BaseDevToolsTest {
 	public static void beforeClass() throws Exception {
 
 		// NOTE:
-
 		// the github location of package org.openqa.selenium.devtools.console
-
 		// is uncertain
-
 		// enable Console
-
 		// chromeDevTools.send(Log.enable());
-
 		// add event listener to show in host console the browser console message
-
 		// chromeDevTools.addListener(Log.entryAdded(), System.err::println);
 		driver.get(baseURL);
 	}

@@ -33,10 +33,12 @@ import org.openqa.selenium.devtools.v143.input.Input.DispatchKeyEventType;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
- * https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchKeyEvent * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ * https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchKeyEvent
  * see also:
  * https://github.com/ChromeDevTools/devtools-protocol/issues/74
  * https://github.com/puppeteer/puppeteer/blob/main/src/common/Input.ts#L118
+ * 
+ * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
 public class ZoomDevToolsTest extends BaseDevToolsTest {

@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +34,10 @@ import org.openqa.selenium.devtools.v143.network.Network;
  * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#type-UserAgentMetadata
  * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#type-UserAgentBrandVersion
  * https://wicg.github.io/ua-client-hints/
- * https://javadoc.io/static/org.seleniumhq.selenium/selenium-devtools-v119/4.16.1/org/openqa/selenium/devtools/v119/emulation/Emulation.html#setUserAgentOverride(java.lang.String,java.util.Optional,java.util.Optional,java.util.Optional)
+ * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setUserAgentOverride
+ * https://javadoc.io/static/org.seleniumhq.selenium/selenium-devtools-v119/4.16.1/org/openqa/selenium/devtools/v119/emulation/Emulation.html#(java.lang.String,java.util.Optional,java.util.Optional,java.util.Optional)
  * https://www.lambdatest.com/automation-testing-advisor/selenium/methods/org.openqa.selenium.devtools.idealized.Network.UserAgent.acceptLanguage
+ * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -167,7 +170,7 @@ public class UserAgentOverrideDevToolsTest extends BaseDevToolsTest {
 				false, // mobile 
 				Optional.empty(), // bitness, 
 				Optional.of(false), // wow64
-                Optional.of(new ArrayList<String>()) // formFactors
+				Optional.of(Collections.emptyList()) // formFactors
 			);
 			// @formatter:on
 
