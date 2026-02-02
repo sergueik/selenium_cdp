@@ -20,8 +20,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v143.network.Network;
-import org.openqa.selenium.devtools.v143.network.model.Headers;
+import org.openqa.selenium.devtools.v144.network.Network;
+import org.openqa.selenium.devtools.v144.network.model.Headers;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 

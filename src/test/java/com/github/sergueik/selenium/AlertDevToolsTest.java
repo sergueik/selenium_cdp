@@ -21,9 +21,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v143.page.Page;
-import org.openqa.selenium.devtools.v143.page.model.JavascriptDialogClosed;
-import org.openqa.selenium.devtools.v143.page.model.JavascriptDialogOpening;
+import org.openqa.selenium.devtools.v144.page.Page;
+import org.openqa.selenium.devtools.v144.page.model.JavascriptDialogClosed;
+import org.openqa.selenium.devtools.v144.page.model.JavascriptDialogOpening;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 

@@ -17,10 +17,10 @@ import java.util.TimeZone;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v143.log.Log;
-import org.openqa.selenium.devtools.v143.log.model.LogEntry;
-import org.openqa.selenium.devtools.v143.runtime.model.Timestamp;
-import org.openqa.selenium.devtools.v143.page.Page;
+import org.openqa.selenium.devtools.v144.log.Log;
+import org.openqa.selenium.devtools.v144.log.model.LogEntry;
+import org.openqa.selenium.devtools.v144.runtime.model.Timestamp;
+import org.openqa.selenium.devtools.v144.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -61,7 +61,7 @@ public class LoggingDevToolsTest extends BaseDevToolsTest {
 
 		// chromeDevTools.addListener(Log.eventAdded(), System.err::println);
 		// what it would print will not be too useful:
-		// org.openqa.selenium.devtools.v143.log.model.LogEntry@5e77d702
+		// org.openqa.selenium.devtools.v144.log.model.LogEntry@5e77d702
 
 		driver.get(baseURL);
 		chromeDevTools
