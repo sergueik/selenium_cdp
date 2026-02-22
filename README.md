@@ -1190,7 +1190,394 @@ sec-ch-ua="Chromium";v="124",
 sec-ch-ua-mobile=?0,
 sec-ch-ua-platform="Linux"
 }
+```
 
+## Mandatory Flaky Test (Chrome / ChromeDriver Version Gatekeeper)
+
+A common failure mode in Selenium 4 test suites is caused by the independent evolution of:
+
+- Google Chrome (auto-updated by the OS)
+- ChromeDriver (pinned in project dependencies or local binaries)
+
+When their **major versions diverge**, Selenium fails with:
+
+SessionNotCreatedException:  
+"This version of ChromeDriver only supports Chrome version X  
+Current browser version is Y"
+
+This error is catastrophic because it prevents **all tests** that rely on Chrome or CDP (Chrome DevTools Protocol) from running.
+
+To make this failure predictable and explicit, a *gatekeeper test* can be introduced that checks versions **before** constructing `ChromeDriver`.
+
+---
+
+### Gatekeeper Test (BeforeClass)
+
+```java
+@BeforeClass
+public static void beforeClass() throws Exception {
+
+    String chromeDriverVersion = getChromeDriverVersion(); // chromedriver.exe -version
+    String chromeVersion = getInstalledChromeVersion();   // OS-specific discovery without instantiating ChromeDriver
+
+    int driverMajor = parseMajor(chromeDriverVersion);
+    int chromeMajor = parseMajor(chromeVersion);
+
+    if (Math.abs(driverMajor - chromeMajor) >= MIN_VERSION_GAP) {
+        throw new RuntimeException(
+            "Chrome/ChromeDriver major version mismatch: "
+            + chromeMajor + " / " + driverMajor);
+    }
+
+    // Safe construction only after validation:
+    // This is intentional in order to surface any other early exceptions that Selenium
+    // or ChromeDriver may introduce in the future (for example, if a previously tolerated
+    // version gap suddenly becomes unsupported).
+
+    ChromeDriver driver = null;
+    try {
+        ChromeOptions options = new ChromeOptions();
+        driver = new ChromeDriver(options);
+        System.err.println("ChromeDriver instance created safely after version check");
+    } catch (SessionNotCreatedException ex) {
+        throw new RuntimeException("Fatal Selenium exception: " + ex.getMessage(), ex);
+    } finally {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}
+
+@Test
+public void test() {
+    // Exists only to trigger the run
+    System.err.println("Test executed");
+}
+```
+
+Observed Non-Deterministic Failures
+
+Despite the simplicity of this logic, the test fails randomly in two distinct ways.
+
+Case 1 — Gatekeeper exception (expected)
+```java
+RuntimeException: Chrome/ChromeDriver major version mismatch: 145 / 143
+```
+Case 2 — Selenium constructor exception (unexpected)
+```
+SessionNotCreatedException: Could not start a new session.
+This version of ChromeDriver only supports Chrome version 143
+Current browser version is 145.0.7632.76
+with binary path C:\Program Files\Google\Chrome\Application\chrome.exe
+```
+The second failure bypasses the intended gatekeeper logic and originates from:
+```java
+new ChromeDriver(options);
+```
+This exception propagates into all tests that rely on `DevTools`:
+```
+DevTools devTools = ((HasDevTools) driver).getDevTools();
+GetVersionResponse response = devTools.send(Browser.getVersion());
+```
+and also on less demanding `CDP`:
+```java
+driver.executeCdpCommand("Browser.getVersion", new HashMap<>());
+```
+Thus, a single version mismatch renders every RPC/CDP-based test unusable.
+
+Root Cause: Constructor Side-Effects and Static Binding
+
+This issue illustrates fundamental Java rules:
+
+Constructors cannot be overridden
+
+Static methods are resolved at compile time
+
+Base class behavior cannot be intercepted polymorphically
+
+Side effects occur before user code regains control
+
+Once `new ChromeDriver()` is executed, Selenium will:
+
+Spawn chromedriver.exe
+
+Perform protocol handshake
+
+Throw `SessionNotCreatedException` before any user logic runs
+
+Therefore, post-construction validation is impossible.
+
+This is a textbook example of:
+
+temporal coupling
+
+non-idempotent constructors
+
+side-effect driven initialization
+
+Architectural Warning (Figaro / Barber of Seville Problem)
+
+One must resist the temptation to modify the real base test class (ChromeDriver) to make it “accountable” for discovering version lag.
+
+Doing so risks creating a comic but dangerous situation similar to Figaro, the Barber of Seville — endlessly reacting to failures caused by the very mechanism meant to prevent them.
+
+In other words:
+
+If ChromeDriver itself is responsible for discovering incompatibility
+
+and that discovery requires instantiating ChromeDriver
+
+then the system becomes logically circular
+
+This is a classic case of self-referential failure handling.
+
+Therefore:
+
+Version discovery must be external, static, and side-effect free.
+
+#### Conclusion
+
+What appears to be a trivial precondition check is complicated by:
+
+Java static dispatch rules
+
+constructor semantics
+
+Selenium’s eager session creation
+
+OS-level process spawning
+
+Chrome auto-updates
+
+The only robust solution is:
+
+Discover Chrome version without interacting with `ChromeDriver`
+
+Discover `chromedriver`/`chromedriver.exe` version via CLI
+
+Compare major versions
+
+Fail early and deterministically
+
+Only then construct `ChromeDriver`
+
+This prevents:
+
+random ordering failures
+
+flaky CI behavior
+
+mass CDP test collapse
+
+misleading Selenium stack traces
+
+
+### Architectural Warning (Barber of Seville Analogy — Layered Plot Management)
+
+Instead of a purely comic failure loop, this situation resembles the protagonist in The Barber of Seville, who succeeds only by navigating an ever-deepening stack of interdependent plot twists and contingencies.
+
+In software terms, attempting to make the real base class (ChromeDriver) responsible for discovering and correcting its own version incompatibility introduces a layered dependency trap:
+
+The driver must start in order to discover incompatibility
+
+Discovering incompatibility depends on the driver starting
+
+Each new safeguard adds another layer of control logic
+
+This produces a structure of cascading preconditions where failure handling itself becomes part of the failure path.
+
+Such designs tend to evole into systems that require increasing orchestration just to reach a stable state — much like the Barber’s intricate maneuvering through multiple overlapping schemes.
+
+Therefore:
+
+Version discovery must remain external, static, and side-effect free, rather than embedded inside the class whose construction is already fragile.
+
+This keeps responsibility clearly separated:
+
+Gatekeeper logic handles environmental validation
+
+ChromeDriver handles browser automation
+
+Neither must reason about the other’s internal failure modes
+
+
+This patches the core attitude: “It will break again”
+
+Cultural Analogy: Defensive Engineering (Argentinian Pessimism)
+
+A useful non-software parallel can be drawn from the Argentinian economic mindset shaped by decades of recurring currency and financial crises.
+
+The resulting core attitude is simple:
+
+“It will break again.”
+
+This pessimism is not cynicism; it is adaptive engineering instinct.
+It leads to designs that assume instability as the default state and prioritize early detection over late recovery.
+
+Applied to Selenium and ChromeDriver version drift, this attitude translates into:
+
+Never trusting that today’s compatible versions will remain compatible tomorrow
+
+Always validating the environment before invoking expensive or fragile operations
+
+Treating external dependencies (browser + driver) as volatile infrastructure, not stable libraries
+
+In practice, this justifies the existence of a gatekeeper test whose only purpose is to fail loudly and deterministically when the environment diverges:
+
+// Safe construction only after validation
+ChromeDriver driver = new ChromeDriver(options);
+
+The test suite thus encodes institutional memory of past breakages, much like an economy that has learned—through repetition—that collapse is not an anomaly but a recurring event.
+
+### Gaming Analogy: The Universal Tool (Crowbar → BFG)
+
+An older gamer analogy helps clarify the engineering instinct behind the gatekeeper test.
+
+In early first-person shooter games, a crude but reliable instrument — often literally a crowbar — served as a universal survival tool.
+It worked when ammunition ran out, when advanced weapons failed, and when the environment became unpredictable.
+
+By the time of the Doom-era lineage, this evolved into the legendary BFG — not subtle, not elegant, but decisive.
+Its purpose was not precision, but certainty: when everything else breaks, this still works.
+
+The gatekeeper test plays the same role in a Selenium test suite:
+
+It is intentionally coarse-grained
+
+It does not attempt fine protocol negotiation (RPC vs CDP)
+
+It answers one brutal question only:
+Is the environment viable or not?
+
+Like the crowbar or the BFG, it is not meant to be pretty — it is meant to prevent the system from wasting hours of effort on doomed execution paths.
+
+This philosophy embraces the defensive maxim:
+
+If the environment is hostile, use the simplest weapon that always fires.
+
+In practice, this means validating Chrome and ChromeDriver compatibility before allowing any higher-level tests to proceed.
+
+### Mandatory Flaky Test, Verbose Take
+
+A common error with Selenium 4 testing is due to evolution of the applocation with demnding requirements. 
+A lean tast can be set up to gate keep against the future past lag:
+
+```java
+	@BeforeClass
+	public static void beforeClass() throws Exception {
+		String chromeDriverVersion = getChromeDriverVersion(); // execute chromedriver.exe -version
+		String chromeVersion = getInstalledChromeVersion(); // perform OS-specicic version discovery without trying to instanciate ChromeDriver 
+
+		int driverMajor = parseMajor(chromeDriverVersion);
+		int chromeMajor = parseMajor(chromeVersion);
+
+		if (Math.abs(driverMajor - chromeMajor) >= MIN_VERSION_GAP) {
+			throw new RuntimeException(
+					"Chrome/ChromeDriver major version mismatch: " + chromeMajor + " / " + driverMajor);
+		}
+
+		// 3️⃣ Now safe to construct the driver
+		ChromeDriver driver = null;
+		try {
+			ChromeOptions options = new ChromeOptions();
+			driver = new ChromeDriver(options);
+			System.err.println("ChromeDriver instance created safely after version check");
+		} catch (SessionNotCreatedException ex) {
+			// amend exception and propagate
+			System.err.println("Fatal Selenium exception: " + ex.getMessage());
+			throw new RuntimeException("Fatal Selenium exception: " + ex.getMessage(), ex);
+		} finally {
+			if (driver != null)
+				driver.quit();
+		}
+	}
+
+	@Test
+	public void test() {
+    // nothing to do - test method exist solely to trigger the run  
+		System.err.println("Test executed");
+	}
+
+``` 
+this code despite elementary keeps failing randomly in both 
+```sh
+mvn test -Dtest=FailWithSessionNotCreatedTest
+```
+```text
+Running FailWithSessionNotCreatedTest Gatekeeper: ChromeDriver version: 143.0.7499.42 Gatekeeper: Chrome version: 145.0.7632.76 
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.145 sec
+ <<< FAILURE! FailWithSessionNotCreatedTest Time elapsed: 0.144 sec 
+<<< ERROR! java.lang.RuntimeException: Chrome/ChromeDriver major version mismatch: 145 / 143
+``
+and 
+```text
+Running FailWithSessionNotCreatedTest Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 3.941 sec
+<<< FAILURE! FailWithSessionNotCreatedTest Time elapsed: 3.94 sec 
+<<< ERROR! org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. 
+Message: session not created: This version of ChromeDriver only supports Chrome version 143 Current browser version is 145.0.7632.76 
+with binary path C:\Program Files\Google\Chrome\Application\chrome.exe
+
+Host info: host: 'sergueik23', ip: '192.168.12.178'
+Build info: version: '4.41.0', revision: '9fc754f'
+System info: os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '11.0.12'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [null, newSession {capabilities=[Capabilities {browserName: chrome, goog:chromeOptions: {args: [], extensions: []}}]}]
+        at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:114)
+        at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:75)
+        at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:61)
+        at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:195)
+        at org.openqa.selenium.remote.service.DriverCommandExecutor.invokeExecute(DriverCommandExecutor.java:216)
+        at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:174)
+        at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:604)
+        at org.openqa.selenium.remote.RemoteWebDriver.startSession(RemoteWebDriver.java:288)
+        at org.openqa.selenium.remote.RemoteWebDriver.<init>(RemoteWebDriver.java:211)
+        at org.openqa.selenium.chromium.ChromiumDriver.<init>(ChromiumDriver.java:115)
+        at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:92)
+        at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:76)
+        at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:72)
+        at FailWithSessionNotCreatedTest.beforeClass(FailWithSessionNotCreatedTest.java:53)
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+        at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
+        at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+        at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
+        at org.junit.internal.runners.statements.RunBefores.invokeMethod(RunBefores.java:33)
+        at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+        at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+        at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+        at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+        at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+        at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+        at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+        at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+        at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+        at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+        at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+
+
+Results :
+
+Tests in error:
+  FailWithSessionNotCreatedTest: Could not start a new session. Response code 500. Message: session not created: This version of ChromeDriver only supports Chrome version 143(..)
+
+```
+the latter exception will affect every `RPC` rank test operating Chrome browser via 
+```java
+ChromiumDriver driver = new ChromeDriver(options);
+DevTools chromeDevTools = ((HasDevTools) driver).getDevTools();
+GetVersionResponse response = chromeDevTools.send(Browser.getVersion());
+```
+and some (possibly all) tests operarting Chrome via `CDP Command`:
+```java
+String command = "Browser.getVersion";
+ChromeOptions options = new ChromeOptions();
+ChromeDriver driver = new ChromeDriver(options);
+Map<String, Object> result = driver.executeCdpCommand(command, new HashMap<>());
 ```
 ### See Also
 

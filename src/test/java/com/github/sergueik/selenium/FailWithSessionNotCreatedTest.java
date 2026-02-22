@@ -1,88 +1,115 @@
-package com.github.sergueik.selenium;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.chromium.ChromiumDriver;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-// to see the intended behavior
-// git show 9494f9cb45c87a596be1fe985bac7e5cccd0d00e:src/test/java/com/github/sergueik/selenium/FailWithSessionNotCreatedTest.java  > src/test/java/com/github/sergueik/selenium/FailWithSessionNotCreatedTest.java
-// mvn test -Dtest=FailWithSessionNotCreatedTest
-// Running com.github.sergueik.selenium.FailWithSessionNotCreatedTest
-// ChromeDriver instance created
-// test is run
+import static org.junit.Assert.fail;
 
 public class FailWithSessionNotCreatedTest {
 
-
-	// fail if major versions diverge this far
+	// allowed version gap
 	private static final int MIN_VERSION_GAP = 2;
 
-	// Junit 4 canonical - fail-flat setup only
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws Exception {
+		String osName = System.getProperty("os.name").toLowerCase();
 
-		// Cross-platform path logic
-		System.setProperty("webdriver.chrome.driver",
-				Paths.get(System.getProperty("user.home")).resolve("Downloads")
-						.resolve(System.getProperty("os.name").toLowerCase().startsWith("windows") ? "chromedriver.exe"
-								: "chromedriver")
-						.toAbsolutePath().toString());
+		// Build ChromeDriver path (same as your original logic)
+		String driverPath = Paths.get(System.getProperty("user.home")).resolve("Downloads")
+				.resolve(osName.startsWith("windows") ? "chromedriver.exe" : "chromedriver").toAbsolutePath()
+				.toString();
 
-		ChromiumDriver driver = null;
+		System.setProperty("webdriver.chrome.driver", driverPath);
 
+		String chromeDriverVersion = getChromeDriverVersion(driverPath);
+
+		String chromeVersion = getInstalledChromeVersion();
+
+		// System.err.println("Gatekeeper: ChromeDriver version: " + chromeDriverVersion);
+		// System.err.println("Gatekeeper: Chrome version: " + chromeVersion);
+
+		int driverMajor = parseMajor(chromeDriverVersion);
+		int chromeMajor = parseMajor(chromeVersion);
+
+		if (Math.abs(driverMajor - chromeMajor) >= MIN_VERSION_GAP) {
+			throw new RuntimeException(
+					"Chrome/ChromeDriver major version mismatch: " + chromeMajor + " / " + driverMajor);
+		}
+
+		// 3️⃣ Now safe to construct the driver
+		ChromeDriver driver = null;
 		try {
 			ChromeOptions options = new ChromeOptions();
-			// options.addArguments("--headless=new");
-
-			// Attempt driver construction
-			try {
-				driver = new ChromeDriver(options);
-			} catch (SessionNotCreatedException e) {
-				// amend exception and propagate
-				System.err.println("Fatal Selenium exception: " + e.getMessage());
-				throw new RuntimeException("Fatal Selenium exception: " + e.getMessage(), e);
-			}
-
-			// Query browser version via CDP
-			Map<String, Object> result = driver.executeCdpCommand("Browser.getVersion", new HashMap<>());
-			String browserProduct = (String) result.get("product"); // e.g., Chrome/145.0.7632.76
-
-			// Query ChromeDriver version from capabilities
-			String chromeDriverFull = ((Map<String, Object>) (driver.getCapabilities()).getCapability("chrome"))
-					.get("chromedriverVersion").toString(); // e.g., 143.0.7570.10
-
-			int browserMajor = Integer.parseInt(browserProduct.split("/")[1].split("\\.")[0]);
-			int driverMajor = Integer.parseInt(chromeDriverFull.split("\\.")[0]);
-
-			System.err.println(
-					"Gatekeeper: Browser version " + browserProduct + " | ChromeDriver version " + chromeDriverFull);
-
-			if (Math.abs(browserMajor - driverMajor) > MIN_VERSION_GAP) {
-				throw new RuntimeException(
-						"Chrome Browser / Chrome Driver version mismatch. " + browserMajor + " / " + driverMajor);
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Gatekeeper fatal error: " + e.getMessage(), e);
+			driver = new ChromeDriver(options);
+			System.err.println("ChromeDriver instance created safely after version check");
 		} finally {
-			if (driver != null) {
+			if (driver != null)
 				driver.quit();
-			}
 		}
 	}
 
-	// @Ignore
 	@Test
 	public void test() {
-		System.err.println("test is run");
+		System.err.println("Test executed");
+	}
+
+	private static String getChromeDriverVersion(String driverPath) throws Exception {
+		ProcessBuilder pb = new ProcessBuilder(driverPath, "--version");
+		pb.redirectErrorStream(true);
+		Process process = pb.start();
+
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+			String line = reader.readLine();
+			if (line != null && line.startsWith("ChromeDriver")) {
+				return line.split(" ")[1];
+			}
+		}
+		throw new RuntimeException("Cannot determine ChromeDriver version from: " + driverPath);
+	}
+
+	private static String getInstalledChromeVersion() throws Exception {
+		String os = System.getProperty("os.name").toLowerCase();
+		String chromeCommand;
+		if (os.contains("win")) {
+			// Windows: try default path
+			chromeCommand = "reg query \"HKEY_CURRENT_USER\\Software\\Google\\Chrome\\BLBeacon\" /v version";
+			Process process = Runtime.getRuntime().exec(chromeCommand);
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					if (line.contains("version")) {
+						return line.trim().split("\\s+")[line.trim().split("\\s+").length - 1];
+					}
+				}
+			}
+		} else if (os.contains("mac")) {
+			chromeCommand = "/Applications/Googlx`e\\ Chrome.app/Contents/MacOS/Google\\ Chrome --version";
+			Process process = Runtime.getRuntime().exec(new String[] { "/bin/bash", "-c", chromeCommand });
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+				return reader.readLine().split(" ")[2];
+			}
+		} else {
+			// Linux: assume google-chrome in PATH
+			chromeCommand = "google-chrome --version";
+			Process process = Runtime.getRuntime().exec(chromeCommand);
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+				return reader.readLine().split(" ")[2];
+			}
+		}
+		throw new RuntimeException("Cannot determine installed Chrome version");
+	}
+
+	private static int parseMajor(String version) {
+		Matcher m = Pattern.compile("(\\d+)").matcher(version);
+		if (m.find())
+			return Integer.parseInt(m.group(1));
+		throw new RuntimeException("Cannot parse major version from: " + version);
 	}
 }
