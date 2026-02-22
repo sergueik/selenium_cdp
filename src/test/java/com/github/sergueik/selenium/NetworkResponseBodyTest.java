@@ -26,9 +26,9 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v144.network.Network;
-import org.openqa.selenium.devtools.v144.network.model.ResourceType;
-import org.openqa.selenium.devtools.v144.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v145.network.Network;
+import org.openqa.selenium.devtools.v145.network.model.ResourceType;
+import org.openqa.selenium.devtools.v145.network.model.ResponseReceived;
 import org.openqa.selenium.interactions.Actions;
 
 import com.google.gson.Gson;
