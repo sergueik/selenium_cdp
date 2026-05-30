@@ -21,7 +21,7 @@
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
     <pdfbox.version>2.0.27</pdfbox.version>
-    <selenium.version>4.41.0</selenium.version>
+    <selenium.version>4.43.0</selenium.version>
     <selenium-devtools-v145.version>${selenium.version}</selenium-devtools-v145.version>
     <java.version>11</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
