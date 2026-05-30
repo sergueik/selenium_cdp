@@ -15,9 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v145.dom.model.Rect;
-import org.openqa.selenium.devtools.v145.emulation.Emulation;
-import org.openqa.selenium.devtools.v145.page.Page;
+import org.openqa.selenium.devtools.v148.dom.model.Rect;
+import org.openqa.selenium.devtools.v148.emulation.Emulation;
+import org.openqa.selenium.devtools.v148.page.Page;
 import org.openqa.selenium.interactions.Actions;
 
 /**
@@ -78,7 +78,9 @@ public class DeviceMetricsOverrideDevToolsTest extends BaseDevToolsTest {
 					Optional.empty(), // screenOrientation
 					Optional.empty(), // viewport 
 					Optional.empty(),  // displayFeature
-					Optional.empty() // devicePosture
+					Optional.empty(), // devicePosture
+					null, 
+					null
 				)
 				// @formatter:on	
 			);
