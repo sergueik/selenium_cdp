@@ -65,7 +65,7 @@ public class DeviceMetricsOverrideDevToolsTest extends BaseDevToolsTest {
 			chromeDevTools.send(
 				// @formatter:off
 				Emulation.setDeviceMetricsOverride(
-						device_width, 
+					device_width, 
 					height,
 					0,  // deviceScaleFactor
 					true, // mobile
@@ -79,8 +79,8 @@ public class DeviceMetricsOverrideDevToolsTest extends BaseDevToolsTest {
 					Optional.empty(), // viewport 
 					Optional.empty(),  // displayFeature
 					Optional.empty(), // devicePosture
-					null, 
-					null
+					Optional.of(Emulation.SetDeviceMetricsOverrideScrollbarType.DEFAULT), // scrollbarType
+					Optional.of(false)  // screenOrientationLockEmulation
 				)
 				// @formatter:on	
 			);

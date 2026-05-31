@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2025 Serguei Kouzmine
+ * Copyright 2025,2026 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -28,20 +28,27 @@ import org.junit.Test;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
-
-// NOTE import org.openqa.selenium.devtools.v148.network.model.Cookie collides with another import statement
-// import org.openqa.selenium.Cookie;
+import org.openqa.selenium.WebDriver.Options;
 
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.DevToolsException;
 import org.openqa.selenium.devtools.HasDevTools;
+
 import org.openqa.selenium.devtools.v148.network.Network;
+
+// NOTE: the import org.openqa.selenium.devtools.v148.network.model.Cookie collides with another import statement
+// import org.openqa.selenium.Cookie;
 import org.openqa.selenium.devtools.v148.network.model.Cookie;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
- * 
- * 
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-deleteCookies
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-getCookies
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setCookie
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-clearBrowserCookies
+ *
+ * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/WebDriver.Options.html
+ * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/class-use/Cookie.html
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -56,13 +63,12 @@ public class NetworkSetCookieDevToolsTest extends BaseDevToolsTest {
 
 	@After
 	public void after() {
-		chromeDevTools.send(Network.deleteCookies(name, // Cookie value
-				Optional.of(baseURL), // Optional: URL
-				Optional.of(domain), // Optional: Domain
-				Optional.empty(), // Optional: Path
-				// NOTE: method signature change
-				// Optional.empty(), // Optional: Path
-				Optional.empty() // Optional: Partition key
+		chromeDevTools.send(Network.deleteCookies(
+				name, // name of the cookies to remove.
+				Optional.of(baseURL), // url
+				Optional.of(domain), // domain
+				Optional.empty(), // path
+				Optional.empty() // partitionKey
 
 		));
 		chromeDevTools.send(Network.clearBrowserCookies());
@@ -73,19 +79,20 @@ public class NetworkSetCookieDevToolsTest extends BaseDevToolsTest {
 	public void before() throws Exception {
 		chromeDevTools.send(Network.enable(Optional.of(100000000), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
 		driver.get(baseURL);
-		chromeDevTools.send(Network.setCookie(name, // Cookie name
-				value, // Cookie value
-				Optional.empty(), // Optional: Path
-				Optional.of(baseURL.replaceFirst("https://", "")), // Optional: Domain
-				Optional.empty(), // Optional: SameSite
-				Optional.of(true), // Optional: Secure
-				Optional.empty(), // Optional: HttpOnly
-				Optional.empty(), // Optional: Expiration date
-				Optional.empty(), // Optional: SameParty
-				Optional.empty(), // Optional: Source Scheme
-				Optional.empty(), // Optional: Source Port
-				Optional.empty(), // Optional: Priority
-				Optional.empty() 
+		chromeDevTools.send(Network.setCookie(
+				name, // name
+				value, // value
+				Optional.empty(), // path
+				Optional.of(baseURL.replaceFirst("https://", "")), // domain
+				Optional.empty(), // sameSite
+				Optional.of(true), // secure
+				Optional.empty(), // httpOnly
+				Optional.empty(), // expires
+				Optional.empty(), // sameParty
+				Optional.empty(), // sourceScheme
+				Optional.empty(), // sourcePort
+				Optional.empty(), // priority
+				Optional.empty()  // partitionKey
 		));
 		driver.get("about:blank");
 
@@ -96,7 +103,6 @@ public class NetworkSetCookieDevToolsTest extends BaseDevToolsTest {
 	public void test1() {
 		// Navigate to the page again to see the cookie applied
 		driver.get(baseURL);
-
 		org.openqa.selenium.Cookie cookie = driver.manage().getCookieNamed(name);
 		assertThat(cookie.getValue(), is(value));
 		assertThat(cookie.getDomain(), is(domain));
@@ -109,7 +115,9 @@ public class NetworkSetCookieDevToolsTest extends BaseDevToolsTest {
 		driver.get(baseURL);
 		// Verify the cookie is set
 		List<Cookie> cookies = chromeDevTools
-				.send(Network.getCookies(Optional.empty()));
+				.send(Network.getCookies(
+						Optional.empty() // urls
+						));
 		assertThat(cookies.size(), greaterThan(0));
 		//System.err.println(cookies.size());
 

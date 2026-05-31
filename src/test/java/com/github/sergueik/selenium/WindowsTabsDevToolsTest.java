@@ -23,11 +23,13 @@ import org.openqa.selenium.devtools.v148.target.model.TargetInfo;
  * see:
  * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-createTarget
  * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-attachToTarget
+ * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-detachFromTarget
  * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-getTargets
  * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-getTargetInfo
  * https://chromedevtools.github.io/devtools-protocol/tot/Target/#type-TargetInfo
  * https://chromedevtools.github.io/devtools-protocol/tot/Target/#type-SessionID
  * https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-attachToBrowserTarget
+ * https://chromedevtools.github.io/devtools-protocol/tot/Target/#event-targetCreated
  */
 
 // NOTE: the "Target.createTarget" method signature change between 109 and 119:
@@ -53,39 +55,47 @@ public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 		// Arrange
 
 		// Act
-		targetId = chromeDevTools.send(Target.createTarget(baseURL, Optional.of(0),
-				Optional.of(0), Optional.empty(), null, null, null, Optional.of(false), Optional.of(true),
-				Optional.of(false), Optional.of(false), null, null));
+		// Creates a new page.
+		targetId = chromeDevTools.send(Target.createTarget(baseURL, Optional.of(0), // left
+				Optional.of(0), // top
+				Optional.of(0), // width
+				Optional.of(0), // height
+				Optional.empty(), // windowState
+				Optional.empty(), // browserContextId
+				Optional.of(false), // enableBeginFrameControl
+				Optional.of(true), // newWindow
+				Optional.of(false), // background
+				Optional.of(false), // forTab
+				Optional.of(false), // hidden
+				Optional.of(false) // focus
+		));
 		Utils.sleep(1000);
 		System.err.println("TargetID: " + targetId);
-		sessionId = chromeDevTools
-				.send(Target.attachToTarget(targetId, Optional.empty()));
+		sessionId = chromeDevTools.send(Target.attachToTarget(targetId, Optional.empty() // flatten
+		));
 		System.err.println("SessionId: " + sessionId);
-		targetInfo = chromeDevTools
-				.send(Target.getTargetInfo(Optional.of(targetId)));
-		System.err.println("TargetInfo: " + "\n" + "TargetId: "
-				+ targetInfo.getTargetId() + "\n" + "Title: " + targetInfo.getTitle()
-				+ "\n" + "Type: " + targetInfo.getType() + "\n" + "Url: "
-				+ targetInfo.getUrl() + "\n" + "Attached: " + targetInfo.getAttached());
-
+		targetInfo = chromeDevTools.send(Target.getTargetInfo(Optional.of(targetId)));
+		System.err.println("TargetInfo: " + "\n" + "TargetId: " + targetInfo.getTargetId() + "\n" + "Title: "
+				+ targetInfo.getTitle() + "\n" + "Type: " + targetInfo.getType() + "\n" + "Url: " + targetInfo.getUrl()
+				+ "\n" + "Attached: " + targetInfo.getAttached() // Whether the target has an attached client
+		);
+		chromeDevTools.send(Target.detachFromTarget(Optional.of(sessionId), Optional.of(targetId)));
 	}
 
 	@Test
 	public void test2() {
 		// Arrange
 		targetInfo = chromeDevTools.send(Target.getTargetInfo(Optional.empty()));
-		System.err.println("TargetInfo: " + "\n" + "TargetId: "
-				+ targetInfo.getTargetId() + "\n" + "Title: " + targetInfo.getTitle()
-				+ "\n" + "Type: " + targetInfo.getType() + "\n" + "Url: "
-				+ targetInfo.getUrl() + "\n" + "Attached: " + targetInfo.getAttached());
+		System.err.println("TargetInfo: " + "\n" + "TargetId: " + targetInfo.getTargetId() + "\n" + "Title: "
+				+ targetInfo.getTitle() + "\n" + "Type: " + targetInfo.getType() + "\n" + "Url: " + targetInfo.getUrl()
+				+ "\n" + "Attached: " + targetInfo.getAttached());
 
 		// Act
 		targetInfos = chromeDevTools.send(Target.getTargets(Optional.empty()));
 		System.err.println("TargetInfos: " + targetInfos.toString());
 		targetInfos.stream()
-				.forEach(o -> System.err.println("TargetInfo: " + "\n" + "TargetId: "
-						+ o.getTargetId() + "\n" + "Title: " + o.getTitle() + "\n"
-						+ "Type: " + o.getType() + "\n" + "Url: " + o.getUrl() + "\n"
+				.forEach(o -> System.err.println("TargetInfo: " + "\n" + "TargetId: " + o.getTargetId() + "\n"
+						+ "Title: " + o.getTitle() + "\n" + "Type: " + o.getType() + "\n" + "Url: " + o.getUrl() + "\n"
 						+ "Attached: " + o.getAttached() + "\n" + "\n"));
 	}
 
@@ -100,27 +110,35 @@ public class WindowsTabsDevToolsTest extends BaseDevToolsTest {
 			sessionId = chromeDevTools.send(Target.attachToBrowserTarget());
 			System.err.println("SessionId: " + sessionId);
 		} catch (DevToolsException e) {
-			System.err.println("DevToolsException exception " + "in test3"
-					+ " (ignored): " + Utils.processExceptionMessage(e.getMessage()));
+			System.err.println("DevToolsException exception " + "in test3" + " (ignored): "
+					+ Utils.processExceptionMessage(e.getMessage()));
 		}
-
 	}
 
 	@Test()
 	public void test4() {
 		// Arrange
 		chromeDevTools.addListener(Target.targetCreated(),
-				(TargetInfo o) -> System.err.println("TargetInfo: " + "\n"
-						+ "TargetId: " + o.getTargetId() + "\n" + "Title: " + o.getTitle()
-						+ "\n" + "Type: " + o.getType() + "\n" + "Url: " + o.getUrl() + "\n"
+				(TargetInfo o) -> System.err.println("TargetInfo: " + "\n" + "TargetId: " + o.getTargetId() + "\n"
+						+ "Title: " + o.getTitle() + "\n" + "Type: " + o.getType() + "\n" + "Url: " + o.getUrl() + "\n"
 						+ "Attached: " + o.getAttached() + "\n" + "\n"));
 
 		// Act
-		targetId = chromeDevTools.send(Target.createTarget(baseURL, Optional.of(0),
-				Optional.of(0), Optional.empty(), null, null, null, Optional.of(false), Optional.of(true),
-				Optional.of(false), Optional.of(false), null, null));
+		// Creates a new page.
+		targetId = chromeDevTools.send(Target.createTarget(baseURL, Optional.of(0), // left
+				Optional.of(0), // top
+				Optional.of(0), // width
+				Optional.of(0), // height
+				Optional.empty(), // windowState
+				Optional.empty(), // browserContextId
+				Optional.of(false), // enableBeginFrameControl
+				Optional.of(true), // newWindow
+				Optional.of(false), // background
+				Optional.of(false), // forTab
+				Optional.of(false), // hidden
+				Optional.of(false) // focus
+		));
 		Utils.sleep(1000);
 	}
 
 }
-

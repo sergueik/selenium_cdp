@@ -71,37 +71,37 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 			chromeDevTools.send(
 				// @formatter:off
 				Emulation.setDeviceMetricsOverride(
-					rect.getWidth().intValue(), 
-					rect.getHeight().intValue(),
-					deviceScaleFactor, 
-					false, 
-					Optional.empty(), 
-					Optional.empty(),
-					Optional.empty(), 
-					Optional.empty(), 
-					Optional.empty(), 
-					Optional.empty(),
-					Optional.empty(), 
-					Optional.empty(), 
-					Optional.empty(),
-					Optional.empty(), 
-					null, 
-					null
+					rect.getWidth().intValue(),  // width
+					rect.getHeight().intValue(), // height
+					deviceScaleFactor,  // deviceScaleFactor
+					false,  // mobile
+					Optional.empty(),  // scale
+					Optional.empty(), // screenWidth
+					Optional.empty(), // screenHeight
+					Optional.empty(), // positionX
+					Optional.empty(), // positionY
+					Optional.empty(), // dontSetVisibleSize
+					Optional.empty(), // screenOrientation
+					Optional.empty(), // viewport
+					Optional.empty(), // displayFeature
+					Optional.empty(), // devicePosture
+					Optional.of(Emulation.SetDeviceMetricsOverrideScrollbarType.DEFAULT), // scrollbarType
+					Optional.of(false)  // screenOrientationLockEmulation
 				)
 				// @formatter:on
 			);
 			String dataString = chromeDevTools.send(
-					// @formatter:off
-					Page.captureScreenshot(
-							Optional.of(Page.CaptureScreenshotFormat.JPEG), // format
-							Optional.of(100), // quality
-							Optional.empty(),  // clip
-							Optional.of(false),  // fromSurface
-							Optional.of(false), // captureBeyondViewport
-							Optional.of(false) // optimizeForSpeed
+				// @formatter:off
+				Page.captureScreenshot(
+					Optional.of(Page.CaptureScreenshotFormat.JPEG), // format
+					Optional.of(100), // quality
+					Optional.empty(),  // clip
+					Optional.of(false),  // fromSurface
+					Optional.of(false), // captureBeyondViewport
+					Optional.of(false) // optimizeForSpeed
 					)
-					// @formatter:on
-		);
+				// @formatter:on
+				);
 		chromeDevTools.send(Emulation.clearDeviceMetricsOverride());
 
 		byte[] image = base64.decode(dataString);
@@ -154,27 +154,28 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 		width = rect.getWidth().intValue();
 		height = rect.getHeight().intValue();
 		System.err.println(String.format("Content size: %dx%d", width, height));
+
 		chromeDevTools.send(
-				// @formatter:off
-				Emulation.setDeviceMetricsOverride(
-					rect.getWidth().intValue(), 
-					rect.getHeight().intValue(),
-					1.0, 
-					false, 
-					Optional.empty(), 
-					Optional.empty(),
-					Optional.empty(), 
-					Optional.empty(), 
-					Optional.empty(), 
-					Optional.empty(),
-					Optional.empty(), 
-					Optional.empty(), 
-					Optional.empty(), 
-					Optional.empty(), 
-					null, 
-					null
-				)
-				// @formatter:on
+			// @formatter:off
+			Emulation.setDeviceMetricsOverride(
+				rect.getWidth().intValue(),  // width
+				rect.getHeight().intValue(), // height
+				1.0,  // deviceScaleFactor
+				false,  // mobile
+				Optional.empty(),  // scale
+				Optional.empty(), // screenWidth
+				Optional.empty(), // screenHeight
+				Optional.empty(), // positionX
+				Optional.empty(), // positionY
+				Optional.empty(), // dontSetVisibleSize
+				Optional.empty(), // screenOrientation
+				Optional.empty(), // viewport
+				Optional.empty(), // displayFeature
+				Optional.empty(), // devicePosture
+				Optional.of(Emulation.SetDeviceMetricsOverrideScrollbarType.DEFAULT), // scrollbarType
+				Optional.of(false)  // screenOrientationLockEmulation
+			)
+			// @formatter:on
 		);
 		// https://chromedevtools.github.io/devtools-protocol/tot/DOM/#method-enable
 		chromeDevTools
