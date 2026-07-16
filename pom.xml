@@ -23,6 +23,7 @@
     <pdfbox.version>2.0.27</pdfbox.version>
     <selenium.version>4.45.0</selenium.version>
     <selenium-devtools-v149.version>${selenium.version}</selenium-devtools-v149.version>
+    <selenium-devtools-v149.version>4.46.0</selenium-devtools-v149.version>
     <java.version>11</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
