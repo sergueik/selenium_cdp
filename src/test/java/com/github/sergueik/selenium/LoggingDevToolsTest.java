@@ -17,10 +17,10 @@ import java.util.TimeZone;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v149.log.Log;
-import org.openqa.selenium.devtools.v149.log.model.LogEntry;
-import org.openqa.selenium.devtools.v149.runtime.model.Timestamp;
-import org.openqa.selenium.devtools.v149.page.Page;
+import org.openqa.selenium.devtools.v151.log.Log;
+import org.openqa.selenium.devtools.v151.log.model.LogEntry;
+import org.openqa.selenium.devtools.v151.runtime.model.Timestamp;
+import org.openqa.selenium.devtools.v151.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -61,7 +61,7 @@ public class LoggingDevToolsTest extends BaseDevToolsTest {
 
 		// chromeDevTools.addListener(Log.eventAdded(), System.err::println);
 		// what it would print will not be too useful:
-		// org.openqa.selenium.devtools.v149.log.model.LogEntry@5e77d702
+		// org.openqa.selenium.devtools.v151.log.model.LogEntry@5e77d702
 
 		driver.get(baseURL);
 		chromeDevTools
@@ -73,6 +73,8 @@ public class LoggingDevToolsTest extends BaseDevToolsTest {
 		final String consoleMessage = "Lorem ipsum";
 		chromeDevTools.addListener(Log.entryAdded(),
 				(LogEntry event) -> assertThat(event.getText(), containsString(consoleMessage)));
+		// see also:
+		// https://github.com/im-ahmed-hasan/selenium-cdp-automation/blob/main/src/main/java/com/ahmedhasan/CDPConsoleLogTest.java
 		driver.executeScript("console.log(arguments[0]);", consoleMessage);
 	}
 

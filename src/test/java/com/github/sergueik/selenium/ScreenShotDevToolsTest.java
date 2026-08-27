@@ -25,11 +25,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v149.css.CSS;
-import org.openqa.selenium.devtools.v149.dom.DOM;
-import org.openqa.selenium.devtools.v149.dom.model.Rect;
-import org.openqa.selenium.devtools.v149.emulation.Emulation;
-import org.openqa.selenium.devtools.v149.page.Page;
+import org.openqa.selenium.devtools.v151.css.CSS;
+import org.openqa.selenium.devtools.v151.dom.DOM;
+import org.openqa.selenium.devtools.v151.dom.model.Rect;
+import org.openqa.selenium.devtools.v151.emulation.Emulation;
+import org.openqa.selenium.devtools.v151.page.Page;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
