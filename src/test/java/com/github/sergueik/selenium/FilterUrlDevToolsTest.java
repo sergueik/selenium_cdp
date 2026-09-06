@@ -22,22 +22,22 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v151.network.Network;
-import org.openqa.selenium.devtools.v151.network.model.BlockedReason;
-import org.openqa.selenium.devtools.v151.network.model.Headers;
-import org.openqa.selenium.devtools.v151.network.model.InterceptionStage;
-import org.openqa.selenium.devtools.v151.network.model.LoadingFailed;
-import org.openqa.selenium.devtools.v151.network.model.Request;
-import org.openqa.selenium.devtools.v151.network.model.RequestId;
-import org.openqa.selenium.devtools.v151.network.model.RequestIntercepted;
-import org.openqa.selenium.devtools.v151.network.model.RequestPattern;
-import org.openqa.selenium.devtools.v151.network.model.RequestWillBeSent;
-import org.openqa.selenium.devtools.v151.network.model.BlockPattern;
-import org.openqa.selenium.devtools.v151.network.model.ResourceType;
-import org.openqa.selenium.devtools.v151.network.model.ResponseReceived;
-import org.openqa.selenium.devtools.v151.page.Page;
-import org.openqa.selenium.devtools.v151.network.model.AuthChallengeResponse;
-import org.openqa.selenium.devtools.v151.network.model.AuthChallengeResponse.Response;
+import org.openqa.selenium.devtools.v152.network.Network;
+import org.openqa.selenium.devtools.v152.network.model.BlockedReason;
+import org.openqa.selenium.devtools.v152.network.model.Headers;
+import org.openqa.selenium.devtools.v152.network.model.InterceptionStage;
+import org.openqa.selenium.devtools.v152.network.model.LoadingFailed;
+import org.openqa.selenium.devtools.v152.network.model.Request;
+import org.openqa.selenium.devtools.v152.network.model.RequestId;
+import org.openqa.selenium.devtools.v152.network.model.RequestIntercepted;
+import org.openqa.selenium.devtools.v152.network.model.RequestPattern;
+import org.openqa.selenium.devtools.v152.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v152.network.model.BlockPattern;
+import org.openqa.selenium.devtools.v152.network.model.ResourceType;
+import org.openqa.selenium.devtools.v152.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v152.page.Page;
+import org.openqa.selenium.devtools.v152.network.model.AuthChallengeResponse;
+import org.openqa.selenium.devtools.v152.network.model.AuthChallengeResponse.Response;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -262,7 +262,7 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 
 	// incompatible types: inference variable T has incompatible bounds:
 	// [ERROR] equality constraints:
-	// org.openqa.selenium.devtools.v151.network.model.AuthChallengeResponse
+	// org.openqa.selenium.devtools.v152.network.model.AuthChallengeResponse
 	// [ERROR] lower bounds: java.lang.Object
 	/*
 	 * @Ignore
