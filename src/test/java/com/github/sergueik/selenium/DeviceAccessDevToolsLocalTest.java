@@ -19,14 +19,14 @@ import org.junit.Test;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v152.deviceaccess.DeviceAccess;
-import org.openqa.selenium.devtools.v152.page.Page;
-import org.openqa.selenium.devtools.v152.page.model.JavascriptDialogClosed;
-import org.openqa.selenium.devtools.v152.page.model.JavascriptDialogOpening;
+import org.openqa.selenium.devtools.v153.deviceaccess.DeviceAccess;
+import org.openqa.selenium.devtools.v153.page.Page;
+import org.openqa.selenium.devtools.v153.page.model.JavascriptDialogClosed;
+import org.openqa.selenium.devtools.v153.page.model.JavascriptDialogOpening;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.devtools.v152.deviceaccess.model.DeviceRequestPrompted;
-import org.openqa.selenium.devtools.v152.deviceaccess.model.PromptDevice;
-import org.openqa.selenium.devtools.v152.deviceaccess.model.RequestId;
+import org.openqa.selenium.devtools.v153.deviceaccess.model.DeviceRequestPrompted;
+import org.openqa.selenium.devtools.v153.deviceaccess.model.PromptDevice;
+import org.openqa.selenium.devtools.v153.deviceaccess.model.RequestId;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**

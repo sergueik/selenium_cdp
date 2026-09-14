@@ -22,22 +22,19 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v152.network.Network;
-import org.openqa.selenium.devtools.v152.network.model.BlockedReason;
-import org.openqa.selenium.devtools.v152.network.model.Headers;
-import org.openqa.selenium.devtools.v152.network.model.InterceptionStage;
-import org.openqa.selenium.devtools.v152.network.model.LoadingFailed;
-import org.openqa.selenium.devtools.v152.network.model.Request;
-import org.openqa.selenium.devtools.v152.network.model.RequestId;
-import org.openqa.selenium.devtools.v152.network.model.RequestIntercepted;
-import org.openqa.selenium.devtools.v152.network.model.RequestPattern;
-import org.openqa.selenium.devtools.v152.network.model.RequestWillBeSent;
-import org.openqa.selenium.devtools.v152.network.model.BlockPattern;
-import org.openqa.selenium.devtools.v152.network.model.ResourceType;
-import org.openqa.selenium.devtools.v152.network.model.ResponseReceived;
-import org.openqa.selenium.devtools.v152.page.Page;
-import org.openqa.selenium.devtools.v152.network.model.AuthChallengeResponse;
-import org.openqa.selenium.devtools.v152.network.model.AuthChallengeResponse.Response;
+import org.openqa.selenium.devtools.v153.network.Network;
+import org.openqa.selenium.devtools.v153.network.model.BlockedReason;
+import org.openqa.selenium.devtools.v153.network.model.Headers;
+import org.openqa.selenium.devtools.v153.network.model.LoadingFailed;
+import org.openqa.selenium.devtools.v153.network.model.Request;
+import org.openqa.selenium.devtools.v153.network.model.RequestId;
+import org.openqa.selenium.devtools.v153.network.model.RequestWillBeSent;
+import org.openqa.selenium.devtools.v153.network.model.BlockPattern;
+import org.openqa.selenium.devtools.v153.network.model.ResourceType;
+import org.openqa.selenium.devtools.v153.network.model.ResponseReceived;
+import org.openqa.selenium.devtools.v153.page.Page;
+import org.openqa.selenium.devtools.v153.network.model.AuthChallengeResponse;
+import org.openqa.selenium.devtools.v153.network.model.AuthChallengeResponse.Response;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -195,32 +192,6 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 
 	}
 
-	// see also:
-	// https://github.com/adiohana/selenium-chrome-devtools-examples/blob/master/src/test/java/ChromeDevToolsTest.java#L81
-	// see also:
-	// https://rahulshettyacademy.com/blog/index.php/2021/11/04/selenium-4-key-feature-network-interception/
-	// NOTE: need to print to read the whole document
-	@SuppressWarnings("deprecation")
-	@Ignore
-	@Test
-	public void test3() {
-		// TODO: java.lang.ClassCastException:
-		// java.util.LinkedHashMap cannot be
-		// cast to java.lang.Void
-		chromeDevTools.addListener(Network.requestIntercepted(),
-				(RequestIntercepted event) -> chromeDevTools
-						.send(Network.continueInterceptedRequest(event.getInterceptionId(), Optional.empty(),
-								Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-								Optional.of(new Headers(new HashMap<String, Object>())), Optional.empty())));
-
-		// set request interception only for css requests
-		RequestPattern requestPattern = new RequestPattern(Optional.of("*.gif"), Optional.of(ResourceType.IMAGE),
-				Optional.of(InterceptionStage.HEADERSRECEIVED));
-		chromeDevTools.send(Network.setRequestInterception(ImmutableList.of(requestPattern)));
-		chromeDevTools
-				.send(Page.navigate(baseURL, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
-		Utils.sleep(1000);
-	}
 
 	private void isImageBroken(WebElement image) {
 		if (image.getAttribute("naturalWidth").equals("0")) {
@@ -228,64 +199,4 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 		}
 	}
 
-	// see also:
-	// https://github.com/adiohana/selenium-chrome-devtools-examples/blob/master/src/test/java/ChromeDevToolsTest.java#L81
-	// see also:
-	// https://rahulshettyacademy.com/blog/index.php/2021/11/04/selenium-4-key-feature-network-interception/
-	// NOTE: need to print to read the whole document
-	@Ignore
-	@SuppressWarnings("deprecation")
-	@Test
-	public void test2() {
-		// TODO: java.lang.ClassCastException:
-		// java.util.LinkedHashMap cannot be
-		// cast to java.lang.Void
-
-		chromeDevTools.addListener(Network.requestIntercepted(),
-				(RequestIntercepted event) -> chromeDevTools.send(Network.continueInterceptedRequest(
-						event.getInterceptionId(), Optional.empty(), Optional.empty(), Optional.empty(),
-						Optional.empty(), Optional.empty(), Optional.of(new Headers(new HashMap<String, Object>())),
-						Optional.of(new AuthChallengeResponse(Response.DEFAULT, Optional.empty(), Optional.empty())))));
-		// java.lang.NullPointerException: response is required
-		// org.openqa.selenium.devtools.DevToolsException:
-		// {"id":38,"error":{"code":-32602,"message":"authChallengeResponse not
-		// expected."},"sessionId":"B6AD0AAC5C8C4E26C8CCF82355E7D7A3"}
-
-		// https://javadoc.io/doc/org.seleniumhq.selenium/selenium-devtools-v126/latest/org/openqa/selenium/devtools/v126/network/model/AuthChallengeResponse.html
-
-		// set request interception only for css requests
-		RequestPattern requestPattern = new RequestPattern(Optional.of("*.gif"), Optional.of(ResourceType.IMAGE),
-				Optional.of(InterceptionStage.HEADERSRECEIVED));
-		chromeDevTools.send(Network.setRequestInterception(ImmutableList.of(requestPattern)));
-		chromeDevTools
-				.send(Page.navigate(baseURL, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
-		Utils.sleep(1000);
-	}
-
-	// incompatible types: inference variable T has incompatible bounds:
-	// [ERROR] equality constraints:
-	// org.openqa.selenium.devtools.v152.network.model.AuthChallengeResponse
-	// [ERROR] lower bounds: java.lang.Object
-	/*
-	 * @Ignore
-	 * 
-	 * @SuppressWarnings("deprecation")
-	 * 
-	 * @Test public void test4() {
-	 * 
-	 * chromeDevTools .addListener(Network.requestIntercepted(), (RequestIntercepted
-	 * event) -> chromeDevTools.send(Network.continueInterceptedRequest(
-	 * event.getInterceptionId(), Optional.empty(), Optional.empty(),
-	 * Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(new
-	 * Headers(new HashMap<String, Object>())), Optional.of(new Object()))));
-	 * 
-	 * // set request interception only for css requests RequestPattern
-	 * requestPattern = new RequestPattern(Optional.of("*.gif"),
-	 * Optional.of(ResourceType.IMAGE),
-	 * Optional.of(InterceptionStage.HEADERSRECEIVED));
-	 * chromeDevTools.send(Network.setRequestInterception(ImmutableList.of(
-	 * requestPattern))); chromeDevTools .send(Page.navigate(baseURL,
-	 * Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
-	 * Utils.sleep(1000); }
-	 */
 }
