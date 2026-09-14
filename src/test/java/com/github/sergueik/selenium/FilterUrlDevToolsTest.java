@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2021,2024,2025 Serguei Kouzmine
+ * Copyright 2021,2024,2025,2026 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.is;
@@ -45,6 +45,8 @@ import com.google.common.collect.ImmutableList;
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setBlockedURLs
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-loadingFailed
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-requestWillBeSent
+ * NOTE: gone
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-requestIntercepted
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-responseReceived
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-continueInterceptedRequest
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-RequestPattern
