@@ -1,3 +1,5 @@
+package com.github.sergueik.selenium;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -90,7 +92,7 @@ public class FailWithSessionNotCreatedTest {
 				}
 			}
 		} else if (os.contains("mac")) {
-			chromeCommand = "/Applications/Googlx`e\\ Chrome.app/Contents/MacOS/Google\\ Chrome --version";
+			chromeCommand = "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --version";
 			Process process = Runtime.getRuntime().exec(new String[] { "/bin/bash", "-c", chromeCommand });
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 				return reader.readLine().split(" ")[2];
