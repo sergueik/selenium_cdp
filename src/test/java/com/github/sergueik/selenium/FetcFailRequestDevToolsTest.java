@@ -1,6 +1,7 @@
 package com.github.sergueik.selenium;
+
 /**
- * Copyright 2023,2024 Serguei Kouzmine
+ * Copyright 2023,2024,2026 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,6 +26,7 @@ import org.openqa.selenium.devtools.v153.fetch.model.RequestPaused;
 import org.openqa.selenium.devtools.v153.network.Network;
 import org.openqa.selenium.devtools.v153.network.model.ErrorReason;
 import org.openqa.selenium.devtools.v153.network.model.Request;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
@@ -32,8 +34,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/
  * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest
  * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-fulfillRequest
- * https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest 
+ * https://chromedevtools.github.io/devtools-protocol/#/Fetch.continueRequest
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-Request
+ *
+ * see also [Intercepting and Faking Requests with
+ * Fetch](https://qaskills.sh/blog/selenium-cdp-add-script-evaluate-guide)
+ *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 // see also:
@@ -48,57 +54,87 @@ public class FetcFailRequestDevToolsTest extends BaseDevToolsTest {
 	@Before
 	public void before() throws TimeoutException {
 		String urlPattern = "*assets*";
-
-		RequestPattern requestPattern = new RequestPattern(Optional.of(urlPattern),
-				Optional.empty(), Optional.empty());
+		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
+		// @formatter:off
+		RequestPattern requestPattern = new RequestPattern(Optional.of(urlPattern), // urlPattern
+				Optional.empty(), // requestStage
+				Optional.empty() // resourceType
+		);
+		// @formatter:on
 		List<RequestPattern> arg = new ArrayList<>();
 		arg.add(requestPattern);
-		chromeDevTools.send(Fetch.enable(Optional.of(arg) /* Optional.empty()*/,
-				Optional.of(false)));
+		// @formatter:off
+		chromeDevTools.send(Fetch.enable(Optional.of(arg), // patterns
+				// TODO: [{"urlPattern": "*/api/products*", "requestStage": "Request"}]
+				Optional.of(false) // handleAuthRequests
+		));
+		// @formatter:on
+
 		chromeDevTools.send(Network.clearBrowserCache());
 		chromeDevTools.send(Network.setCacheDisabled(true));
 
 		chromeDevTools.addListener(Fetch.requestPaused(), (RequestPaused event) -> {
 			Request request = event.getRequest();
 			RequestId requestId = event.getRequestId();
-			System.err.println("About to handle the request: " + request.getUrl());
 			if (request.getUrl().matches(".*\\.(?:png|jpg|jpeg)$")) {
-				System.err.println("About to abort the request to " + request.getUrl());
+				System.err.println("About to abort the request: " + request.getUrl());
 				ErrorReason errorReason = ErrorReason.FAILED;
 				Fetch.failRequest(requestId, errorReason);
 			} else {
 				// NOTE: setting HTTP response code by hand
-				Fetch.continueRequest(requestId, Optional.of(request.getUrl()),
-						Optional.of(request.getMethod()), request.getPostData(),
-						/* Optional.of(request.getHeaders()) */ Optional.empty(),
-						Optional.of(false));
+				System.err.println("About to handle the request: " + request.getUrl());
+				// @formatter:off
+				Fetch.continueRequest(requestId, Optional.of(request.getUrl()), Optional.of(request.getMethod()),
+						request.getPostData(),
+						/* Optional.of(request.getHeaders()) */
+						Optional.empty(), // headers
+						Optional.of(false) // interceptResponse
+				);
+				// @formatter:on
 			}
 		});
-
 	}
 
 	@Test
 	public void test2() {
+		System.err.println(String.format("navigating to url %s",url));	
 		try {
 			driver.navigate().to(url);
 		} catch (TimeoutException e) {
-			System.err.println("continue");
+			System.err.println("continue after timeout exception");
 		}
-		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
-
-		wait.pollingEvery(Duration.ofMillis(pollingInterval));
+		System.err.println(String.format("navigated to url %s",url));	
 		// Visibility or presence would time out
 		// element = wait.until(ExpectedConditions.visibilityOfElementLocated(
 		// By.cssSelector("img.central-featured-logo")));
 		// element = wait.until(ExpectedConditions
 		element = driver.findElement(By.cssSelector("img.central-featured-logo"));
-		// .presenceOfElementLocated(By.cssSelector("img.central-featured-logo")));
-		Long naturalWidth = (Long) driver
-				.executeScript("return arguments[0].naturalWidth", element);
-		Long naturalHeight = (Long) driver
-				.executeScript("return arguments[0].naturalHeight", element);
+		Long naturalWidth = (Long) driver.executeScript("return arguments[0].naturalWidth", element);
+		Long naturalHeight = (Long) driver.executeScript("return arguments[0].naturalHeight", element);
 		assertThat(naturalWidth, is(0L));
 		assertThat(naturalHeight, is(0L));
+		element = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("img.central-featured-logo")));
+		System.err.println(String.format("test complete %s", "test2"));	
+		naturalWidth = (Long) driver.executeScript("return arguments[0].naturalWidth", element);
+		naturalHeight = (Long) driver.executeScript("return arguments[0].naturalHeight", element);
+		assertThat(naturalWidth, is(0L));
+		assertThat(naturalHeight, is(0L));
+	}
+
+	@Test
+	public void test3() {
+		System.err.println(String.format("navigating to url %s",url));	
+		try {
+			driver.navigate().to(url);
+		} catch (TimeoutException e) {
+			System.err.println("continue after timeout exception");
+		}
+		System.err.println(String.format("navigated to url %s",url));	
+		wait.pollingEvery(Duration.ofMillis(pollingInterval));
+		// Visibility or presence would time out
+		element = wait
+				.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("img.central-featured-logo")));
+		System.err.println(String.format("test complete %s", "test3"));	
 	}
 
 	@After
@@ -109,4 +145,3 @@ public class FetcFailRequestDevToolsTest extends BaseDevToolsTest {
 	}
 
 }
-

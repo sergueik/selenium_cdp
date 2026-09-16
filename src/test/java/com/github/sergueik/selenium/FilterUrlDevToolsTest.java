@@ -8,9 +8,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-
-
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,11 +53,16 @@ import com.google.common.collect.ImmutableList;
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-setCacheDisabled
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-clearBrowserCache
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-enable
- * 
+ *
+ * see also [Intercepting and Faking Requests with Fetch](https://qaskills.sh/blog/selenium-cdp-add-script-evaluate-guide)
+ *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
 public class FilterUrlDevToolsTest extends BaseDevToolsTest {
+
+	private Object monitor = new Object();
+	private final int count = 10;
 
 	@Before
 	public void before() throws Exception {
@@ -81,8 +83,7 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 	public void after() {
 
 		// @formatter:off
-		chromeDevTools.send(Network.setBlockedURLs(
-				Optional.of(new ArrayList<BlockPattern>()), // urlPatterns
+		chromeDevTools.send(Network.setBlockedURLs(Optional.of(new ArrayList<BlockPattern>()), // urlPatterns
 				Optional.of(Collections.emptyList()) // urls
 		));
 		// @formatter:on
@@ -91,49 +92,34 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 		chromeDevTools.clearListeners();
 	}
 
-	private Object monitor = new Object();
-	private final int count = 10;
-
 	// see also:
 	// https://github.com/adiohana/selenium-chrome-devtools-examples/blob/master/src/test/java/ChromeDevToolsTest.java
 	// NOTE: there is CDP model drift vs. Javadoc mismatch
 	@Test
 	public void test1() {
 		final Map<String, Map<String, String>> requests = new HashMap<>();
-		// Arrange
-		// NOTE: BlockPattern::new only works for single-argument constructors
 		List<BlockPattern> blockPatterns = Arrays
-				.asList(new String[] { "*.css", "*.png", "*.jpg", "*.gif", "*favicon.ico" })
-				.stream()
 				// @formatter:off
-				.map((String oldUrlPattern) -> "*://*/" + oldUrlPattern )
-				.map((String urlPattern) -> {
-					var blockPattern = new BlockPattern(urlPattern, true);
-					// https://www.selenium.dev/selenium/docs/api/dotnet/webdriver/OpenQA.Selenium.DevTools.V149.Network.BlockPattern.html
-					// var blockPattern = new BlockPattern {UrlPattern = urlPattern, Block = true};
-					// The field BlockPattern.urlPattern is not visible
-					// see also: .net API spec
-					// blockPattern.urlPattern   = urlPattern;
-					// The field BlockPattern.block is not visible
-					// blockPattern.block = true;
-					return blockPattern;
-				})
+				.asList(new String[] {
+					"*.css",
+					"*.png",
+					"*.jpg",
+					"*.gif",
+					"*favicon.ico"
+				}).stream()
 				// @formatter:on
+				.map((String oldUrlPattern) -> "*://*/" + oldUrlPattern)
+				.map((String urlPattern) -> new BlockPattern(urlPattern, true))
 
 				.collect(Collectors.toList());
-		// TODO: org.openqa.selenium.devtools.DevToolsException: 
-		// {"id":8,"error":{"code":-32602,"message":"Pattern \"*.css\" 
-		// failed to parse as a URLPattern."}
 		// @formatter:off
-		chromeDevTools.send(
-				Network.setBlockedURLs(
-						Optional.of(blockPatterns), // urlPatterns
-						Optional.of(Collections.emptyList())  // urls
-				)
+		chromeDevTools.send(Network.setBlockedURLs(
+			Optional.of(blockPatterns), // urlPatterns
+			Optional.of(Collections.emptyList()) // urls
+		)
 		// @formatter:on
 		);
 
-		// @formatter:on
 		// verify that css jpg and png are blocked
 		// see also:
 		// https://rahulshettyacademy.com/blog/index.php/2021/11/04/selenium-4-key-feature-network-interception/
@@ -147,15 +133,11 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 			if (resourceType.equals(ResourceType.STYLESHEET) || resourceType.equals(ResourceType.IMAGE)
 					|| resourceType.equals(ResourceType.OTHER)) {
 				Optional<BlockedReason> blockedReason = event.getBlockedReason();
-				try {
-					assertThat(blockedReason, notNullValue());
+				assertThat(blockedReason, notNullValue());
+				if (blockedReason.isPresent()) {
 					assertThat(blockedReason.get(), notNullValue());
-					System.err.println(String.format("Blocked Reason: %s", (blockedReason == null ? "unknown": blockedReason.get())));
-					// assertThat(blockedReason.isPresent(), is(true));
-					// NOTE: .isPresent no longer set to true
+					System.err.println(String.format("Blocked Reason: %s", blockedReason.get()));
 					assertThat(blockedReason.get(), is(BlockedReason.INSPECTOR));
-				} catch (NoSuchElementException e) { 
-					// ignore when java.util.NoSuchElementException: No value present
 				}
 			} else {
 				System.err.println(String.format("Also Blocked request %s event type: %s", requestId, resourceType));
@@ -216,10 +198,9 @@ public class FilterUrlDevToolsTest extends BaseDevToolsTest {
 
 	}
 
-
 	private void reportImageIsNotLoaded(WebElement image) {
 		if (image.getAttribute("naturalWidth").equals("0")) {
-			System.err.println(String.format("Image \"%s\" is not loaded.", image.getAttribute("src") ) );
+			System.err.println(String.format("Image \"%s\" is not loaded.", image.getAttribute("src")));
 		}
 	}
 
