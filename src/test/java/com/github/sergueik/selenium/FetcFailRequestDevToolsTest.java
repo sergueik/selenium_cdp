@@ -92,18 +92,19 @@ public class FetcFailRequestDevToolsTest extends BaseDevToolsTest {
 				);
 				// @formatter:on
 			}
+			// TODO: fulfillRequest
 		});
 	}
 
 	@Test
 	public void test2() {
-		System.err.println(String.format("navigating to url %s",url));	
+		System.err.println(String.format("navigating to url %s", url));
 		try {
 			driver.navigate().to(url);
 		} catch (TimeoutException e) {
 			System.err.println("continue after timeout exception");
 		}
-		System.err.println(String.format("navigated to url %s",url));	
+		System.err.println(String.format("navigated to url %s", url));
 		// Visibility or presence would time out
 		// element = wait.until(ExpectedConditions.visibilityOfElementLocated(
 		// By.cssSelector("img.central-featured-logo")));
@@ -114,7 +115,7 @@ public class FetcFailRequestDevToolsTest extends BaseDevToolsTest {
 		assertThat(naturalWidth, is(0L));
 		assertThat(naturalHeight, is(0L));
 		element = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("img.central-featured-logo")));
-		System.err.println(String.format("test complete %s", "test2"));	
+		System.err.println(String.format("test complete %s", "test2"));
 		naturalWidth = (Long) driver.executeScript("return arguments[0].naturalWidth", element);
 		naturalHeight = (Long) driver.executeScript("return arguments[0].naturalHeight", element);
 		assertThat(naturalWidth, is(0L));
@@ -123,23 +124,22 @@ public class FetcFailRequestDevToolsTest extends BaseDevToolsTest {
 
 	@Test
 	public void test3() {
-		System.err.println(String.format("navigating to url %s",url));	
+		System.err.println(String.format("navigating to url %s", url));
 		try {
 			driver.navigate().to(url);
 		} catch (TimeoutException e) {
 			System.err.println("continue after timeout exception");
 		}
-		System.err.println(String.format("navigated to url %s",url));	
+		System.err.println(String.format("navigated to url %s", url));
 		wait.pollingEvery(Duration.ofMillis(pollingInterval));
 		// Visibility or presence would time out
 		element = wait
 				.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("img.central-featured-logo")));
-		System.err.println(String.format("test complete %s", "test3"));	
+		System.err.println(String.format("test complete %s", "test3"));
 	}
 
 	@After
 	public void after() {
-
 		chromeDevTools.send(Fetch.disable());
 		chromeDevTools.clearListeners();
 	}

@@ -1,15 +1,15 @@
 package com.github.sergueik.selenium;
-/**
- * Copyright 2023,2024 Serguei Kouzmine
- */
 
+/**
+ * Copyright 2023,2024,2026 Serguei Kouzmine
+ */
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 
-import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.junit.After;
@@ -22,16 +22,21 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 
 /**
- * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
- * based on https://www.selenium.dev/documentation/webdriver/bidirectional/bidi_api/#listen-to-js-exceptions
+ * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge based on
+ * https://www.selenium.dev/documentation/webdriver/bidirectional/bidi_api/#listen-to-js-exceptions
+ *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
 public class ExceptionListenerDevToolsTest extends BaseDevToolsTest {
 
 	private static WebElement element;
-	
-	private List<JavascriptException> jsExceptions = new ArrayList<>();
+
+	private Set<JavascriptException> javascriptExceptions = new HashSet<>();
+
+	private static String baseURL = "https://www.wikipedia.org";
+
+	String cssSelector = "#js-link-box-en";
 
 	@After
 	public void after() throws Exception {
@@ -40,11 +45,13 @@ public class ExceptionListenerDevToolsTest extends BaseDevToolsTest {
 		boolean done = false;
 		while (!done) {
 			try {
-				for (JavascriptException e : jsExceptions) {
-					System.out.println("Javascript exception message: " + e.getMessage()
-							+ "\n" + "System information: " + e.getSystemInformation() + "\n"
-							+ "Stack trace:" + "\n");
-					e.printStackTrace();
+				for (JavascriptException e : javascriptExceptions) {
+					System.err.println("Javascript exception message: " + e.getRawMessage() + "\n"
+							+ "System information: " + e.getSystemInformation());
+					if (e.getStackTrace().length > 0) {
+						System.err.println("Stack trace:" + "\n");
+						e.printStackTrace();
+					}
 				}
 				done = true;
 			} catch (ConcurrentModificationException e) {
@@ -56,33 +63,35 @@ public class ExceptionListenerDevToolsTest extends BaseDevToolsTest {
 
 	@Before
 	public void before() throws Exception {
-		Consumer<JavascriptException> addEntry = jsExceptions::add;
-		chromeDevTools.getDomains().events()
-				.addJavascriptExceptionListener(addEntry);
-		driver.get("https://www.wikipedia.org");
+		Consumer<JavascriptException> addEntry = javascriptExceptions::add;
+		chromeDevTools.getDomains().events().addJavascriptExceptionListener(addEntry);
+		driver.get(baseURL);
 	}
 
 	@Test
 	public void test1() {
 		element = driver.findElement(By.tagName("img"));
 		// NOTE: no semicolon at the end of the script argument is OK
-		addOnClick(element, "throw new Error('test1')");
+		String script = "throw new Error('test1')";
+		addOnClick(element, script);
 		try {
 			element.click();
 		} catch (ElementClickInterceptedException e) {
 			// the "element is not clickable at point" exception
 			// message will include the target
 			// element HTML which will include the
+			// attribute just added
 			// onclick="throw new Error('test1')"
 			// injected handler
 			System.err.println("Exception(ignored) " + e.toString());
 			assertThat(e.toString(), containsString("test1"));
+			assertThat(e.toString(), containsString(script));
 		}
 	}
 
 	@Test
 	public void test2() {
-		element = driver.findElement(By.cssSelector("#js-link-box-en"));
+		element = driver.findElement(By.cssSelector(cssSelector));
 		addOnClick(element, "throw new Error('test2');");
 		try {
 			element.click();
@@ -99,7 +108,7 @@ public class ExceptionListenerDevToolsTest extends BaseDevToolsTest {
 	// when setInterval is handler is called
 	@Test
 	public void test3() {
-		element = driver.findElement(By.cssSelector("#js-link-box-en"));
+		element = driver.findElement(By.cssSelector(cssSelector));
 		String blinkTitlescrpit = "setInterval(() => { "
 				+ " document.title = titleState? \"blinking\" : \"title\"; titleState = "
 				+ " titleState ? 0 : 1 ; } , 500 );";
@@ -116,7 +125,7 @@ public class ExceptionListenerDevToolsTest extends BaseDevToolsTest {
 	// see also: https://qna.habr.com/q/1089060
 	@Test
 	public void test4() {
-		element = driver.findElement(By.cssSelector("#js-link-box-en"));
+		element = driver.findElement(By.cssSelector(cssSelector));
 		String blinkTitlescrpit = "var titleState = 0; setInterval(() => { "
 				+ " document.title = titleState ? \"blinking\" : \"title\"; titleState = "
 				+ " titleState ? 0 : 1; } , 500 );";
@@ -132,8 +141,7 @@ public class ExceptionListenerDevToolsTest extends BaseDevToolsTest {
 
 	public Object executeScript(String script, Object... arguments) {
 		if (driver instanceof JavascriptExecutor) {
-			JavascriptExecutor javascriptExecutor = JavascriptExecutor.class
-					.cast(driver);
+			JavascriptExecutor javascriptExecutor = JavascriptExecutor.class.cast(driver);
 			return javascriptExecutor.executeScript(script, arguments);
 		} else {
 			throw new RuntimeException("Script execution failed.");
@@ -141,8 +149,6 @@ public class ExceptionListenerDevToolsTest extends BaseDevToolsTest {
 	}
 
 	private void addOnClick(WebElement element, String script) {
-		executeScript("arguments[0].setAttribute(arguments[1], arguments[2]);",
-				element, "onclick", script);
-
+		executeScript("arguments[0].setAttribute(arguments[1], arguments[2]);", element, "onclick", script);
 	}
 }

@@ -31,7 +31,7 @@ public class ExtensionsDevToolsTest extends BaseDevToolsTest {
 	}
 	private static Gson gson = new Gson();
 
-	// invoking an innocent "eetExtensions" method in experimental Extensions domain raises Method Not Available exception
+	// invoking an innocent "getExtensions" method in experimental Extensions domain raises Method Not Available exception
 	// with Selenium 4.49, Chrome 153
 	@Test(expected = DevToolsException.class)
 	public void test1() {

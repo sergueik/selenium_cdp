@@ -1635,9 +1635,14 @@ Map<String, Object> result = driver.executeCdpCommand(command, new HashMap<>());
   * [Testing for Content Security Policy](https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/12-Test_for_Content_Security_Policy)
   * [Enable page Content Security Policy by-passing](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-setBypassCSP)
   * [Content Security Policy Examples](https://content-security-policy.com/examples/)
-
-
-
+  * __Simple Push Demo__ [page](https://simple-push-demo.vercel.app/) and [sources](https://github.com/gauntface/simple-push-demo)
+  * https://jakearchibald.github.io/isserviceworkerready/demos/sync/
+  * https://developer.chrome.com/docs/devtools/javascript/background-services
+  * https://github.com/WebMCP-org/chrome-devtools-quickstart
+  * https://www.datacamp.com/tutorial/webmcp-tutorial
+  * https://developer.chrome.com/docs/ai/webmcp
+  * https://qaskills.sh/blog/selenium-cdp-add-script-evaluate-guide (pythonish - not callable)
+  
 ### License
 This project is licensed under the terms of the MIT license.
 
