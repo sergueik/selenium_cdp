@@ -27,7 +27,7 @@ import org.openqa.selenium.WebDriverException;
  * https://chromedevtools.github.io/devtools-protocol/tot/Performance#method-enable
  * https://chromedevtools.github.io/devtools-protocol/tot/Performance#method-getMetrics
  * https://chromedevtools.github.io/devtools-protocol/tot/Performance/#type-Metric
- * 
+ *
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
@@ -39,17 +39,46 @@ public class PerformanceMetricsCdpTest extends BaseCdpTest {
 	private static List<Object> metrics = new ArrayList<>();
 	private static HashSet<Object> metricKeys = new HashSet<>();
 
-	private static String[] standardKeys = { "AdSubframes", "ArrayBufferContents",
-			"AudioHandlers", "ContextLifecycleStateObservers", "DetachedScriptStates",
-			"DevToolsCommandDuration", "Documents", "DomContentLoaded",
-			"FirstMeaningfulPaint", "Frames", "JSEventListeners", "JSHeapTotalSize",
-			"JSHeapUsedSize", "LayoutCount", "LayoutDuration", "LayoutObjects",
-			"MediaKeySessions", "MediaKeys", "NavigationStart", "Nodes",
-			"ProcessTime", "RTCPeerConnections", "RecalcStyleCount",
-			"RecalcStyleDuration", "ResourceFetchers", "Resources", "ScriptDuration",
-			"TaskDuration", "TaskOtherDuration", "ThreadTime", "Timestamp",
-			"UACSSResources", "V8CompileDuration", "V8PerContextDatas",
-			"WorkerGlobalScopes" };
+	// @formatter:off
+	private static String[] standardKeys = {
+		"AdSubframes",
+		"ArrayBufferContents",
+		"AudioHandlers",
+		"AudioWorkletProcessors",
+		"ContextLifecycleStateObservers",
+		"DetachedScriptStates",
+		"DevToolsCommandDuration",
+		"Documents",
+		"DomContentLoaded",
+		"FirstMeaningfulPaint",
+		"Frames",
+		"JSEventListeners",
+		"JSHeapTotalSize",
+		"JSHeapUsedSize",
+		"LayoutCount",
+		"LayoutDuration",
+		"LayoutObjects",
+		"MediaKeySessions",
+		"MediaKeys",
+		"NavigationStart",
+		"Nodes",
+		"ProcessTime",
+		"RTCPeerConnections",
+		"RecalcStyleCount",
+		"RecalcStyleDuration",
+		"ResourceFetchers",
+		"Resources",
+		"ScriptDuration",
+		"TaskDuration",
+		"TaskOtherDuration",
+		"ThreadTime",
+		"Timestamp",
+		"UACSSResources",
+		"V8CompileDuration",
+		"V8PerContextDatas",
+		"WorkerGlobalScopes"
+	};
+	// @formatter:on
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -57,7 +86,7 @@ public class PerformanceMetricsCdpTest extends BaseCdpTest {
 	// https://github.com/SrinivasanTarget/selenium4CDPsamples/blob/master/src/test/java/DevToolsTest.java
 	// see also:
 	// https://github.com/ShamaUgale/Selenium4Examples/blob/master/src/main/java/com/devtools/GetMetrics.java
-	public void getPerformanceMetricsTest() {
+	public void test1() {
 		command = "Performance.setTimeDomain";
 		params.put("timeDomain", "timeTicks");
 		try {

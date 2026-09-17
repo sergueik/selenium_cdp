@@ -36,17 +36,47 @@ public class PerformanceMetricDevToolsTest extends BaseDevToolsTest {
 
 	private static List<Metric> metrics;
 	private static HashSet<Object> metricKeys = new HashSet<>();
-	private static String[] standardKeys = { "AdSubframes", "ArrayBufferContents",
-			"AudioHandlers", "ContextLifecycleStateObservers", "DetachedScriptStates",
-			"DevToolsCommandDuration", "Documents", "DomContentLoaded",
-			"FirstMeaningfulPaint", "Frames", "JSEventListeners", "JSHeapTotalSize",
-			"JSHeapUsedSize", "LayoutCount", "LayoutDuration", "LayoutObjects",
-			"MediaKeySessions", "MediaKeys", "NavigationStart", "Nodes",
-			"ProcessTime", "RTCPeerConnections", "RecalcStyleCount",
-			"RecalcStyleDuration", "ResourceFetchers", "Resources", "ScriptDuration",
-			"TaskDuration", "TaskOtherDuration", "ThreadTime", "Timestamp",
-			"UACSSResources", "V8CompileDuration", "V8PerContextDatas",
-			"WorkerGlobalScopes" };
+	// @formatter:off
+	private static String[] standardKeys = {
+		"AdSubframes",
+		"ArrayBufferContents",
+		"AudioHandlers",
+		"AudioWorkletProcessors",
+		"ContextLifecycleStateObservers",
+		"DetachedScriptStates",
+		"DevToolsCommandDuration",
+		"Documents",
+		"DomContentLoaded",
+		"FirstMeaningfulPaint",
+		"Frames",
+		"JSEventListeners",
+		"JSHeapTotalSize",
+		"JSHeapUsedSize",
+		"LayoutCount",
+		"LayoutDuration",
+		"LayoutObjects",
+		"MediaKeySessions",
+		"MediaKeys",
+		"NavigationStart",
+		"Nodes",
+		"ProcessTime",
+		"RTCPeerConnections",
+		"RecalcStyleCount",
+		"RecalcStyleDuration",
+		"ResourceFetchers",
+		"Resources",
+		"ScriptDuration",
+		"TaskDuration",
+		"TaskOtherDuration",
+		"ThreadTime",
+		"Timestamp",
+		"UACSSResources",
+		"V8CompileDuration",
+		"V8PerContextDatas",
+		"WorkerGlobalScopes" 
+	};
+	// @formatter:on
+
 	private static String baseURL = "https://developer.mozilla.org/en-US/docs/Web/API/PerformanceNavigationTiming";
 
 	@Before
@@ -89,11 +119,27 @@ public class PerformanceMetricDevToolsTest extends BaseDevToolsTest {
 		List<String> metricNames = metrics.stream().map(Metric::getName)
 				.collect(Collectors.toList());
 		System.err.println("MetricNames: " + metricNames);
-		List<String> keyMetrics = Arrays.asList("Timestamp", "Documents", "Frames",
-				"JSEventListeners", "Nodes", "LayoutCount", "RecalcStyleCount",
-				"RecalcStyleDuration", "LayoutDuration", "MediaKeySessions",
-				"Resources", "DomContentLoaded", "NavigationStart", "TaskDuration",
-				"JSHeapUsedSize", "JSHeapTotalSize", "ScriptDuration");
+		// @formatter:off
+		List<String> keyMetrics = Arrays.asList(
+			"Timestamp",
+			"Documents",
+			"Frames",
+			"JSEventListeners",
+			"Nodes",
+			"LayoutCount",
+			"RecalcStyleCount",
+			"RecalcStyleDuration",
+			"LayoutDuration",
+			"MediaKeySessions",
+			"Resources",
+			"DomContentLoaded",
+			"NavigationStart",
+			"TaskDuration",
+			"JSHeapUsedSize",
+			"JSHeapTotalSize",
+			"ScriptDuration"
+		);
+		// @formatter:on
 		keyMetrics.forEach(metric -> System.err.println("Metric: " + metric + "\n"
 				+ metrics.get(metricNames.indexOf(metric)).getValue()));
 		// NOTE: hamcrest does not have "containsAll"
