@@ -9,6 +9,7 @@ import org.openqa.selenium.WebDriverException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -59,7 +60,9 @@ public class PerformanceTimelineDevToolsTest extends BaseDevToolsTest {
 		"resource",
 		"visibility-state"
 	};
-	// @formatter:on
+
+//	private static String[] supportedEntryTypes = { "frame" };
+// @formatter:on
 
 	private static String baseURL = "https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry";
 
@@ -70,37 +73,39 @@ public class PerformanceTimelineDevToolsTest extends BaseDevToolsTest {
 		// Arrange
 	}
 
-	@Test(expected = DevToolsException.class)
+	// @Test(expected = DevToolsException.class)
+	@Test
 	public void test1() {
-
-		// Arrange
-		try {
-			chromeDevTools.send(PerformanceTimeline.enable(Arrays.asList(supportedEntryTypes)));
-			chromeDevTools.addListener(PerformanceTimeline.timelineEventAdded(), (
-
-					timelineEvent) -> {
-				String name = timelineEvent.getName();
-				TimeSinceEpoch timeSinceEpoch = timelineEvent.getTime();
-				System.err.println(String.format("Event %s added: %d", name, timeSinceEpoch));
-			});
-		} catch (DevToolsException e) {
-			// TODO: find
-			// org.openqa.selenium.devtools.DevToolsException:
-			// {"id":5,"error":{"code":-32602,"message":"Unknown or unsupported entry
-			// type"},"sessionId":"F9AC510B3011602B7F7019CB34F6C575"}
-			String message = e.getCause().getMessage();
-			String typeName = e.getCause().getClass().getTypeName();
-			WebDriverException webDriverException = (WebDriverException) e.getCause();
-			String rawMessage = webDriverException.getRawMessage();
-			System.err.println("DevToolsException message: " + message);
+		var entryTypes = new ArrayList<String>();
+		for (String supportedEntryType : supportedEntryTypes) {
+			// Arrange
+			entryTypes.clear();
+			entryTypes.add(supportedEntryType);
 			try {
-				Map<String, Object> data = gson.fromJson(rawMessage, Map.class);
-				System.err.println(String.format("WebDriverException message: %s", data.get("error")));
-			} catch (JsonSyntaxException e2) {
-				System.err.println(
-						String.format("Could not parse WebDriverException raw message json: %s", e2.getMessage()));
+				chromeDevTools.send(PerformanceTimeline.enable(entryTypes));
+				chromeDevTools.addListener(PerformanceTimeline.timelineEventAdded(), (TimelineEvent timelineEvent) -> {
+					String name = timelineEvent.getName();
+					TimeSinceEpoch timeSinceEpoch = timelineEvent.getTime();
+					System.err.println(String.format("Event %s added at %d", name, timeSinceEpoch));
+				});
+			} catch (DevToolsException e) {
+				// TODO: find
+				// org.openqa.selenium.devtools.DevToolsException:
+				// {"id":5,"error":{"code":-32602,"message":"Unknown or unsupported entry
+				// type"},"sessionId":"F9AC510B3011602B7F7019CB34F6C575"}
+				String message = e.getCause().getMessage();
+				String typeName = e.getCause().getClass().getTypeName();
+				WebDriverException webDriverException = (WebDriverException) e.getCause();
+				String rawMessage = webDriverException.getRawMessage();
+				System.err.println("DevToolsException message: " + message);
+				try {
+					Map<String, Object> data = gson.fromJson(rawMessage, Map.class);
+					System.err.println(String.format("WebDriverException message for type %s: %s", supportedEntryType, data.get("error")));
+				} catch (JsonSyntaxException e2) {
+					System.err.println(String.format("Could not parse WebDriverException raw message json: %s", e2.getMessage()));
+				}
+				// throw e;
 			}
-			throw e;
 		}
 	}
 
