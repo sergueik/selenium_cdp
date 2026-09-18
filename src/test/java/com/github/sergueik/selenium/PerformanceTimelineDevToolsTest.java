@@ -1,25 +1,32 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2023,2024 Serguei Kouzmine
+ * Copyright 2026 Serguei Kouzmine
  */
 
 import org.openqa.selenium.devtools.DevToolsException;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.devtools.v153.extensions.Extensions;
 import org.openqa.selenium.devtools.v153.extensions.model.ExtensionInfo;
@@ -29,8 +36,12 @@ import org.openqa.selenium.devtools.v153.performancetimeline.model.TimelineEvent
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
- * see: https://chromedevtools.github.io/devtools-protocol/#/PerformanceTimeline
+ * see: 
+ * https://chromedevtools.github.io/devtools-protocol/#/PerformanceTimeline
+ * 
+ * https://github.com/debug-tips/timing2
  * https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype
+ * https://w3c.github.io/performance-timeline/#getentries-method
  * https://github.com/w3c/performance-timeline
  * https://github.com/mdn/content/issues/2667 -
  * `PerformanceObserver.supportedEntryTypes` is undocumented
@@ -41,24 +52,20 @@ import org.openqa.selenium.devtools.v153.performancetimeline.model.TimelineEvent
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
+@SuppressWarnings("unchecked")
 public class PerformanceTimelineDevToolsTest extends BaseDevToolsTest {
 
+	private WebDriverException webDriverException = null;
+	private Map<String, Object> data = new HashMap<>();
 	private static HashSet<Object> metricKeys = new HashSet<>();
 	// @formatter:off
-	private static String[] supportedEntryTypes = {
-		"element",
-		"event",
-		"first-input",
-		"largest-contentful-paint",
-		"layout-shift",
-		"long-animation-frame",
-		"longtask",
-		"mark",
-		"measure",
-		"navigation",
-		"paint",
-		"resource",
-		"visibility-state"
+	private static String[] supportedEntryTypes = { "unloadEventStart", "unloadEventEnd", "redirectStart",
+			"redirectEnd", "fetchStart", "domainLookupStart", "domainLookupEnd", "connectStart", "connectEnd",
+			"secureConnectionStart", "requestStart", "responseStart", "responseEnd", "domLoading", "domInteractive",
+			"domContentLoadedEventStart", "domContentLoadedEventEnd", "domComplete", "loadEventStart", "initiatorUrl" 
+			
+//			[name, entryType, startTime, duration, navigationId, initiatorType, deliveryType, nextHopProtocol, renderBlockingStatus, contentType, contentEncoding, workerStart, workerRouterEvaluationStart, workerCacheLookupStart, workerMatchedSourceType, workerFinalSourceType, initiatorUrl, redirectStart, redirectEnd, fetchStart, domainLookupStart, domainLookupEnd, connectStart, secureConnectionStart, connectEnd, requestStart, responseStart, firstInterimResponseStart, finalResponseHeadersStart, responseEnd, transferSize, encodedBodySize, decodedBodySize, responseStatus, serverTiming, unloadEventStart, unloadEventEnd, domInteractive, domContentLoadedEventStart, domContentLoadedEventEnd, domComplete, loadEventStart, loadEventEnd, type, redirectCount, activationStart, criticalCHRestart, notRestoredReasons, confidence
+			 
 	};
 
 //	private static String[] supportedEntryTypes = { "frame" };
@@ -67,42 +74,85 @@ public class PerformanceTimelineDevToolsTest extends BaseDevToolsTest {
 	private static String baseURL = "https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry";
 
 	private static Gson gson = new Gson();
+	private static String url = "https://www.wikipedia.org";
+	private static final Map<String, String> param = new HashMap<>();
 
 	@Before
 	public void before() throws Exception {
 		// Arrange
+		try {
+			driver.navigate().to(url);
+		} catch (TimeoutException e) {
+			System.err.println("continue after timeout exception");
+		}
 	}
 
-	// @Test(expected = DevToolsException.class)
+	@Test
+	public void test2() {
+		String script = "if (typeof window.performance.getEntries === 'function') return window.performance.getEntries();";
+		List<String> results = (List<String>) executeScript(script);
+		System.err.println(results);
+	}
+
+	@Test
+	public void test3() {
+		String script = "return JSON.stringify(window.performance.getEntries());";
+		List<Map<String, Object>> result = gson.fromJson((String) executeScript(script), List.class);
+		System.err.println(result.size());
+		System.err.println(result.get(0).keySet().toString());
+	}
+
+	@Test
+	public void test4() {
+		for (String supportedEntryType : supportedEntryTypes) {
+		String script = "var entryType = arguments[0]; return JSON.stringify(window.performance.getEntriesByType(entryType));";
+		String result = (String) executeScript(script, supportedEntryType);
+		System.err.println(String.format("%s %s",supportedEntryType,result));
+		}
+	}
+
+	@Test
+	public void test5() {
+		String script = "return JSON.stringify({'now': window.performance.now(), 'timeOrigin': window.performance.timeOrigin});";
+		Map<String, Object> result = gson.fromJson((String) executeScript(script), Map.class);
+		System.err.println(result);
+	}
+
+	// see https://github.com/sergueik/selenium_tests/blob/master/src/test/java/com/github/sergueik/selenium/PageTimingTest.java
+	@Test
+	public void test6() {
+		param.clear();
+		param.put("ladder", "true");
+		String result = (String) executeScript(getScriptContent("compute-timing.js"));
+		System.err.println("Result (raw)" + result);
+	}
+
+	@Ignore
 	@Test
 	public void test1() {
-		var entryTypes = new ArrayList<String>();
 		for (String supportedEntryType : supportedEntryTypes) {
 			// Arrange
-			entryTypes.clear();
-			entryTypes.add(supportedEntryType);
 			try {
-				chromeDevTools.send(PerformanceTimeline.enable(entryTypes));
+				chromeDevTools.send(PerformanceTimeline.enable(Arrays.asList(supportedEntryType)));
+				System.err.println(String.format("Performance Timeline enabled for Event type %s", supportedEntryType));
 				chromeDevTools.addListener(PerformanceTimeline.timelineEventAdded(), (TimelineEvent timelineEvent) -> {
 					String name = timelineEvent.getName();
 					TimeSinceEpoch timeSinceEpoch = timelineEvent.getTime();
 					System.err.println(String.format("Event %s added at %d", name, timeSinceEpoch));
 				});
 			} catch (DevToolsException e) {
-				// TODO: find
-				// org.openqa.selenium.devtools.DevToolsException:
-				// {"id":5,"error":{"code":-32602,"message":"Unknown or unsupported entry
-				// type"},"sessionId":"F9AC510B3011602B7F7019CB34F6C575"}
-				String message = e.getCause().getMessage();
-				String typeName = e.getCause().getClass().getTypeName();
-				WebDriverException webDriverException = (WebDriverException) e.getCause();
-				String rawMessage = webDriverException.getRawMessage();
-				System.err.println("DevToolsException message: " + message);
-				try {
-					Map<String, Object> data = gson.fromJson(rawMessage, Map.class);
-					System.err.println(String.format("WebDriverException message for type %s: %s", supportedEntryType, data.get("error")));
-				} catch (JsonSyntaxException e2) {
-					System.err.println(String.format("Could not parse WebDriverException raw message json: %s", e2.getMessage()));
+				if (e.getCause() instanceof WebDriverException) {
+					webDriverException = (WebDriverException) e.getCause();
+
+					try {
+						data = gson.fromJson(webDriverException.getRawMessage(), Map.class);
+
+						System.err.println(
+								String.format("Unsupported entry type: %s: %s", supportedEntryType, data.get("error")));
+					} catch (JsonSyntaxException e2) {
+						System.err
+								.println(String.format("Exception(ignored) parsing message json: %s", e2.getMessage()));
+					}
 				}
 				// throw e;
 			}
@@ -114,6 +164,50 @@ public class PerformanceTimelineDevToolsTest extends BaseDevToolsTest {
 	public void after() throws Exception {
 		// NOTE: the method disable() is undefined for the type PerformanceTimeline
 		// chromeDevTools.send(PerformanceTimeline.disable());
+	}
+
+	protected String getScriptContent(String scriptName) {
+		try {
+			final InputStream stream = this.getClass().getClassLoader().getResourceAsStream(scriptName);
+			final byte[] bytes = new byte[stream.available()];
+			stream.read(bytes);
+			return new String(bytes, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(scriptName);
+		}
+	}
+
+	// http://www.javawithus.com/tutorial/using-ellipsis-to-accept-variable-number-of-arguments
+	// see also:
+	// https://github.com/handakumbura/Seleniumuntil/blob/master/src/main/java/io/github/handakumbura/JavaScriptHelper.java
+	// for binding events listeners to DOM
+	public Object executeScript(String script, Object... arguments) {
+		if (driver instanceof JavascriptExecutor) {
+			JavascriptExecutor javascriptExecutor = JavascriptExecutor.class.cast(driver);
+			/*
+			 *
+			 * // currently unsafe err.println(arguments.length + " arguments received.");
+			 * String argStr = "";
+			 * 
+			 * for (int i = 0; i < arguments.length; i++) { argStr = argStr + " " +
+			 * (arguments[i] == null ? "null" : arguments[i].toString()); }
+			 * 
+			 * err.println("Calling " + script.substring(0, 40) + "..." + \n" + "with
+			 * arguments: " + argStr);
+			 */
+			return javascriptExecutor.executeScript(script, arguments);
+		} else {
+			throw new RuntimeException("Script execution failed.");
+		}
+	}
+
+	public Object executeScript(WebDriver driver, String script, Object... arguments) {
+		if (driver instanceof JavascriptExecutor) {
+			JavascriptExecutor javascriptExecutor = JavascriptExecutor.class.cast(driver);
+			return javascriptExecutor.executeScript(script, arguments);
+		} else {
+			throw new RuntimeException("Script execution failed.");
+		}
 	}
 
 }
