@@ -50,11 +50,7 @@ public class PerformanceTimelineCdpTest extends BaseCdpTest {
 	@Before
 	public void before() throws Exception {
 		// Arrange
-		try {
-			driver.navigate().to(baseURL);
-		} catch (TimeoutException e) {
-			System.err.println("continue after timeout exception");
-		}
+		driver.navigate().to(baseURL);
 	}
 
 	@SuppressWarnings("unchecked")

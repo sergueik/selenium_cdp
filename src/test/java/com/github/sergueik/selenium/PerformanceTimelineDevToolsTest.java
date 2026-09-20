@@ -75,11 +75,7 @@ public class PerformanceTimelineDevToolsTest extends BaseDevToolsTest {
 	@Before
 	public void before() throws Exception {
 		// Arrange
-		try {
-			driver.navigate().to(baseURL);
-		} catch (TimeoutException e) {
-			System.err.println("continue after timeout exception");
-		}
+		driver.navigate().to(baseURL);
 	}
 
 	@Test
@@ -125,7 +121,6 @@ public class PerformanceTimelineDevToolsTest extends BaseDevToolsTest {
 		} catch (DevToolsException e) {
 			if (e.getCause() instanceof WebDriverException) {
 				webDriverException = (WebDriverException) e.getCause();
-
 				try {
 					data = gson.fromJson(webDriverException.getRawMessage(), Map.class);
 
@@ -134,6 +129,8 @@ public class PerformanceTimelineDevToolsTest extends BaseDevToolsTest {
 				} catch (JsonSyntaxException e2) {
 					System.err.println(String.format("Exception(ignored) parsing message json: %s", e2.getMessage()));
 				}
+	            System.err.println("Cause:");
+	            e.getCause().printStackTrace();
 			}
 		}
 	}
@@ -154,10 +151,12 @@ public class PerformanceTimelineDevToolsTest extends BaseDevToolsTest {
 					"NullPointerException enabling Performance Timeline for null eventTypes: %s", e.getMessage()));
 			// NullPointerException enabling Performance Timeline for null eventTypes:
 			// eventTypes is required
+			printPartialStackTrace(e, 5);
 			throw e;
 		} catch (Exception e) {
 			System.err.println(
 					String.format("Exception enabling Performance Timeline for null eventTypes: %s", e.getMessage()));
+			e.printStackTrace();
 		}
 	}
 
@@ -257,6 +256,16 @@ public class PerformanceTimelineDevToolsTest extends BaseDevToolsTest {
 		} else {
 			throw new RuntimeException("Script execution failed.");
 		}
+	}
+	
+	private static void printPartialStackTrace(Throwable throwable, int depth) {
+	    System.err.println(throwable);
+
+	    StackTraceElement[] stackTrace = throwable.getStackTrace();
+
+	    for (int cnt = 0; cnt < Math.min(depth, stackTrace.length); cnt++) {
+	        System.err.println(String.format("\tat %s", stackTrace[cnt]));
+	    }
 	}
 
 }
