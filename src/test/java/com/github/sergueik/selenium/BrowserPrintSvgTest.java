@@ -34,6 +34,7 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		assertThat(element, notNullValue());
 		assertThat(element.isDisplayed(), is(true));
 		// TODO: computed size
+		Utils.sleep(60000);
 	}
 
 	@After
@@ -47,8 +48,10 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		// Act
 
 		// filename argument is ignored
-		Utils.executeAsyncScript(Utils.getScriptContent("svg_to_png.js"), Utils.cssSelectorOfElement(element),
-				filename);
+		WebElement textarea = driver.findElement(By.id("diagramInput"));
+		Object result = Utils.executeAsyncScript(Utils.getScriptContent("svg_to_png.js"), Utils.cssSelectorOfElement(element),
+		        textarea,filename);
+		System.err.println("SVG PNG RESULT: " + result.toString());
 		// TODO: org.openqa.selenium.ScriptTimeoutException: script timeout
 		// Assert
 		// verify downloaded PNG
