@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+
+  <!-- Start -->
+  <ellipse cx="300" cy="50" rx="80" ry="35" fill="#4CAF50" stroke="#388E3C" stroke-width="2"/>
+  <text x="300" y="55" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Start</text>
+
+  <!-- Process 1 -->
+  <rect x="200" y="120" width="200" height="60" rx="8" fill="#2196F3" stroke="#1565C0" stroke-width="2"/>
+  <text x="300" y="155" text-anchor="middle" fill="white" font-size="14">Process Data</text>
+
+  <!-- Decision -->
+  <polygon points="300,220 400,280 300,340 200,280" fill="#FFC107" stroke="#F57F17" stroke-width="2"/>
+  <text x="300" y="285" text-anchor="middle" fill="#333" font-size="14">Valid?</text>
+
+  <!-- Process 2 - Yes -->
+  <rect x="80" y="370" width="180" height="60" rx="8" fill="#2196F3" stroke="#1565C0" stroke-width="2"/>
+  <text x="170" y="405" text-anchor="middle" fill="white" font-size="14">Save Result</text>
+
+  <!-- Process 3 - No -->
+  <rect x="340" y="370" width="180" height="60" rx="8" fill="#f44336" stroke="#c62828" stroke-width="2"/>
+  <text x="430" y="405" text-anchor="middle" fill="white" font-size="14">Log Error</text>
+
+  <!-- End -->
+  <ellipse cx="300" cy="470" rx="80" ry="35" fill="#9C27B0" stroke="#6A1B9A" stroke-width="2"/>
+  <text x="300" y="475" text-anchor="middle" fill="white" font-size="16" font-weight="bold">End</text>
+
+  <!-- Arrows -->
+  <line x1="300" y1="85" x2="300" y2="120" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="300" y1="180" x2="300" y2="220" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="200" y1="280" x2="170" y2="370" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="400" y1="280" x2="430" y2="370" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="170" y1="430" x2="270" y2="455" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="430" y1="430" x2="330" y2="455" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Labels on arrows -->
+  <text x="155" y="325" fill="#388E3C" font-size="13" font-weight="bold">Yes</text>
+  <text x="415" y="325" fill="#c62828" font-size="13" font-weight="bold">No</text>
+</svg>

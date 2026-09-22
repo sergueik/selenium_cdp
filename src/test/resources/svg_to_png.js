@@ -36,15 +36,21 @@ function convertSvgToPng(svgElement, callback) {
 }
 
 // === Usage Example ===
-const mySvg = document.querySelector(arguments[0]);
+var selector = arguments[0];
+var filename = arguments[1];
+var done = arguments[arguments.length - 1];
 
-convertSvgToPng(mySvg, (pngUrl) => {
+const element = document.querySelector(selector);
+convertSvgToPng(element, (pngUrl) => {
   // Option A: Display it in an <img> tag
   // document.getElementById('my-image').src = pngUrl;
 
   // Option B: Automatically trigger a download
   const downloadLink = document.createElement('a');
   downloadLink.href = pngUrl;
-  downloadLink.download = 'converted-image.png';
+  downloadLink.download = filename || 'converted-image.png';
   downloadLink.click();
+  setTimeout(function() { element.style.class = 'done';   done();  },100);
 });
+
+

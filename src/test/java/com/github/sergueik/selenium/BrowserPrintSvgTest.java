@@ -20,7 +20,7 @@ import org.junit.Test;
  */
 public class BrowserPrintSvgTest extends BaseCdpTest {
 
-	private final static String cssSelector = "img#diagram";
+	private final static String cssSelector = "svg#graph1";
 	private final static String filename = "diagram.png";
 
 	private static WebElement element;
@@ -46,9 +46,7 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 
 		// Act
 
-		// wait for SVG
 		// filename argument is ignored
-		Utils.executeScript(Utils.getScriptContent("svg_to_png.js"), cssSelector, filename);
 		Utils.executeAsyncScript(Utils.getScriptContent("svg_to_png.js"), Utils.cssSelectorOfElement(element),
 				filename);
 		// TODO: org.openqa.selenium.ScriptTimeoutException: script timeout
