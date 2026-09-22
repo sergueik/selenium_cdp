@@ -93,6 +93,10 @@ public class Utils {
 		}
 	}
 
+	public static String cssSelectorOfElement(WebElement element) {
+		return (String) executeScript(getScriptContent("cssSelectorOfElement.js"), element);
+	}
+
 	public static void stopLocalHttpServer(int delay) {
 		if (delay == 0)
 			delay = 3;
@@ -105,7 +109,7 @@ public class Utils {
 
 	public static String getLocallyServerSocketHostedPageContent(String pagename) throws IOException {
 		// NOTE: fixed port can be used with ServerSocket
-		
+
 		serverSocket = new ServerSocket(0);
 		localPort = serverSocket.getLocalPort();
 		Thread thread = new Thread(() -> {
@@ -120,10 +124,8 @@ public class Utils {
 					inputStream.read(body);
 					inputStream.close();
 					OutputStream outputStream = socket.getOutputStream();
-					outputStream.write(("HTTP/1.0 200 OK\r\n" + 
-							"Content-Type: text/html\r\n" + 
-							"Content-Length: " + body.length + 
-							"\r\n\r\n").getBytes());
+					outputStream.write(("HTTP/1.0 200 OK\r\n" + "Content-Type: text/html\r\n" + "Content-Length: "
+							+ body.length + "\r\n\r\n").getBytes());
 					outputStream.write(body);
 					outputStream.flush();
 
@@ -150,7 +152,7 @@ public class Utils {
 		}
 	}
 
-	// NOTE: HttpServer is widely used in test fixtures 
+	// NOTE: HttpServer is widely used in test fixtures
 	// for classic and CDP Selenium examples, and HTTP mocks
 	public static String getLocallyHostedPageContent(String pagename) {
 		try {
@@ -203,6 +205,10 @@ public class Utils {
 	// http://www.javawithus.com/tutorial/using-ellipsis-to-accept-variable-number-of-arguments
 	public static Object executeScript(String script, Object... arguments) {
 		return js.executeScript(script, arguments);
+	}
+
+	public static Object executeAsyncScript(String script, Object... arguments) {
+		return js.executeAsyncScript(script, arguments);
 	}
 
 	public static String processExceptionMessage(String message) {
