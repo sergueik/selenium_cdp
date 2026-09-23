@@ -20,7 +20,7 @@ import org.junit.Test;
  */
 public class BrowserPrintSvgTest extends BaseCdpTest {
 
-	private final static String cssSelector = "svg#graph1";
+	private final static String cssSelector = "svg#diagram";
 	private final static String filename = "diagram.png";
 
 	private static WebElement element;
@@ -28,8 +28,12 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 	@Before
 	public void before() {
 		// Arrange
+		
 		String page = "mermaid_test.html";
 		driver.get(Utils.getPageContent(page));
+		
+		// driver.get("http://192.168.12.122:8000/mermaid_test.html");
+		
 		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(cssSelector)));
 		assertThat(element, notNullValue());
 		assertThat(element.isDisplayed(), is(true));
@@ -48,9 +52,8 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		// Act
 
 		// filename argument is ignored
-		WebElement textarea = driver.findElement(By.id("diagramInput"));
-		Object result = Utils.executeAsyncScript(Utils.getScriptContent("svg_to_png.js"), Utils.cssSelectorOfElement(element),
-		        textarea,filename);
+		Object result = Utils.executeAsyncScript(Utils.getScriptContent("svg_to_png.js"),
+				Utils.cssSelectorOfElement(element), filename);
 		System.err.println("SVG PNG RESULT: " + result.toString());
 		// TODO: org.openqa.selenium.ScriptTimeoutException: script timeout
 		// Assert

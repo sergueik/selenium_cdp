@@ -86,11 +86,32 @@ try {
 
             URL.revokeObjectURL(url);
 
+
+
+            const testDownload = true;
+            if (testDownload) {
+              var downloadLink = document.createElement("a");
+              downloadLink.href = "data:text/plain;charset=utf-8,HELLO_FROM_SELENIUM";
+              downloadLink.download = "selenium_test.txt";
+
+              document.body.appendChild(downloadLink);
+downloadLink.addEventListener("click", (event) => {
+  log("Click received, propagating and navigating normally!");
+  
+});
+
+
+              downloadLink.click();
+
+              document.body.removeChild(downloadLink);
+
+              log("download click completed");
+            } else {
+
             var downloadLink = document.createElement("a");
 
             downloadLink.href = pngDataUrl;
-            downloadLink.download =
-                filename || "converted-image.png";
+            downloadLink.download = filename;
 
             log("download link created");
             log("download filename=" + downloadLink.download);
@@ -102,6 +123,7 @@ try {
             document.body.removeChild(downloadLink);
 
             log("download click completed");
+            }
 
             done("SUCCESS\n" + trace.join("\n"));
 
