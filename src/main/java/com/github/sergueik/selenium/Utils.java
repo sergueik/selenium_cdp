@@ -208,6 +208,32 @@ public class Utils {
 	}
 
 	public static Object executeAsyncScript(String script, Object... arguments) {
+		// NOTE: the `executeAsyncScript` does not return when the JavaScript function returns; 
+		// it returns when the WebDriver-injected completion callback is invoked
+		// var done = arguments[arguments.length - 1];
+		// `done` argument is not supplied by the Java caller explicitly 
+		// it is the WebDriver-provided completion callback, injected as the final argument of the JavaScript function invocation. 
+		// the first value passed to done(...)
+		// done(status + "\n" + trace.join("\n"))
+		// becomes the return value of executeAsyncScript(...)
+		// There isn't Java class/method that appends the callback: 
+		// it's provisioned by the WebDriver remote end (the browser driver) according to the W3C WebDriver specification:
+
+		// see also:
+		// https://github.com/SeleniumHQ/selenium/blob/trunk/java/src/org/openqa/selenium/remote/RemoteWebDriver.java?utm_source=chatgpt.com
+		/*
+		@Override
+		public Object executeAsyncScript(String script, Object... args) {
+		  List<Object> convertedArgs =
+		      Stream.of(args)
+		          .map(new WebElementToJsonConverter())
+		          .collect(Collectors.toList());
+
+		  return execute(
+		      DriverCommand.EXECUTE_ASYNC_SCRIPT(script, convertedArgs))
+		      .getValue();
+		}
+		*/			
 		return js.executeAsyncScript(script, arguments);
 	}
 

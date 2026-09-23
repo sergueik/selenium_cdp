@@ -1201,8 +1201,8 @@ A common failure mode in Selenium 4 test suites is caused by the independent evo
 
 When their **major versions diverge**, Selenium fails with:
 
-SessionNotCreatedException:  
-"This version of ChromeDriver only supports Chrome version X  
+SessionNotCreatedException:
+"This version of ChromeDriver only supports Chrome version X
 Current browser version is Y"
 
 This error is catastrophic because it prevents **all tests** that rely on Chrome or CDP (Chrome DevTools Protocol) from running.
@@ -1458,14 +1458,14 @@ In practice, this means validating Chrome and ChromeDriver compatibility before 
 
 ### Mandatory Flaky Test, Verbose Take
 
-A common error with Selenium 4 testing is due to evolution of the applocation with demnding requirements. 
+A common error with Selenium 4 testing is due to evolution of the applocation with demnding requirements.
 A lean tast can be set up to gate keep against the future past lag:
 
 ```java
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		String chromeDriverVersion = getChromeDriverVersion(); // execute chromedriver.exe -version
-		String chromeVersion = getInstalledChromeVersion(); // perform OS-specicic version discovery without trying to instanciate ChromeDriver 
+		String chromeVersion = getInstalledChromeVersion(); // perform OS-specicic version discovery without trying to instanciate ChromeDriver
 
 		int driverMajor = parseMajor(chromeDriverVersion);
 		int chromeMajor = parseMajor(chromeVersion);
@@ -1493,27 +1493,27 @@ A lean tast can be set up to gate keep against the future past lag:
 
 	@Test
 	public void test() {
-    // nothing to do - test method exist solely to trigger the run  
+    // nothing to do - test method exist solely to trigger the run
 		System.err.println("Test executed");
 	}
 
-``` 
-this code despite elementary keeps failing randomly in both 
+```
+this code despite elementary keeps failing randomly in both
 ```sh
 mvn test -Dtest=FailWithSessionNotCreatedTest
 ```
 ```text
-Running FailWithSessionNotCreatedTest Gatekeeper: ChromeDriver version: 143.0.7499.42 Gatekeeper: Chrome version: 145.0.7632.76 
+Running FailWithSessionNotCreatedTest Gatekeeper: ChromeDriver version: 143.0.7499.42 Gatekeeper: Chrome version: 145.0.7632.76
 Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.145 sec
- <<< FAILURE! FailWithSessionNotCreatedTest Time elapsed: 0.144 sec 
+ <<< FAILURE! FailWithSessionNotCreatedTest Time elapsed: 0.144 sec
 <<< ERROR! java.lang.RuntimeException: Chrome/ChromeDriver major version mismatch: 145 / 143
 ``
-and 
+and
 ```text
 Running FailWithSessionNotCreatedTest Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 3.941 sec
-<<< FAILURE! FailWithSessionNotCreatedTest Time elapsed: 3.94 sec 
-<<< ERROR! org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. 
-Message: session not created: This version of ChromeDriver only supports Chrome version 143 Current browser version is 145.0.7632.76 
+<<< FAILURE! FailWithSessionNotCreatedTest Time elapsed: 3.94 sec
+<<< ERROR! org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500.
+Message: session not created: This version of ChromeDriver only supports Chrome version 143 Current browser version is 145.0.7632.76
 with binary path C:\Program Files\Google\Chrome\Application\chrome.exe
 
 Host info: host: 'sergueik23', ip: '192.168.12.178'
@@ -1566,7 +1566,7 @@ Tests in error:
   FailWithSessionNotCreatedTest: Could not start a new session. Response code 500. Message: session not created: This version of ChromeDriver only supports Chrome version 143(..)
 
 ```
-the latter exception will affect every `RPC` rank test operating Chrome browser via 
+the latter exception will affect every `RPC` rank test operating Chrome browser via
 ```java
 ChromiumDriver driver = new ChromeDriver(options);
 DevTools chromeDevTools = ((HasDevTools) driver).getDevTools();
@@ -1729,6 +1729,105 @@ Chrome creates diagram.png.crdownload
  ↓
 2,468 bytes written
 ```
+
+#### Underlying Mechanics
+
+There isn't Java class/method that appends the callback: it's provisioned by the WebDriver remote end (the browser driver) according to the W3C
+[WebDriver specification](https://github.com/SeleniumHQ/selenium/blob/trunk/java/src/org/openqa/selenium/remote/RemoteWebDriver.java)
+
+```java
+@Override
+public Object executeAsyncScript(String script, Object... args) {
+  List<Object> convertedArgs =
+      Stream.of(args)
+          .map(new WebElementToJsonConverter())
+          .collect(Collectors.toList());
+
+  return execute(
+      DriverCommand.EXECUTE_ASYNC_SCRIPT(script, convertedArgs))
+      .getValue();
+}
+```
+
+> NOTE: there is no `args.add(callback)` here. the Selenium client constructs the HTTP/WebDriver command containing:
+> ```
+> {
+>   "script": "...",
+>   "args": [...]
+> }
+> ```
+
+The W3C WebDriver spec's Execute Async Script algorithm explicitly says:
+
+* Let body and arguments be ...
+...
+
+* Run the following substeps in parallel:
+
+   + Append resolve to script arguments.
+   + Let result be the result of promise-calling execute a function body, with arguments body and arguments.
+
+That Append resolve to script arguments is the critical operation.
+
+```text
+
+executeAsyncScript(script, arg1, arg2)
+
+             ↓
+
+Selenium Java client:
+    POST /session/.../execute/async
+    {
+        script: script,
+        args: [arg1, arg2]
+    }
+
+             ↓
+
+browser driver / WebDriver remote end:
+
+ arguments = [arg1, arg2]
+
+    append(callback)
+
+    arguments = [arg1, arg2, callback]
+
+             ↓
+
+    execute function body with those arguments
+```
+
+The current [WebDriver specification](https://www.w3.org/TR/2026/WD-webdriver2-20260528) describes this explicitly: the async command supplies an additional argument as the final argument to the function.
+
+And an older WebDriver specification makes the operation even more visually obvious:
+
+* Let callback be a function 
+* Append callback to arguments
+* Let result be the result of calling execute a function body with arguments body and arguments
+
+
+How it happen - Here are three different pieces, and they live in different places:
+
+|Layer|Where|What |
+|-----|-----|------------|
+|Java Selenium|`RemoteWebDriver.executeAsyncScript()`|Sends script + caller's args|
+|WebDriver protocol|W3C Execute Async Script algorithm|Appends callback to arguments|
+|Browser-specific driver|ChromeDriver or other|Implements that remote-end algorithm|
+
+
+The Selenium Java client does not append the callback. `RemoteWebDriver.executeAsyncScript()` sends the supplied argument list unchanged
+The WebDriver remote end then appends a completion callback as the final argument before invoking the JavaScript function.
+
+is much more precise than an *"Selenium injects a callback"*
+
+And it explains perfectly why this works:
+```java
+var done = arguments[arguments.length - 1];
+```
+because the protocol guarantees that the final argument is the WebDriver completion callback.
+
+an [early WebDriver specification](https://www.w3.org/TR/2017/WD-webdriver-20170119) actually contains almost the exact pseudo-code you were looking for — Append callback to arguments
+
 ### See Also
 
   * [chrome devtools](https://github.com/ChromeDevTools/awesome-chrome-devtools) project
@@ -1792,7 +1891,7 @@ Chrome creates diagram.png.crdownload
   * https://www.datacamp.com/tutorial/webmcp-tutorial
   * https://developer.chrome.com/docs/ai/webmcp
   * https://qaskills.sh/blog/selenium-cdp-add-script-evaluate-guide (pythonish - not callable)
-  
+
 ### License
 This project is licensed under the terms of the MIT license.
 

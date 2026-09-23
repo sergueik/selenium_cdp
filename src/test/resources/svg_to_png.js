@@ -1,7 +1,10 @@
 var selector = arguments[0];
 var filename = arguments[1];
 var done = arguments[arguments.length - 1];
-
+/* here, done is not an argument supplied by the Java caller; 
+it is the WebDriver-provided completion callback, injected as the final argument of the JavaScript function invocation. 
+the first value passed to done(...) becomes the return value of executeAsyncScript(...)
+*/
 var trace = [];
 
 function log(message) {
