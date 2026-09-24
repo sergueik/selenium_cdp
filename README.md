@@ -1582,11 +1582,14 @@ Map<String, Object> result = driver.executeCdpCommand(command, new HashMap<>());
 
 ### Printing Mermaid SVG Entirely on the Browser
 
-```
-http://192.168.12.122:8000/mermaid_test.html
-python -m http.server  8000  --bind 192.168.12.122
+to run the page in a mall web server on the local address from `netsh interface ip show address "Wi-Fi"`
+navigate and run
+```sh
+pushd <PROJECT DIRECTORY>
+python -m http.server 8000 --bind 192.168.12.122
 ```
 ```cmd
+set HEADLESS=true
 mvn test -Dtest=BrowserPrintSvgTest
 ```
 ```text
