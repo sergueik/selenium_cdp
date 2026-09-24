@@ -1,10 +1,18 @@
 var selector = arguments[0];
 var filename = arguments[1];
+var noop = arguments[2];
 var done = arguments[arguments.length - 1];
-/* here, done is not an argument supplied by the Java caller; 
-it is the WebDriver-provided completion callback, injected as the final argument of the JavaScript function invocation. 
-the first value passed to done(...) becomes the return value of executeAsyncScript(...)
-*/
+var done = arguments[arguments.length - 1];
+
+/*
+ * The Java caller supplies selector, filename, and noop.
+ * The WebDriver remote end supplies `done` as an additional
+ * final argument when invoking this asynchronous script.
+ *
+ * Calling done(value) completes executeAsyncScript().
+ * `value` becomes its return value.
+ */
+ 
 var trace = [];
 
 function log(message) {
@@ -91,14 +99,14 @@ try {
 
 
 
-            const testDownload = true;
-            if (testDownload) {
+            if (noop||false){
               var downloadLink = document.createElement("a");
               downloadLink.href = "data:text/plain;charset=utf-8,HELLO_FROM_SELENIUM";
               downloadLink.download = "selenium_test.txt";
 
               document.body.appendChild(downloadLink);
 downloadLink.addEventListener("click", (event) => {
+              // var downloadLink = document.createElement("a");
   log("Click received, propagating and navigating normally!");
   
 });
