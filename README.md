@@ -1582,7 +1582,7 @@ Map<String, Object> result = driver.executeCdpCommand(command, new HashMap<>());
 
 ### Printing Mermaid SVG Entirely on the Browser
 
-to run the page in a mall web server on the local address from `netsh interface ip show address "Wi-Fi"`
+to run the page in a small web server on the local address from `netsh interface ip show address "Wi-Fi"`
 navigate and run
 ```sh
 pushd <PROJECT DIRECTORY>
@@ -1593,77 +1593,45 @@ set HEADLESS=true
 mvn test -Dtest=BrowserPrintSvgTest
 ```
 ```text
-Running com.github.sergueik.selenium.BrowserPrintSvgTest
-Testing local file: file:/c:/developer/sergueik/selenium_cdp/target/test-classes/mermaid_test.html
-Raw path: /c:/developer/sergueik/selenium_cdp/target/test-classes/mermaid_test.html
-SVG PNG RESULT: FAIL
-START
-selector=svg#graph1
-filename=[object HTMLTextAreaElement]
-element found
-tag=svg
-id=graph1
-width=738.857177734375
-height=334.5625
-serializing
-serialized, length=18815
-blob created, size=18825
-object URL created
-assigning img.src
-img.src assigned
-IMAGE ONLOAD
-naturalWidth=300
-naturalHeight=136
-canvas created
-canvas context created
-drawImage completed
-ONLOAD ERROR
-SecurityError
-Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported.
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 62.675 sec
-
-Results :
-
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  01:04 min
-[INFO] Finished at: 2026-09-22T20:05:08-04:00
-[INFO] ------------------------------------------------------------------------
-
-```
-```text
-inline Mermaid SVG
-        ↓
-serialize
-        ↓
-Blob
-        ↓
-Image.onload       ✓
-        ↓
-Canvas.drawImage   ✓
-        ↓
-canvas.toDataURL   ✗  SecurityError: tainted canvas
-
-```
-```text
-canvas has become tainted
-```
-with vanilla svg embedded in HTML
-```
-
 -------------------------------------------------------
  T E S T S
 -------------------------------------------------------
 Running com.github.sergueik.selenium.BrowserPrintSvgTest
-Testing local file: file:/c:/developer/sergueik/selenium_cdp/target/test-classes/mermaid_test.html
-Raw path: /c:/developer/sergueik/selenium_cdp/target/test-classes/mermaid_test.html
-SVG PNG RESULT: SUCCESS
+Testing local file: file:/C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test.html
+Raw path: /C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test.html
+Script Console Log: SUCCESS
 START
 selector=svg#diagram
-filename=diagram.png
+filename=selenium_test.txt
+element found
+tag=svg
+id=diagram
+width=600
+height=150
+serializing
+serialized, length=88
+blob created, size=88
+object URL created
+assigning img.src
+img.src assigned
+IMAGE ONLOAD
+naturalWidth=600
+naturalHeight=150
+canvas created
+canvas context created
+drawImage completed
+toDataURL completed
+PNG length=3314
+Click received, propagating and navigating normally!
+download click completed
+Continue waiting.
+Done waiting.
+Testing local file: file:/C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test.html
+Raw path: /C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test.html
+Script Console Log: SUCCESS
+START
+selector=svg#diagram
+filename=svg.png
 element found
 tag=svg
 id=diagram
@@ -1684,53 +1652,82 @@ drawImage completed
 toDataURL completed
 PNG length=3314
 download link created
-download filename=diagram.png
+download filename=svg.png
 download click completed
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 63.483 sec
+Continue waiting.
+Done waiting.
+Testing local file: file:/C:/developer/sergueik/selenium_cdp/target/test-classes/mermaid_test.html
+
+Raw path: /C:/developer/sergueik/selenium_cdp/target/test-classes/mermaid_test.html
+Script Console Log: FAIL
+START
+selector=svg#graph1
+filename=graph.png
+element found
+tag=svg
+id=graph1
+width=527
+height=238.6875
+serializing
+serialized, length=17225
+blob created, size=17235
+object URL created
+assigning img.src
+img.src assigned
+IMAGE ONLOAD
+naturalWidth=300
+naturalHeight=136
+canvas created
+canvas context created
+drawImage completed
+ONLOAD ERROR
+SecurityError
+Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported.
+Continue waiting.
+Continue waiting.
+Continue waiting.
+Continue waiting.
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 49.516 sec
 
 Results :
 
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 1
 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  01:21 min
-[INFO] Finished at: 2026-09-22T21:20:19-04:00
+[INFO] Total time:  55.870 s
+[INFO] Finished at: 2026-09-24T13:29:15-04:00
 [INFO] ------------------------------------------------------------------------
 
 ```
-```cmd
-Directory of c:\Users\kouzm\Downloads
-
- 09/22/2026 10:12 PM 2,468 diagram.png.crdownload
+```text
+inline Mermaid SVG
+        ↓
+serialize
+        ↓
+Blob
+        ↓
+Image.onload       ✓
+        ↓
+Canvas.drawImage   ✓
+        ↓
+canvas.toDataURL   ✗  SecurityError: tainted canvas
 
 ```
+```text
+canvas has become tainted
+```
+NOTE: the noop test and test with vanilla svg embedded in HTML both passed.
+
+to disable IPV6:
+
 ```cmd
 reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" ^
     /v DisabledComponents ^
     /t REG_DWORD ^
     /d 0xFF ^
     /f
-```
-
-```text
-SVG
- ↓
-Image.onload
- ↓
-canvas.drawImage()
- ↓
-canvas.toDataURL()
- ↓
-PNG data URL
- ↓
-<a download="diagram.png">
- ↓
-Chrome creates diagram.png.crdownload
- ↓
-2,468 bytes written
 ```
 
 #### Underlying Mechanics

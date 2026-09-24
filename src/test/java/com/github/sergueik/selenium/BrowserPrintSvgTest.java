@@ -2,6 +2,7 @@ package com.github.sergueik.selenium;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.containsString;
 
@@ -9,6 +10,8 @@ import org.openqa.selenium.By;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,7 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
-
+import java.time.Duration;
 import java.util.concurrent.*;
 import java.io.File;
 import java.io.IOException;
@@ -71,7 +74,7 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 	}
 
 	@Test
-	public void test2() {
+	public void test2() throws DownloadTimeoutException {
 		// Arrange
 		testpageFilename = "svg_test.html";
 		outputFilename = "selenium_test.txt";
@@ -85,7 +88,6 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(cssSelector)));
 		assertThat(element, notNullValue());
 		assertThat(element.isDisplayed(), is(true));
-
 
 		// Act
 		Object result = Utils.executeAsyncScript(Utils.getScriptContent(scriptFilename),
@@ -107,10 +109,10 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 	}
 
 	@Test
-	public void test3() {
+	public void test3() throws DownloadTimeoutException {
 		// Arrange
 		testpageFilename = "svg_test.html";
-		outputFilename = "selenium_test.txt";
+		outputFilename = "svg.png";
 		noop = false;
 		cssSelector = "svg#diagram";
 		scriptFilename = "svg_to_png.js";
@@ -121,7 +123,6 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		assertThat(element, notNullValue());
 		assertThat(element.isDisplayed(), is(true));
 
-
 		Path filePath = Path.of(Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().toString());
 
 		// Act
@@ -129,64 +130,125 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 				Utils.cssSelectorOfElement(element), outputFilename, noop);
 		System.err.println("Script Console Log: " + result.toString());
 		waitDownloadFileExists(filePath);
-
 		assertThat(new File(filePath.toString()).exists(), is(true));
 		assertThat(PngVerifier.isValidPng(filePath), is(true));
 
 	}
 
-	private void waitDownloadFileExists(final Path filePath) {
+	@Test
+	public void test4() {
+		// Arrange
+		testpageFilename = "mermaid_test.html";
+		outputFilename = "graph.png";
+		noop = true;
+		cssSelector = "svg#graph1";
+		scriptFilename = "svg_to_png.js";
 
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		boolean running = true;
-		long maxIterationTimeMs = 60000; // 1 minute limit per iteration
-		while (running) {
-			Future<Void> future = executor.submit(() -> {
-				// TODO: Put your actual loop iteration work here
-				// NOTE: need synchronized ?
-				Thread.sleep(1500); // hard work
-				return null;
-			});
+		driver.get(Utils.getPageContent(testpageFilename));
+
+		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(cssSelector)));
+		assertThat(element, notNullValue());
+		assertThat(element.isDisplayed(), is(true));
+
+		// Act
+		Object result = Utils.executeAsyncScript(Utils.getScriptContent(scriptFilename),
+				Utils.cssSelectorOfElement(element), outputFilename, noop);
+		System.err.println("Script Console Log: " + result.toString());
+
+		Path filePath = Path.of(Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().toString());
+		DownloadTimeoutException exception = assertThrows(DownloadTimeoutException.class,
+				() -> waitDownloadFileExists(filePath));
+
+		assertThat(new File(Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().toString()).exists(),
+				is(false));
+	}
+
+	@Ignore
+	@Test
+	public void test5() {
+		// Arrange
+		testpageFilename = "mermaid_test.html";
+		outputFilename = "graph.png";
+		noop = true;
+		cssSelector = "svg#graph1";
+		scriptFilename = "svg_to_png.js";
+
+		driver.get(Utils.getPageContent(testpageFilename));
+
+		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(cssSelector)));
+		assertThat(element, notNullValue());
+		assertThat(element.isDisplayed(), is(true));
+
+		// Act
+		Object result = Utils.executeAsyncScript(Utils.getScriptContent(scriptFilename),
+				Utils.cssSelectorOfElement(element), outputFilename, noop);
+		System.err.println("Script Console Log: " + result.toString());
+
+		Path filePath = Path.of(Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().toString());
+		DownloadTimeoutException exception = assertThrows(DownloadTimeoutException.class,
+				() -> waitDownloadFileExists(filePath));
+
+		try {
+			assertThat(
+					new File(Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().toString()).exists(),
+					is(true));
+			String fileContent = Files.readString(filePath);
+			assertThat(fileContent, containsString("HELLO_FROM_SELENIUM"));
+		} catch (IOException e) {
+			System.err.println("Error: " + e.toString());
+		}
+	}
+
+	private void waitDownloadFileExists(final Path filePath) throws DownloadTimeoutException {
+		long timeout = 30;
+		waitDownloadFileExists(filePath, timeout);
+	}
+
+	private void waitDownloadFileExists(final Path filePath, long timeout) throws DownloadTimeoutException {
+
+		Duration duration = Duration.ofSeconds(timeout);
+
+		String formatted = String.format("%02d:%02d:%02d", duration.toHours(), duration.toMinutesPart(),
+				duration.toSecondsPart());
+
+		long deadline = System.currentTimeMillis() + timeout * 1000;
+		long interval = (timeout * 1000) / 4;
+
+		while (!Files.exists(filePath)) {
+
+			if (System.currentTimeMillis() >= deadline) {
+				System.err.println("Timed out waiting for file");
+				throw new DownloadTimeoutException(
+						String.format("Timed out waiting for file %s over %s", filePath, formatted));
+			}
 
 			try {
-				// Wait for the iteration to finish within the time limit
-				future.get(maxIterationTimeMs, TimeUnit.MILLISECONDS);
-				System.err.println("Iteration completed successfully.");
-				if (new File(filePath.toString()).exists() == true) {
-					running = false; // Stop the loop
-					System.err.println("Done waiting.");
-				} else
-					System.err.println("Continue waiting.");
-			} catch (TimeoutException e) {
-				// Iteration took too long! Fail/abort it.
-				future.cancel(true); // Attempt to interrupt the running task
-				System.err.println("timed out!");
-				running = false;
-			} catch (InterruptedException | ExecutionException e) {
-				System.err.println("Error: " + e.getCause());
-				running = false;
+				Thread.sleep(interval);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new AssertionError("Interrupted while waiting for file: " + filePath, e);
 			}
+
+			System.err.println("Continue waiting");
 		}
 
+		System.err.println("Done waiting");
 	}
 
 	private static class PngVerifier {
 
-		// Standard 8-byte PNG magic number signature
+		// PNG magic number signature
 		private static final byte[] PNG_SIGNATURE = new byte[] { (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A,
 				0x0A };
 
-		/**
-		 * Verifies if a file is a valid, uncorrupted PNG image.
-		 */
 		public static boolean isValidPng(Path filePath) {
-			// Step 1: Fast check - Verify file signature (Magic Bytes)
+
 			try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(filePath.toFile()))) {
 				byte[] signature = new byte[8];
 				int bytesRead = bis.read(signature);
 
 				if (bytesRead != 8 || !Arrays.equals(PNG_SIGNATURE, signature)) {
-					System.out.println("Failed signature check: Not a PNG file.");
+					System.err.println("Failed signature check: Not a PNG file.");
 					return false;
 				}
 			} catch (IOException e) {
@@ -194,25 +256,33 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 				return false;
 			}
 
-			// Step 2: Deep check - Try decoding the image data to ensure it isn't corrupt
 			try {
 				// ImageIO.read returns null if no registered decoder handles it,
 				// or throws an IOException if the file stream data is corrupt.
 				BufferedImage image = ImageIO.read(filePath.toFile());
 				if (image == null) {
-					System.out.println("Failed decode check: Invalid or unsupported image data.");
+					System.err.println("Failed decode check: Invalid or unsupported image data.");
 					return false;
 				}
 
-				// Optional: Access a property to force full data pixel processing
+				// Optional: Access a metadata property to force full data pixel processing
 				image.getWidth();
 				return true;
 
 			} catch (IOException e) {
-				System.out.println("Failed decode check: Image data is corrupted.");
+				System.err.println("Failed decode check: Image data is corrupted.");
 				return false;
 			}
 		}
 
+	}
+
+	@SuppressWarnings("serial")
+	public static class DownloadTimeoutException extends TimeoutException {
+
+		// Constructor that accepts a custom error message
+		public DownloadTimeoutException(String message) {
+			super(message);
+		}
 	}
 }
