@@ -43,9 +43,11 @@ import java.util.stream.Collectors;
 
 public class BrowserPrintSvgTest extends BaseCdpTest {
 
-	private final static String cssSelector = "svg#diagram";
-	private final static String scriptFilename = "svg_to_png.js";
-	private static String filename = null;
+	private static String cssSelector = null;
+	private static String scriptFilename = null;
+	private static String outputFilename = null;
+	private static String testpageFilename = null;
+
 	private final static String downloadDirectory = Paths.get(System.getProperty("user.home")).resolve("Downloads")
 			.toAbsolutePath().toString();
 	private static boolean noop = true;
@@ -53,41 +55,49 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 
 	@Before
 	public void before() {
-		// Arrange
-
-		String page = "mermaid_test.html";
-		driver.get(Utils.getPageContent(page));
-		// can test on web page - not limited to local file
-		// driver.get("http://192.168.12.122:8000/mermaid_test.html");
-		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(cssSelector)));
-		assertThat(element, notNullValue());
-		assertThat(element.isDisplayed(), is(true));
 
 	}
 
 	@After
 	public void after() {
 		driver.get("about:blank");
-		new File(Paths.get(downloadDirectory).resolve(filename).toAbsolutePath().toString()).delete();
+		try {
+			File outputFile = new File(
+					Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().toString());
+			if (outputFile.exists())
+				outputFile.delete();
+		} catch (NullPointerException e) {
+		}
 	}
 
 	@Test
 	public void test2() {
 		// Arrange
-		filename = "selenium_test.txt";
+		testpageFilename = "svg_test.html";
+		outputFilename = "selenium_test.txt";
 		noop = true;
-		// NOTE filename argument is ignored when noop is true
+		cssSelector = "svg#diagram";
+		scriptFilename = "svg_to_png.js";
+
+		driver.get(Utils.getPageContent(testpageFilename));
+		// NOTE: not limited to local file - can test on web page
+		// driver.get(String.format("http://192.168.12.122:8000/%s", testpageFilename));
+		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(cssSelector)));
+		assertThat(element, notNullValue());
+		assertThat(element.isDisplayed(), is(true));
+
 
 		// Act
 		Object result = Utils.executeAsyncScript(Utils.getScriptContent(scriptFilename),
-				Utils.cssSelectorOfElement(element), filename, noop);
+				Utils.cssSelectorOfElement(element), outputFilename, noop);
 		System.err.println("Script Console Log: " + result.toString());
 
-		Path filePath = Path.of(Paths.get(downloadDirectory).resolve(filename).toAbsolutePath().toString());
+		Path filePath = Path.of(Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().toString());
 		waitDownloadFileExists(filePath);
 
 		try {
-			assertThat(new File(Paths.get(downloadDirectory).resolve(filename).toAbsolutePath().toString()).exists(),
+			assertThat(
+					new File(Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().toString()).exists(),
 					is(true));
 			String fileContent = Files.readString(filePath);
 			assertThat(fileContent, containsString("HELLO_FROM_SELENIUM"));
@@ -99,18 +109,28 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 	@Test
 	public void test3() {
 		// Arrange
-		filename = "diagram.png";
+		testpageFilename = "svg_test.html";
+		outputFilename = "selenium_test.txt";
 		noop = false;
+		cssSelector = "svg#diagram";
+		scriptFilename = "svg_to_png.js";
+		driver.get(Utils.getPageContent(testpageFilename));
+		// NOTE: not limited to local file - can test on web page
+		// driver.get(String.format("http://192.168.12.122:8000/%s", testpageFilename));
+		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(cssSelector)));
+		assertThat(element, notNullValue());
+		assertThat(element.isDisplayed(), is(true));
+
+
+		Path filePath = Path.of(Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().toString());
 
 		// Act
 		Object result = Utils.executeAsyncScript(Utils.getScriptContent(scriptFilename),
-				Utils.cssSelectorOfElement(element), filename, noop);
+				Utils.cssSelectorOfElement(element), outputFilename, noop);
 		System.err.println("Script Console Log: " + result.toString());
-		Path filePath = Path.of(Paths.get(downloadDirectory).resolve(filename).toAbsolutePath().toString());
 		waitDownloadFileExists(filePath);
 
-		assertThat(new File(Paths.get(downloadDirectory).resolve(filename).toAbsolutePath().toString()).exists(),
-				is(true));
+		assertThat(new File(filePath.toString()).exists(), is(true));
 		assertThat(PngVerifier.isValidPng(filePath), is(true));
 
 	}
