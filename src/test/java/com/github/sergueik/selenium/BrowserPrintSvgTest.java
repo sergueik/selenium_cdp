@@ -1,8 +1,11 @@
 package com.github.sergueik.selenium;
 
+/**
+ * Copyright 2026 Serguei Kouzmine
+ */
+
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.containsString;
 
@@ -11,9 +14,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import junit.framework.Assert;
-
 import org.junit.After;
+import static org.junit.Assert.assertThrows;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -22,27 +24,24 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import java.util.Arrays;
-import java.time.Duration;
-import java.util.concurrent.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.time.Duration;
+import java.io.File;
 
-/**
- * Selected test scenarios for Selenium WebDriver
- * 
- * @author: Serguei Kouzmine (kouzmine_serguei@yahoo
- */
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.concurrent.TimeoutException;
 
 public class BrowserPrintSvgTest extends BaseCdpTest {
 
@@ -64,15 +63,15 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 	@After
 	public void after() {
 		driver.get("about:blank");
-		try {
-			File outputFile = new File(
-					Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().toString());
-			if (outputFile.exists())
-				outputFile.delete();
-		} catch (NullPointerException e) {
-		}
+		/*
+		 * try { File outputFile = new File(
+		 * Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().
+		 * toString()); if (outputFile.exists()) outputFile.delete(); } catch
+		 * (NullPointerException e) { }
+		 */
 	}
 
+	@Ignore
 	@Test
 	public void test2() throws DownloadTimeoutException {
 		// Arrange
@@ -108,6 +107,7 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		}
 	}
 
+//	@Ignore
 	@Test
 	public void test3() throws DownloadTimeoutException {
 		// Arrange
@@ -132,15 +132,42 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		waitDownloadFileExists(filePath);
 		assertThat(new File(filePath.toString()).exists(), is(true));
 		assertThat(PngVerifier.isValidPng(filePath), is(true));
+		File outputFile = new File(filePath.toString());
 
+		try {
+			FileInputStream fileInputStream = new FileInputStream(outputFile);
+			byte byteData[] = new byte[(int) outputFile.length()];
+			fileInputStream.read(byteData);
+
+			byte[] base64EncodedByteArray = Base64.encodeBase64(byteData);
+
+			fileInputStream.close();
+
+			byte[] outputFileHash = new byte[20];
+			try {
+				MessageDigest md = MessageDigest.getInstance("SHA-256");
+				outputFileHash = md.digest(base64EncodedByteArray);
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			}
+			// output file encoded and added from C:\Users\kouzm\Downloads\svg.png: hash:
+			// e7Jn+2V6VQ+c791XFZelruhI56Zjl1xVFFrbPlLrT0E=
+			System.err.println(String.format("output file encoded and added from %s: hash: %s",
+					filePath.toString().replaceFirst("^.*[\\/]", ""), new String(Base64.encodeBase64(outputFileHash))));
+		} catch (FileNotFoundException e) {
+			System.err.println("Chrome extension not found: " + filePath.toString() + " " + e);
+		} catch (IOException e) {
+			System.err.println("Problem with reading output file: " + e);
+		}
 	}
 
+	@Ignore
 	@Test
 	public void test4() {
 		// Arrange
 		testpageFilename = "mermaid_test.html";
 		outputFilename = "graph.png";
-		noop = true;
+		noop = false;
 		cssSelector = "svg#graph1";
 		scriptFilename = "svg_to_png.js";
 
@@ -169,7 +196,7 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		// Arrange
 		testpageFilename = "mermaid_test.html";
 		outputFilename = "graph.png";
-		noop = true;
+		noop = false;
 		cssSelector = "svg#graph1";
 		scriptFilename = "svg_to_png.js";
 

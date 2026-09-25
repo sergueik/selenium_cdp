@@ -2,7 +2,6 @@ var selector = arguments[0];
 var filename = arguments[1];
 var noop = arguments[2];
 var done = arguments[arguments.length - 1];
-var done = arguments[arguments.length - 1];
 
 /*
  * The Java caller supplies selector, filename, and noop.
@@ -48,7 +47,42 @@ try {
     var serializer = new XMLSerializer();
     var svgString = serializer.serializeToString(element);
 
-    log('serialized, length=' + svgString.length);
+    
+    log("SVG length = " + svgString.length);
+/*
+    log("check: contains <image>: " +  /<image\b/i.test(svgString));
+
+    log("check: contains href: " +  /\bhref\s*=/i.test(svgString));
+
+    log("check: contains xlink:href: " + /xlink:href\s*=/i.test(svgString));
+
+    log("check: contains url(): " +  /url\s*\(/i.test(svgString) + ' ' + svgString.match(/url\s*\([^)]+\)/i));
+
+    log("check: contains http: " +    /http:/i.test(svgString)  + ' ' + svgString.match(/http:[^ ]+/i) );
+
+    log("check: contains https: " +    /https:/i.test(svgString));
+
+    log("check: contains data:: " +   /data:/i.test(svgString));
+*/
+var checks = [
+    { name: "<image>",     pattern: /<image\b/i,             capture: /<image\b[^>]*>/i },
+    { name: "href",        pattern: /\bhref\s*=/i,            capture: /\bhref\s*=\s*["'][^"']+["']/i },
+    { name: "xlink:href",  pattern: /xlink:href\s*=/i,        capture: /xlink:href\s*=\s*["'][^"']+["']/i },
+    { name: "url()",       pattern: /url\s*\(/i,              capture: /url\s*\([^)]+\)/i },
+    { name: "http",        pattern: /http:/i,                 capture: /http:[^"'\s<>]+/i },
+    { name: "https",       pattern: /https:/i,                capture: /https:[^"'\s<>]+/i },
+    { name: "data:",       pattern: /data:/i,                 capture: /data:[^"'\s<>]+/i }
+];
+
+checks.forEach(function(check) {
+    var match = svgString.match(check.pattern);
+    var captures = svgString.match(check.capture);
+    log("check: " + check.name + ": " + !!match + " " + (captures || ""));
+}); 
+
+log("----- SVG BEGIN -----");
+log(svgString);
+log("----- SVG END -----");
 
     var svgBlob = new Blob(
         [svgString],

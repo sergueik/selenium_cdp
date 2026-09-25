@@ -1627,6 +1627,7 @@ download click completed
 Continue waiting.
 Done waiting.
 Testing local file: file:/C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test.html
+
 Raw path: /C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test.html
 Script Console Log: SUCCESS
 START
@@ -1683,10 +1684,11 @@ drawImage completed
 ONLOAD ERROR
 SecurityError
 Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported.
-Continue waiting.
-Continue waiting.
-Continue waiting.
-Continue waiting.
+Continue waiting
+Continue waiting
+Continue waiting
+Continue waiting
+Timed out waiting for file
 Tests run: 4, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 49.516 sec
 
 Results :

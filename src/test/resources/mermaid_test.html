@@ -198,60 +198,17 @@ Mermaid Input
 
 <textarea id="diagramInput">
 
+
 flowchart LR
 
-Start(((Start)))
-
-Cond1{"❓Condition 1"}
-Confirm(["📂Confirm"])
-
-Cond2{"Condition 2"}
-
-Then1[["🔧 Execute Process"]]
-
-Message[/"📩 Message"/]
-
-Database[("📊 Database")]
-
-End((End))
-
-Start --> Cond1
-Cond1 -->|Yes| Then1
-Cond1 -->|No| Cond2
-
-subgraph SUBGRAPH2["Subgraph 2"]
-Then1 --> Confirm
-end 
-
-subgraph SUBGRAPH1["Subgraph 1"]
-Cond2 -->|Yes| Message
-Cond2 -->|No| Database
-end
-
-Database --> End
-Message --> End
-Confirm -->|Done| End
-
-style Start fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
-style End fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
-
-style Cond1 fill:#fff3cd,stroke:#d39e00,stroke-width:2px
-style Cond2 fill:#fff3cd,stroke:#d39e00,stroke-width:2px
-
-style Then1 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-style Confirm fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-
-style Message fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-style Database fill:#eeeeee,stroke:#555555,stroke-width:2px
-
-%% NOTE: the subgraph labels are case sensitive
-%% SUBGRAPH2 is not a node ID in the same sense as Start, Cond1, etc.
-style SUBGRAPH2 fill:#C9F7FF,stroke:#2e7d32,stroke-width:2px
-
-%% Uncommenting the following line creates a loose 
-%% node element 
-%% rather than styling the subgraph SUBGRAPH2:
-%% style Subgraph2 fill:#FF8080,stroke:#8B0000,stroke-width:2px
+A[A]
+B[B]
+C[C]
+D[D]
+A --> B
+A --> C
+C --> D
+B --> D
 
 </textarea>
 
