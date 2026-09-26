@@ -169,7 +169,7 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 				Utils.cssSelectorOfElement(element), outputFilename, noop);
 		System.err.println("Script Console Log: " + result.toString());
 		// Assert
-		// optionally may store and inspect the thrown exception 
+		// optionally may store and inspect the thrown exception
 		/* DownloadTimeoutException exception = */ assertThrows(DownloadTimeoutException.class,
 				() -> waitDownloadFileExists(filePath));
 
@@ -206,6 +206,8 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		 try { assertThat(fileHash, is(not(BLANK_PNG_HASH))); } catch (AssertionError e) { throw new BlankPngException("This is a blank PNG"); }
 		 */
 		if (BLANK_PNG_HASH.equals(fileHash)) {
+
+			System.err.println("This is a blank PNG");
 			throw new BlankPngException("This is a blank PNG");
 		}
 	}

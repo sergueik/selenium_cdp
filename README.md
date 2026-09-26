@@ -1580,7 +1580,7 @@ ChromeDriver driver = new ChromeDriver(options);
 Map<String, Object> result = driver.executeCdpCommand(command, new HashMap<>());
 ```
 
-### Printing Mermaid SVG Entirely on the Browser
+### Print Mermaid SVG Entirely on the Browser
 
 to run the page in a small web server on the local address from `netsh interface ip show address "Wi-Fi"`
 navigate and run
@@ -1597,38 +1597,252 @@ mvn test -Dtest=BrowserPrintSvgTest
  T E S T S
 -------------------------------------------------------
 Running com.github.sergueik.selenium.BrowserPrintSvgTest
-Testing local file: file:/C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test.html
-Raw path: /C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test.html
+Testing local file: file:/C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test1.html
+Raw path: /C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test1.html
 Script Console Log: SUCCESS
 START
 selector=svg#diagram
-filename=selenium_test.txt
+filename=svg.png
 element found
 tag=svg
 id=diagram
 width=600
-height=150
+height=500.0000305175781
 serializing
-serialized, length=88
-blob created, size=88
+SVG length = 2442
+check: <image>: false
+check: href: false
+check: xlink:href: false
+check: url(): true url(#arrowhead)
+check: http: true http://www.w3.org/2000/svg
+check: https: false
+check: data:: false
+----- SVG BEGIN -----
+<svg id="diagram" width="600px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+
+  <!-- Start -->
+  <ellipse cx="300" cy="50" rx="80" ry="35" fill="#4CAF50" stroke="#388E3C" stroke-width="2"/>
+  <text x="300" y="55" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Start</text>
+
+  <!-- Process 1 -->
+  <rect x="200" y="120" width="200" height="60" rx="8" fill="#2196F3" stroke="#1565C0" stroke-width="2"/>
+  <text x="300" y="155" text-anchor="middle" fill="white" font-size="14">Process Data</text>
+
+  <!-- Decision -->
+  <polygon points="300,220 400,280 300,340 200,280" fill="#FFC107" stroke="#F57F17" stroke-width="2"/>
+  <text x="300" y="285" text-anchor="middle" fill="#333" font-size="14">Valid?</text>
+
+  <!-- Process 2 - Yes -->
+  <rect x="80" y="370" width="180" height="60" rx="8" fill="#2196F3" stroke="#1565C0" stroke-width="2"/>
+  <text x="170" y="405" text-anchor="middle" fill="white" font-size="14">Save Result</text>
+
+  <!-- Process 3 - No -->
+  <rect x="340" y="370" width="180" height="60" rx="8" fill="#f44336" stroke="#c62828" stroke-width="2"/>
+  <text x="430" y="405" text-anchor="middle" fill="white" font-size="14">Log Error</text>
+
+  <!-- End -->
+  <ellipse cx="300" cy="470" rx="80" ry="35" fill="#9C27B0" stroke="#6A1B9A" stroke-width="2"/>
+  <text x="300" y="475" text-anchor="middle" fill="white" font-size="16" font-weight="bold">End</text>
+
+  <!-- Arrows -->
+  <line x1="300" y1="85" x2="300" y2="120" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="300" y1="180" x2="300" y2="220" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="200" y1="280" x2="170" y2="370" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="400" y1="280" x2="430" y2="370" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="170" y1="430" x2="270" y2="455" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="430" y1="430" x2="330" y2="455" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Labels on arrows -->
+  <text x="155" y="325" fill="#388E3C" font-size="13" font-weight="bold">Yes</text>
+  <text x="415" y="325" fill="#c62828" font-size="13" font-weight="bold">No</text>
+</svg>
+----- SVG END -----
+blob created, size=2442
 object URL created
 assigning img.src
 img.src assigned
 IMAGE ONLOAD
 naturalWidth=600
-naturalHeight=150
+naturalHeight=500
 canvas created
 canvas context created
 drawImage completed
 toDataURL completed
-PNG length=3314
-Click received, propagating and navigating normally!
+PNG length=45134
+download link created
+download filename=svg.png
 download click completed
-Continue waiting.
-Done waiting.
-Testing local file: file:/C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test.html
-
-Raw path: /C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test.html
+Continue waiting
+Done waiting
+output file encoded and added from C:\Users\kouzm\Downloads\svg.png: hash: osFSMvZIbQXNSlnHZQe6e4TK2ngnbpjKyBMLlZCq0E0=
+Testing local file: file:/C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test2.html
+Raw path: /C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test2.html
+Script Console Log: FAIL
+START
+selector=svg#diagram
+filename=svg.png
+element found
+tag=svg
+id=diagram
+width=189.82144165039062
+height=133.99107360839844
+serializing
+SVG length = 9675
+check: <image>: false
+check: href: false
+check: xlink:href: false
+check: url(): true url(#flowchart-pointEnd)
+check: http: true http://www.w3.org/2000/svg
+check: https: false
+check: data:: false
+----- SVG BEGIN -----
+<svg width="600px" id="diagram" xmlns="http://www.w3.org/2000/svg" style="max-width: 189.828px; transform: scale(1); transform-origin: 0px 0px;" viewBox="-8 -8 189.828125 134" role="graphics-document document" aria-roledescription="flowchart-v2">
+  <style>#graph1{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#graph1 .error-icon{fill:#552222;}#graph1 .error-text{fill:#552222;stroke:#552222;}#graph1 .edge-thickness-normal{stroke-width:2px;}#graph1 .edge-thickness-thick{stroke-width:3.5px;}#graph1 .edge-pattern-solid{stroke-dasharray:0;}#graph1 .edge-pattern-dashed{stroke-dasharray:3;}#graph1 .edge-pattern-dotted{stroke-dasharray:2;}#graph1 .marker{fill:#333333;stroke:#333333;}#graph1 .marker.cross{stroke:#333333;}#graph1 svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#graph1 .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#graph1 .cluster-label text{fill:#333;}#graph1 .cluster-label span{color:#333;}#graph1 .label text,#graph1 span{fill:#333;color:#333;}#graph1 .node rect,#graph1 .node circle,#graph1 .node ellipse,#graph1 .node polygon,#graph1 .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#graph1 .node .label{text-align:center;}#graph1 .node.clickable{cursor:pointer;}#graph1 .arrowheadPath{fill:#333333;}#graph1 .edgePath .path{stroke:#333333;stroke-width:2.0px;}#graph1 .flowchart-link{stroke:#333333;fill:none;}#graph1 .edgeLabel{background-color:#e8e8e8;text-align:center;}#graph1 .edgeLabel rect{opacity:0.5;background-color:#e8e8e8;fill:#e8e8e8;}#graph1 .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#graph1 .cluster text{fill:#333;}#graph1 .cluster span{color:#333;}#graph1 div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#graph1 .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#graph1 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}
+</style>
+  <g>
+    <marker id="flowchart-pointEnd" class="marker flowchart" viewBox="0 0 12 20" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/>
+    </marker>
+    <marker id="flowchart-pointStart" class="marker flowchart" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto">
+      <path d="M 0 5 L 10 10 L 10 0 z" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/>
+    </marker>
+    <marker id="flowchart-circleEnd" class="marker flowchart" viewBox="0 0 10 10" refX="11" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto">
+      <circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/>
+    </marker>
+    <marker id="flowchart-circleStart" class="marker flowchart" viewBox="0 0 10 10" refX="-1" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto">
+      <circle cx="5" cy="5" r="5" class="arrowMarkerPath" style="stroke-width: 1; stroke-dasharray: 1, 0;"/>
+    </marker>
+    <marker id="flowchart-crossEnd" class="marker cross flowchart" viewBox="0 0 11 11" refX="12" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto">
+      <path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/>
+    </marker>
+    <marker id="flowchart-crossStart" class="marker cross flowchart" viewBox="0 0 11 11" refX="-1" refY="5.2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto">
+      <path d="M 1,1 l 9,9 M 10,1 l -9,9" class="arrowMarkerPath" style="stroke-width: 2; stroke-dasharray: 1, 0;"/>
+    </marker>
+    <g class="root">
+      <g class="clusters"/>
+      <g class="edgePaths">
+        <path d="M24.4375,72.78841309823677L28.604166666666668,77.49034424853065C32.770833333333336,82.19227539882452,41.104166666666664,91.59613769941227,49.48046875,96.29806884970613C57.856770833333336,101,66.27604166666667,101,70.48567708333333,101L74.6953125,101" id="L-A-B-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-B" style="fill:none;" marker-end="url(#flowchart-pointEnd)"/>
+        <path d="M24.4375,45.211586901763226L28.604166666666668,40.50965575146935C32.770833333333336,35.80772460117549,41.104166666666664,26.403862300587743,49.4375,21.70193115029387C57.770833333333336,17,66.10416666666667,17,70.27083333333333,17L74.4375,17" id="L-A-C-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-A LE-C" style="fill:none;" marker-end="url(#flowchart-pointEnd)"/>
+        <path d="M99.015625,17L103.18229166666667,17C107.34895833333333,17,115.68229166666667,17,124.015625,21.678362573099417C132.34895833333334,26.35672514619883,140.68229166666666,35.71345029239766,144.84895833333334,40.39181286549708L149.015625,45.07017543859649" id="L-C-D-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-C LE-D" style="fill:none;" marker-end="url(#flowchart-pointEnd)"/>
+        <path d="M98.7578125,101L102.96744791666667,101C107.17708333333333,101,115.59635416666667,101,123.97265625,96.32163742690058C132.34895833333334,91.64327485380117,140.68229166666666,82.28654970760233,144.84895833333334,77.60818713450293L149.015625,72.9298245614035" id="L-B-D-0" class=" edge-thickness-normal edge-pattern-solid flowchart-link LS-B LE-D" style="fill:none;" marker-end="url(#flowchart-pointEnd)"/>
+      </g>
+      <g class="edgeLabels">
+        <g class="edgeLabel">
+          <g class="label" transform="translate(0, 0)">
+            <foreignObject width="0" height="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+</span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="edgeLabel">
+          <g class="label" transform="translate(0, 0)">
+            <foreignObject width="0" height="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+</span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="edgeLabel">
+          <g class="label" transform="translate(0, 0)">
+            <foreignObject width="0" height="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+</span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="edgeLabel">
+          <g class="label" transform="translate(0, 0)">
+            <foreignObject width="0" height="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+</span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+      </g>
+      <g class="nodes">
+        <g class="node default default" id="flowchart-A-24" transform="translate(12.21875, 59)">
+          <rect class="basic label-container" style="" rx="0" ry="0" x="-12.21875" y="-17" width="24.4375" height="34"/>
+          <g class="label" style="" transform="translate(-4.71875, -9.5)">
+            <foreignObject width="9.4375" height="19">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">A
+</span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="node default default" id="flowchart-B-25" transform="translate(86.7265625, 101)">
+          <rect class="basic label-container" style="" rx="0" ry="0" x="-12.03125" y="-17" width="24.0625" height="34"/>
+          <g class="label" style="" transform="translate(-4.53125, -9.5)">
+            <foreignObject width="9.0625" height="19">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">B
+</span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="node default default" id="flowchart-C-26" transform="translate(86.7265625, 17)">
+          <rect class="basic label-container" style="" rx="0" ry="0" x="-12.2890625" y="-17" width="24.578125" height="34"/>
+          <g class="label" style="" transform="translate(-4.7890625, -9.5)">
+            <foreignObject width="9.578125" height="19">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">C
+</span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="node default default" id="flowchart-D-27" transform="translate(161.421875, 59)">
+          <rect class="basic label-container" style="" rx="0" ry="0" x="-12.40625" y="-17" width="24.8125" height="34"/>
+          <g class="label" style="" transform="translate(-4.90625, -9.5)">
+            <foreignObject width="9.8125" height="19">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="nodeLabel">D
+</span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
+----- SVG END -----
+blob created, size=9675
+object URL created
+assigning img.src
+img.src assigned
+IMAGE ONLOAD
+naturalWidth=600
+naturalHeight=424
+canvas created
+canvas context created
+drawImage completed
+ONLOAD ERROR
+SecurityError
+Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported.
+Continue waiting
+Continue waiting
+Continue waiting
+Continue waiting
+Timed out waiting for file
+Testing local file: file:/C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test3.html
+Raw path: /C:/developer/sergueik/selenium_cdp/target/test-classes/svg_test3.html
 Script Console Log: SUCCESS
 START
 selector=svg#diagram
@@ -1639,7 +1853,17 @@ id=diagram
 width=600
 height=150
 serializing
-serialized, length=88
+SVG length = 88
+check: <image>: false
+check: href: false
+check: xlink:href: false
+check: url(): false
+check: http: true http://www.w3.org/2000/svg
+check: https: false
+check: data:: false
+----- SVG BEGIN -----
+<svg xmlns="http://www.w3.org/2000/svg" width="600px" id="diagram" src="flowchart.svg"/>
+----- SVG END -----
 blob created, size=88
 object URL created
 assigning img.src
@@ -1655,52 +1879,22 @@ PNG length=3314
 download link created
 download filename=svg.png
 download click completed
-Continue waiting.
-Done waiting.
-Testing local file: file:/C:/developer/sergueik/selenium_cdp/target/test-classes/mermaid_test.html
-
-Raw path: /C:/developer/sergueik/selenium_cdp/target/test-classes/mermaid_test.html
-Script Console Log: FAIL
-START
-selector=svg#graph1
-filename=graph.png
-element found
-tag=svg
-id=graph1
-width=527
-height=238.6875
-serializing
-serialized, length=17225
-blob created, size=17235
-object URL created
-assigning img.src
-img.src assigned
-IMAGE ONLOAD
-naturalWidth=300
-naturalHeight=136
-canvas created
-canvas context created
-drawImage completed
-ONLOAD ERROR
-SecurityError
-Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported.
 Continue waiting
-Continue waiting
-Continue waiting
-Continue waiting
-Timed out waiting for file
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 49.516 sec
+Done waiting
+output file encoded and added from C:\Users\kouzm\Downloads\svg.png: hash: e7Jn+2V6VQ+c791XFZelruhI56Zjl1xVFFrbPlLrT0E=
+This is a blank PNG
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 2, Time elapsed: 49.615 sec
 
 Results :
 
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 1
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 2
 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  55.870 s
-[INFO] Finished at: 2026-09-24T13:29:15-04:00
-[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:09 min
+[INFO] Finished at: 2026-09-26T00:23:22-04:00
+[INFO] -----------------------------------------
 
 ```
 ```text
@@ -1730,6 +1924,60 @@ reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" ^
     /t REG_DWORD ^
     /d 0xFF ^
     /f
+```
+```code
+```
+
+![browser rendering Mermaid svg](screenshots/capture-mermaid-svg.png)
+
+![mermaid live rendering](screenshots/capture-mermaid-live.png)
+
+
+The first image is not merely "poorly rendered Mermaid." It is essentially Mermaid's SVG with its stylesheet not being applied.
+
+Compare the symptoms:
+
+rectangles are solid black → SVG's default fill for <rect> is black
+labels are absent → the styling/foreign-object presentation isn't being applied correctly
+curved connecting paths are absent → an SVG <path> with no applicable stroke has no visible line; its default fill doesn't produce a visible open curve
+arrowheads remain → the marker-end="url(#...)" definitions are still being resolved and rendered
+
+The second screenshot is the normal Mermaid result: CSS supplies the node fill/stroke, path stroke, fonts, etc.
+
+So this is a very useful distinction:
+
+```text
+
+Mermaid SVG
+    |
+    +-- SVG geometry works
+    |      |
+    |      +-- rects appear
+    |      +-- marker references work
+    |
+    +-- Mermaid CSS presentation does NOT work
+           |
+           +-- node fill/stroke missing
+           +-- path stroke missing
+           +-- label presentation missing
+
+```
+![manually styled mermaid svg](screenshots/capture-modified-mermaid-svg.png)
+
+
+this was produced by adding the `style="fill: red; stroke: blue; stroke-width: 2px;"` in the `<svg>` element:
+```xml
+<g class="node default default" id="flowchart-B-25" transform="translate(86.7265625, 101)">
+  <rect class="basic label-container" style="fill: red; stroke: blue; stroke-width: 2px;" rx="0" ry="0" x="-12.03125" y="-17" width="24.0625" height="34"/>
+  <g class="label" style="" transform="translate(-4.53125, -9.5)">
+    <foreignObject width="9.0625" height="19">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+        <span class="nodeLabel">B
+</span>
+      </div>
+    </foreignObject>
+  </g>
+</g>
 ```
 
 #### Underlying Mechanics
