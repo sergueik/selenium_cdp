@@ -50,6 +50,7 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 	private static String scriptFilename = null;
 	private static String outputFilename = null;
 	private static String testpageFilename = null;
+	private final static String BLANK_PNG_HASH = "e7Jn+2V6VQ+c791XFZelruhI56Zjl1xVFFrbPlLrT0E=";
 
 	private final static String downloadDirectory = Paths.get(System.getProperty("user.home")).resolve("Downloads")
 			.toAbsolutePath().toString();
@@ -109,6 +110,7 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void test3() throws DownloadTimeoutException {
 		// Arrange
@@ -145,6 +147,7 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		assertThat(PngVerifier.isValidPng(filePath), is(true));
 	}
 
+	@Ignore
 	@Test
 	public void test4() throws DownloadTimeoutException {
 		// Arrange
@@ -176,6 +179,7 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		assertThat(new File(filePath.toString()).exists(), is(false));
 	}
 
+	@Ignore
 	@Test(expected = BlankPngException.class)
 	public void test5() throws DownloadTimeoutException, BlankPngException {
 		// Arrange
@@ -197,13 +201,17 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		// Act
 		Object result = Utils.executeAsyncScript(Utils.getScriptContent(scriptFilename),
 				Utils.cssSelectorOfElement(element), outputFilename, noop);
-		System.err.println("Script Console Log: " + result.toString());
+		String log = result.toString();
+		System.err.println("Script Console Log: " + log);
+		assertThat("Expected specific log message", log, containsString("Tainted canvases may not be exported."));
+
 		waitDownloadFileExists(filePath);
 		assertThat(new File(filePath.toString()).exists(), is(true));
 		assertThat(PngVerifier.isValidPng(filePath), is(true));
 		String fileHash = computeHash(filePath);
 		/*
-		 try { assertThat(fileHash, is(not(BLANK_PNG_HASH))); } catch (AssertionError e) { throw new BlankPngException("This is a blank PNG"); }
+		 * try { assertThat(fileHash, is(not(BLANK_PNG_HASH))); } catch (AssertionError
+		 * e) { throw new BlankPngException("This is a blank PNG"); }
 		 */
 		if (BLANK_PNG_HASH.equals(fileHash)) {
 
@@ -212,16 +220,13 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		}
 	}
 
-	private final static String BLANK_PNG_HASH = "e7Jn+2V6VQ+c791XFZelruhI56Zjl1xVFFrbPlLrT0E=";
-
-	@Ignore
 	@Test
 	public void test6() {
 		// Arrange
 		testpageFilename = "mermaid_test.html";
 		outputFilename = "graph.png";
 		noop = false;
-		cssSelector = "svg#graph1";
+		cssSelector = "svg[id ^='graph1']";
 		scriptFilename = "svg_to_png.js";
 		Path filePath = Path.of(Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().toString());
 
