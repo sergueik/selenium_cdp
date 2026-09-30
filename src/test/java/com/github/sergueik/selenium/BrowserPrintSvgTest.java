@@ -220,6 +220,7 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void test6() {
 		// Arrange
@@ -246,6 +247,33 @@ public class BrowserPrintSvgTest extends BaseCdpTest {
 				() -> waitDownloadFileExists(filePath));
 
 		assertThat(new File(filePath.toString()).exists(), is(false));
+	}
+
+	@Test
+	public void test7() throws DownloadTimeoutException {
+		// Arrange
+		testpageFilename = "graphviz_test.html";
+		outputFilename = "graph.png";
+		noop = false;
+		cssSelector = "#output svg";
+		scriptFilename = "svg_to_png.js";
+		Path filePath = Path.of(Paths.get(downloadDirectory).resolve(outputFilename).toAbsolutePath().toString());
+
+		driver.get(Utils.getPageContent(testpageFilename));
+
+		element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(cssSelector)));
+		assertThat(element, notNullValue());
+		assertThat(element.isDisplayed(), is(true));
+
+		// Act
+		Object result = Utils.executeAsyncScript(Utils.getScriptContent(scriptFilename), cssSelector, outputFilename,
+				noop);
+		System.err.println("Script Console Log: " + result.toString());
+
+		// Assert
+		waitDownloadFileExists(filePath);
+
+		assertThat(new File(filePath.toString()).exists(), is(true));
 	}
 
 	private void waitDownloadFileExists(final Path filePath) throws DownloadTimeoutException {

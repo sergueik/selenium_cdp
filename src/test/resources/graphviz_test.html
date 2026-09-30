@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ultra Basic DOT Renderer</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: Verdana, sans-serif;
+    background: linear-gradient(#7d8086, #5d6168);
+    color: #111;
+  }
+
+  body {
+    padding: 6px;   /* much smaller margins */
+    box-sizing: border-box;
+  }
+
+  .app-shell {
+    width: 100%;
+    height: calc(100vh - 12px);
+    background: linear-gradient(#c8c8c8, #a9a9a9);
+    border: 2px solid #6d6d6d;
+    box-shadow:
+      inset 1px 1px 0 #f5f5f5,
+      inset -1px -1px 0 #6e6e6e,
+      0 4px 12px rgba(0,0,0,0.35);
+    padding: 8px;
+    box-sizing: border-box;
+  }
+
+  .titlebar {
+    background: linear-gradient(#d8d8d8, #a8a8a8);
+    border: 1px solid #777;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  .split {
+    display: flex;
+    gap: 8px;
+    height: calc(100% - 42px);
+  }
+
+  .pane-input {
+    flex: 0 0 25%;
+    display: flex;
+    flex-direction: column;
+    min-width: 220px;
+  }
+
+  .pane-output {
+    flex: 0 0 75%;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .panel-label {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  textarea {
+    width: 100%;
+    flex: 1;
+    box-sizing: border-box;
+    background: #efefef;
+    border: 2px inset #9a9a9a;
+    font-family: Consolas, monospace;
+    padding: 8px;
+    resize: vertical;
+  }
+
+  #output {
+    flex: 1;
+    background: #f5f5f5;
+    border: 2px inset #999;
+    padding: 6px;
+    overflow: auto;
+  }
+
+  .toolbar {
+    margin-top: 6px;
+  }
+
+  button {
+    padding: 6px 12px;
+    margin-right: 4px;
+    border: 1px solid #666;
+    background: linear-gradient(#eeeeee, #bbbbbb);
+    cursor: pointer;
+    font-weight: bold;
+  }
+</style>
+
+  <script src="viz.js"></script>
+  <script src="svg-export.umd.standalone.min.js"></script>
+  <script src="full.render.js"></script>
+<script>
+let scale = 1;
+
+function zoomIn() {
+  scale += 0.1;
+  console.log('[ZOOM] + scale=' + scale);
+  applyZoom();
+}
+
+function zoomOut() {
+  scale -= 0.1;
+  console.log('[ZOOM] - scale=' + scale);
+  applyZoom();
+}
+
+function applyZoom() {
+  const svg = document.querySelector('#output svg');
+
+  if (svg) {
+    svg.style.transform = `scale(${scale})`;
+    svg.style.transformOrigin = '0 0';
+
+    logSvgState('[ZOOM] after applyZoom', svg);
+  }
+}
+
+function logSvgState(prefix, svg) {
+  const viewBox = svg.viewBox.baseVal;
+  const rect = svg.getBoundingClientRect();
+
+  console.log( prefix + ' scale=' + scale + ' cssTransform="' + svg.style.transform + '"' + ' viewBox="' + svg.getAttribute('viewBox') + '"' + ' viewBox=' + viewBox.x + ',' + viewBox.y + ',' + viewBox.width + ',' + viewBox.height + ' rect=' + rect.x.toFixed(2) + ',' + rect.y.toFixed(2) + ',' + rect.width.toFixed(2) + 'x' + rect.height.toFixed(2));
+
+}
+</script>
+
+</head>
+ <div class="app-shell">
+    <div class="titlebar">Ultra Basic DOT Renderer</div>
+
+    <div class="split">
+      <div class="pane-input">
+        <div class="panel-label">DOT Input</div>
+        <textarea id="dotInput">
+
+digraph if_else_flow {
+  rankdir=LR;
+  node [shape=circle];
+
+  Start [shape=point];
+  End   [shape=doublecircle];
+
+  Start -> Cond1;
+  Cond1 -> Then1   [label="if"];
+  Cond1 -> Cond2   [label="else"];
+
+  Cond2 -> Then2   [label="elseif"];
+  Cond2 -> Else    [label="else"];
+
+  Then1 -> End;
+  Then2 -> End;
+  Else  -> End;
+}
+
+</textarea>
+  <div style="margin-top:6px">
+    <button onclick="renderDot()">Render</button>
+    <button onclick="zoomIn()">+</button>
+    <button onclick="zoomOut()">-</button>   
+    <button onclick="exportSvg()"><span style="font-size: 0.67rem;">SVG<span/></button>    
+    </div>
+</div>
+
+ <div class="pane-output">
+        <div class="panel-label">Rendered Graph</div>
+        <div id="output"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const viz = new Viz();
+
+  function renderDot() {
+    const dot = document.getElementById('dotInput').value;
+
+    viz.renderSVGElement(dot).then(function(svg) {
+
+        // Make SVG responsive
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
+        svg.style.width = '150%';
+        svg.style.height = 'auto';
+
+        // Optional: set viewBox if missing
+        if (!svg.getAttribute('viewBox')) {
+          const width = svg.viewBox.baseVal.width || 1600;
+          const height = svg.viewBox.baseVal.height || 1200;
+          svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        }
+
+        const output = document.getElementById('output');
+        output.innerHTML = '';
+        output.appendChild(svg);
+      })
+      .catch(function(error) {
+        document.getElementById('output').innerText = error.message;
+      });
+  }
+
+/*
+ * Round SVG viewBox coordinates and dimensions to integers.
+ */
+function normalizeSvgViewBoxToIntegers(svg) {
+
+    const viewBox = svg.viewBox.baseVal;
+
+    const original = svg.getAttribute('viewBox');
+
+    const x = Math.round(viewBox.x);
+
+    const y = Math.round(viewBox.y);
+
+    const width = Math.round(viewBox.width);
+
+    const height = Math.round(viewBox.height);
+
+    const normalized = x + ' ' + y + ' ' + width + ' ' + height;
+
+    console.log( 'original: ' + original + ' normalized: ' + normalized);
+
+    svg.setAttribute( 'viewBox', normalized);
+}
+
+window.exportSvg = async function() {
+
+    const sourceSvg = document.querySelector('#output svg');
+
+    if (!sourceSvg) {
+        alert( 'No Graphviz SVG is currently rendered.');
+        return;
+    }
+    
+    const svg = sourceSvg.cloneNode(true);
+
+    const data = svg.outerHTML;
+
+    normalizeSvgViewBoxToIntegers(svg);
+
+    await svgExport.downloadSvg( svg, 'Graphviz diagram');
+};
+
+window.onload = renderDot;
+</script>
+</body>
+</html>
+
+
