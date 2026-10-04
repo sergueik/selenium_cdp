@@ -14,11 +14,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v153.network.model.TimeSinceEpoch;
-import org.openqa.selenium.devtools.v153.page.Page;
-import org.openqa.selenium.devtools.v153.page.Page.StartScreencastFormat;
-import org.openqa.selenium.devtools.v153.page.model.ScreencastFrame;
-import org.openqa.selenium.devtools.v153.page.model.ScreencastFrameMetadata;
+import org.openqa.selenium.devtools.v154.network.model.TimeSinceEpoch;
+import org.openqa.selenium.devtools.v154.page.Page;
+import org.openqa.selenium.devtools.v154.page.Page.StartScreencastFormat;
+import org.openqa.selenium.devtools.v154.page.model.ScreencastFrame;
+import org.openqa.selenium.devtools.v154.page.model.ScreencastFrameMetadata;
 import org.openqa.selenium.interactions.Actions;
 
 /**
@@ -117,9 +117,16 @@ public class ScreenCastFramesDevToolsTest extends BaseDevToolsTest {
 		element.sendKeys(Keys.SPACE);
 		Utils.sleep(1000);
 		element.click();
-		chromeDevTools.send(Page.startScreencast(Optional.of(format),
-				Optional.of(quality), Optional.of(maxWidth), Optional.of(maxHeight),
-				Optional.of(everyNthFrame)));
+		chromeDevTools.send(Page.startScreencast(
+				Optional.of(format),
+				Optional.of(quality), 
+				Optional.of(maxWidth), 
+				Optional.of(maxHeight),
+				Optional.of(everyNthFrame),
+				Optional.empty(),
+				Optional.empty()
+			)
+		);
 		// chromeDevTools.send(Page.reload(Optional.of(true), Optional.empty()));
 		Utils.sleep(delay);
 

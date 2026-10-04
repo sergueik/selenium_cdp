@@ -23,12 +23,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v153.fetch.Fetch;
-import org.openqa.selenium.devtools.v153.fetch.model.HeaderEntry;
-import org.openqa.selenium.devtools.v153.fetch.model.RequestPattern;
-import org.openqa.selenium.devtools.v153.fetch.model.RequestPaused;
-import org.openqa.selenium.devtools.v153.fetch.model.RequestStage;
-import org.openqa.selenium.devtools.v153.network.model.ResourceType;
+import org.openqa.selenium.devtools.v154.fetch.Fetch;
+import org.openqa.selenium.devtools.v154.fetch.model.HeaderEntry;
+import org.openqa.selenium.devtools.v154.fetch.model.RequestPattern;
+import org.openqa.selenium.devtools.v154.fetch.model.RequestPaused;
+import org.openqa.selenium.devtools.v154.fetch.model.RequestStage;
+import org.openqa.selenium.devtools.v154.network.model.ResourceType;
 
 import com.google.gson.Gson;
 

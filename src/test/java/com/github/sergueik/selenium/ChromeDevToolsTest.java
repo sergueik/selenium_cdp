@@ -29,24 +29,24 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
 
-// import org.openqa.selenium.devtools.v153.target.model.SessionID;
+// import org.openqa.selenium.devtools.v154.target.model.SessionID;
 import org.openqa.selenium.devtools.idealized.target.model.SessionID;
-import static org.openqa.selenium.devtools.v153.performance.Performance.disable;
-import static org.openqa.selenium.devtools.v153.performance.Performance.enable;
-import static org.openqa.selenium.devtools.v153.performance.Performance.getMetrics;
-import org.openqa.selenium.devtools.v153.browser.Browser;
-import org.openqa.selenium.devtools.v153.browser.Browser.GetWindowForTargetResponse;
-import org.openqa.selenium.devtools.v153.browser.model.Bounds;
-import org.openqa.selenium.devtools.v153.browser.model.WindowID;
-import org.openqa.selenium.devtools.v153.input.Input;
-import org.openqa.selenium.devtools.v153.input.Input.DispatchKeyEventType;
-import org.openqa.selenium.devtools.v153.log.Log;
-import org.openqa.selenium.devtools.v153.network.Network;
-import org.openqa.selenium.devtools.v153.network.model.Headers;
-import org.openqa.selenium.devtools.v153.page.Page;
-import org.openqa.selenium.devtools.v153.page.model.ScriptIdentifier;
-import org.openqa.selenium.devtools.v153.performance.Performance;
-import org.openqa.selenium.devtools.v153.performance.model.Metric;
+import static org.openqa.selenium.devtools.v154.performance.Performance.disable;
+import static org.openqa.selenium.devtools.v154.performance.Performance.enable;
+import static org.openqa.selenium.devtools.v154.performance.Performance.getMetrics;
+import org.openqa.selenium.devtools.v154.browser.Browser;
+import org.openqa.selenium.devtools.v154.browser.Browser.GetWindowForTargetResponse;
+import org.openqa.selenium.devtools.v154.browser.model.Bounds;
+import org.openqa.selenium.devtools.v154.browser.model.WindowID;
+import org.openqa.selenium.devtools.v154.input.Input;
+import org.openqa.selenium.devtools.v154.input.Input.DispatchKeyEventType;
+import org.openqa.selenium.devtools.v154.log.Log;
+import org.openqa.selenium.devtools.v154.network.Network;
+import org.openqa.selenium.devtools.v154.network.model.Headers;
+import org.openqa.selenium.devtools.v154.page.Page;
+import org.openqa.selenium.devtools.v154.page.model.ScriptIdentifier;
+import org.openqa.selenium.devtools.v154.performance.Performance;
+import org.openqa.selenium.devtools.v154.performance.model.Metric;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge

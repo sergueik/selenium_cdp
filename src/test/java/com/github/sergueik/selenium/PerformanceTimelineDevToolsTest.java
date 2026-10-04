@@ -28,9 +28,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.openqa.selenium.devtools.v153.network.model.TimeSinceEpoch;
-import org.openqa.selenium.devtools.v153.performancetimeline.PerformanceTimeline;
-import org.openqa.selenium.devtools.v153.performancetimeline.model.TimelineEvent;
+import org.openqa.selenium.devtools.v154.network.model.TimeSinceEpoch;
+import org.openqa.selenium.devtools.v154.performancetimeline.PerformanceTimeline;
+import org.openqa.selenium.devtools.v154.performancetimeline.model.TimelineEvent;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
