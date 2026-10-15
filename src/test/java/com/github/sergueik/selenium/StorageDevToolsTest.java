@@ -18,12 +18,12 @@ import org.junit.Before;
 // import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v154.network.model.TimeSinceEpoch;
-import org.openqa.selenium.devtools.v154.storage.Storage;
-import org.openqa.selenium.devtools.v154.storage.Storage.GetUsageAndQuotaResponse;
-import org.openqa.selenium.devtools.v154.storage.model.UsageForType;
+import org.openqa.selenium.devtools.v155.network.model.TimeSinceEpoch;
+import org.openqa.selenium.devtools.v155.storage.Storage;
+import org.openqa.selenium.devtools.v155.storage.Storage.GetUsageAndQuotaResponse;
+import org.openqa.selenium.devtools.v155.storage.model.UsageForType;
 // NOTE: removed in v154
-// import org.openqa.selenium.devtools.v154.storage.model.SharedStorageMetadata;
+// import org.openqa.selenium.devtools.v155.storage.model.SharedStorageMetadata;
 import org.openqa.selenium.json.JsonException;
 
 /**

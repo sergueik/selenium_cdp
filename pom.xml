@@ -21,8 +21,8 @@
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
     <pdfbox.version>2.0.27</pdfbox.version>
-    <selenium.version>4.50.0</selenium.version>
-    <selenium-devtools-v154.version>${selenium.version}</selenium-devtools-v154.version>
+    <selenium.version>4.51.0</selenium.version>
+    <selenium-devtools-v155.version>${selenium.version}</selenium-devtools-v155.version>
     <java.version>11</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -69,22 +69,22 @@
       <exclusions>
         <exclusion>
           <groupId>org.seleniumhq.selenium</groupId>
+          <artifactId>selenium-devtools-v154</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.seleniumhq.selenium</groupId>
           <artifactId>selenium-devtools-v153</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.seleniumhq.selenium</groupId>
           <artifactId>selenium-devtools-v152</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>org.seleniumhq.selenium</groupId>
-          <artifactId>selenium-devtools-v151</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-devtools-v154</artifactId>
-      <version>${selenium-devtools-v154.version}</version>
+      <artifactId>selenium-devtools-v155</artifactId>
+      <version>${selenium-devtools-v155.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>

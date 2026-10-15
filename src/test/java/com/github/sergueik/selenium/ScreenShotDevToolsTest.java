@@ -1,7 +1,7 @@
 package com.github.sergueik.selenium;
 
 /**
- * Copyright 2022,2024 Serguei Kouzmine
+ * Copyright 2022,2024,2026 Serguei Kouzmine
  */
 
 
@@ -19,24 +19,24 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
 
-/* Copyright 2020,2022 Serguei Kouzmine */
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v154.css.CSS;
-import org.openqa.selenium.devtools.v154.dom.DOM;
-import org.openqa.selenium.devtools.v154.dom.model.Rect;
-import org.openqa.selenium.devtools.v154.emulation.Emulation;
-import org.openqa.selenium.devtools.v154.page.Page;
+import org.openqa.selenium.devtools.v155.css.CSS;
+import org.openqa.selenium.devtools.v155.dom.DOM;
+import org.openqa.selenium.devtools.v155.dom.model.Rect;
+import org.openqa.selenium.devtools.v155.emulation.Emulation;
+import org.openqa.selenium.devtools.v155.emulation.Emulation.SetDeviceMetricsOverrideViewportMeta;
+import org.openqa.selenium.devtools.v155.page.Page;
+import org.openqa.selenium.devtools.v155.page.model.Viewport;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
  * see also:
  * https://github.com/rookieInTraining/selenium-cdp-examples/blob/main/src/test/java/com/rookieintraining/cdp/examples/Pages.java
  * https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-getLayoutMetrics
- * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setDeviceMetricsOverride
+ * https://chromedevtools.github.io/devtools-protocol/#/Emulation.setDeviceMetricsOverride
  * https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
  * https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-clearDeviceMetricsOverride
  *
@@ -67,6 +67,9 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 			rect = layoutMetrics.getContentSize();
 			width = rect.getWidth().intValue();
 			height = rect.getHeight().intValue();
+
+			Viewport viewPort = new Viewport(0,0,width,height, 1);
+
 			System.err.println(String.format("Content size: %dx%d", width, height));
 			chromeDevTools.send(
 				// @formatter:off
@@ -86,7 +89,8 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 					Optional.empty(), // displayFeature
 					Optional.empty(), // devicePosture
 					Optional.of(Emulation.SetDeviceMetricsOverrideScrollbarType.DEFAULT), // scrollbarType
-					Optional.of(false)  // screenOrientationLockEmulation
+					Optional.of(false), // screenOrientationLockEmulation
+					Optional.of(SetDeviceMetricsOverrideViewportMeta.DEFAULT) // viewportMeta
 				)
 				// @formatter:on
 			);
@@ -173,7 +177,8 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 				Optional.empty(), // displayFeature
 				Optional.empty(), // devicePosture
 				Optional.of(Emulation.SetDeviceMetricsOverrideScrollbarType.DEFAULT), // scrollbarType
-				Optional.of(false)  // screenOrientationLockEmulation
+				Optional.of(false), // screenOrientationLockEmulation
+				Optional.of(SetDeviceMetricsOverrideViewportMeta.DEFAULT) // viewportMeta
 			)
 			// @formatter:on
 		);

@@ -19,10 +19,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v154.dom.DOM;
-import org.openqa.selenium.devtools.v154.dom.DOM.EnableIncludeWhitespace;
-import org.openqa.selenium.devtools.v154.dom.model.Node;
-import org.openqa.selenium.devtools.v154.dom.model.NodeId;
+import org.openqa.selenium.devtools.v155.dom.DOM;
+import org.openqa.selenium.devtools.v155.dom.DOM.EnableIncludeWhitespace;
+import org.openqa.selenium.devtools.v155.dom.model.Node;
+import org.openqa.selenium.devtools.v155.dom.model.NodeId;
 
 /**
  * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge

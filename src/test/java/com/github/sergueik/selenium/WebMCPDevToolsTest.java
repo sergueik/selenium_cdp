@@ -22,13 +22,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v154.network.Network;
-import org.openqa.selenium.devtools.v154.page.model.FrameId;
-import org.openqa.selenium.devtools.v154.webmcp.WebMCP;
-import org.openqa.selenium.devtools.v154.webmcp.model.Tool;
-import org.openqa.selenium.devtools.v154.webmcp.model.ToolInvoked;
-import org.openqa.selenium.devtools.v154.webmcp.model.ToolResponded;
-import org.openqa.selenium.devtools.v154.webmcp.model.Annotation;
+import org.openqa.selenium.devtools.v155.network.Network;
+import org.openqa.selenium.devtools.v155.page.model.FrameId;
+import org.openqa.selenium.devtools.v155.webmcp.WebMCP;
+import org.openqa.selenium.devtools.v155.webmcp.model.Tool;
+import org.openqa.selenium.devtools.v155.webmcp.model.ToolInvoked;
+import org.openqa.selenium.devtools.v155.webmcp.model.ToolResponded;
+import org.openqa.selenium.devtools.v155.webmcp.model.Annotation;
 import com.google.gson.Gson;
 
 /**

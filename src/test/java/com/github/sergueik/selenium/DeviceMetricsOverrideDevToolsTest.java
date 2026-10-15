@@ -15,9 +15,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v154.dom.model.Rect;
-import org.openqa.selenium.devtools.v154.emulation.Emulation;
-import org.openqa.selenium.devtools.v154.page.Page;
+import org.openqa.selenium.devtools.v155.dom.model.Rect;
+import org.openqa.selenium.devtools.v155.emulation.Emulation;
+import org.openqa.selenium.devtools.v155.emulation.Emulation.SetDeviceMetricsOverrideViewportMeta;
+import org.openqa.selenium.devtools.v155.page.Page;
+import org.openqa.selenium.devtools.v155.page.model.Viewport;
 import org.openqa.selenium.interactions.Actions;
 
 /**
@@ -57,11 +59,13 @@ public class DeviceMetricsOverrideDevToolsTest extends BaseDevToolsTest {
 		chromeDevTools.send(Emulation.clearDeviceMetricsOverride());
 	}
 
+	@SuppressWarnings("unused")
 	@Test
 	public void test1() {
 		for (Integer device_width : widths.keySet()) {
 			Integer viewport_width = widths.get(device_width);
 
+			Viewport viewPort = new Viewport(0,0,viewport_width,height, 1);
 			chromeDevTools.send(
 				// @formatter:off
 				Emulation.setDeviceMetricsOverride(
@@ -80,7 +84,8 @@ public class DeviceMetricsOverrideDevToolsTest extends BaseDevToolsTest {
 					Optional.empty(),  // displayFeature
 					Optional.empty(), // devicePosture
 					Optional.of(Emulation.SetDeviceMetricsOverrideScrollbarType.DEFAULT), // scrollbarType
-					Optional.of(false)  // screenOrientationLockEmulation
+					Optional.of(false), // screenOrientationLockEmulation
+					Optional.of(SetDeviceMetricsOverrideViewportMeta.DEFAULT) // viewportMeta
 				)
 				// @formatter:on	
 			);
