@@ -16,8 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v155.console.Console;
-import org.openqa.selenium.devtools.v155.console.model.ConsoleMessage;
+import org.openqa.selenium.devtools.v156.console.Console;
+import org.openqa.selenium.devtools.v156.console.model.ConsoleMessage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 

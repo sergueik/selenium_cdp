@@ -22,13 +22,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v155.network.Network;
-import org.openqa.selenium.devtools.v155.page.model.FrameId;
-import org.openqa.selenium.devtools.v155.webmcp.WebMCP;
-import org.openqa.selenium.devtools.v155.webmcp.model.Tool;
-import org.openqa.selenium.devtools.v155.webmcp.model.ToolInvoked;
-import org.openqa.selenium.devtools.v155.webmcp.model.ToolResponded;
-import org.openqa.selenium.devtools.v155.webmcp.model.Annotation;
+import org.openqa.selenium.devtools.v156.network.Network;
+import org.openqa.selenium.devtools.v156.page.model.FrameId;
+import org.openqa.selenium.devtools.v156.webmcp.WebMCP;
+import org.openqa.selenium.devtools.v156.webmcp.model.Tool;
+import org.openqa.selenium.devtools.v156.webmcp.model.ToolInvoked;
+import org.openqa.selenium.devtools.v156.webmcp.model.ToolResponded;
+import org.openqa.selenium.devtools.v156.webmcp.model.Annotation;
 import com.google.gson.Gson;
 
 /**
@@ -37,6 +37,7 @@ import com.google.gson.Gson;
  * https://chromedevtools.github.io/devtools-protocol/#/WebMCP.enable
  * https://chromedevtools.github.io/devtools-protocol/#/WebMCP.invokeTool
  * https://chromedevtools.github.io/devtools-protocol/#/WebMCP.toolInvoked
+ * https://chromedevtools.github.io/devtools-protocol/#/WebMCP.Annotation
  *
  * see also:
  * https://medium.com/@LakshmiNarayana_U/i-built-a-six-tool-agent-ready-website-with-webmcp-heres-what-it-actually-changes-b98e6a2ec20a
@@ -85,7 +86,8 @@ public class WebMCPDevToolsTest extends BaseDevToolsTest {
 				Optional.of(false),  // readOnly
 				Optional.of(false),  // untrustedContent
 				Optional.of(false),  // consequential
-				Optional.of(false)   // autosubmit
+				Optional.of(false),  // autosubmit
+				Optional.of(false)  // untrustedContent	
 			)
 			// @formatter:on
 		);

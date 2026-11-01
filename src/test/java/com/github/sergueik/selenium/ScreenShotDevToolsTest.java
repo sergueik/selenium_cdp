@@ -23,13 +23,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.devtools.DevToolsException;
-import org.openqa.selenium.devtools.v155.css.CSS;
-import org.openqa.selenium.devtools.v155.dom.DOM;
-import org.openqa.selenium.devtools.v155.dom.model.Rect;
-import org.openqa.selenium.devtools.v155.emulation.Emulation;
-import org.openqa.selenium.devtools.v155.emulation.Emulation.SetDeviceMetricsOverrideViewportMeta;
-import org.openqa.selenium.devtools.v155.page.Page;
-import org.openqa.selenium.devtools.v155.page.model.Viewport;
+import org.openqa.selenium.devtools.v156.css.CSS;
+import org.openqa.selenium.devtools.v156.dom.DOM;
+import org.openqa.selenium.devtools.v156.dom.model.Rect;
+import org.openqa.selenium.devtools.v156.emulation.Emulation;
+import org.openqa.selenium.devtools.v156.emulation.Emulation.SetDeviceMetricsOverrideTextLayoutMode;
+import org.openqa.selenium.devtools.v156.emulation.Emulation.SetDeviceMetricsOverrideViewportMeta;
+import org.openqa.selenium.devtools.v156.page.Page;
+import org.openqa.selenium.devtools.v156.page.model.Viewport;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -90,7 +91,9 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 					Optional.empty(), // devicePosture
 					Optional.of(Emulation.SetDeviceMetricsOverrideScrollbarType.DEFAULT), // scrollbarType
 					Optional.of(false), // screenOrientationLockEmulation
-					Optional.of(SetDeviceMetricsOverrideViewportMeta.DEFAULT) // viewportMeta
+					Optional.of(SetDeviceMetricsOverrideViewportMeta.DEFAULT), // viewportMeta
+					Optional.of(SetDeviceMetricsOverrideTextLayoutMode.DEFAULT) // textLayoutMode
+
 				)
 				// @formatter:on
 			);
@@ -178,7 +181,8 @@ public class ScreenShotDevToolsTest extends BaseDevToolsTest {
 				Optional.empty(), // devicePosture
 				Optional.of(Emulation.SetDeviceMetricsOverrideScrollbarType.DEFAULT), // scrollbarType
 				Optional.of(false), // screenOrientationLockEmulation
-				Optional.of(SetDeviceMetricsOverrideViewportMeta.DEFAULT) // viewportMeta
+				Optional.of(SetDeviceMetricsOverrideViewportMeta.DEFAULT), // viewportMeta
+				Optional.of(SetDeviceMetricsOverrideTextLayoutMode.DEFAULT) // textLayoutMode
 			)
 			// @formatter:on
 		);
