@@ -59,7 +59,7 @@ chromeDevTools.send(Fetch.enable(Optional.of(reqPattern), Optional.of(false)));
 (If necessary one can limit to subset of reuests via match pattern).
 Then in the test method callback is set up:
 
-```java
+```java                                  fun
 @Test
 public void test() {
 	chromeDevTools.addListener(Fetch.requestPaused(),
@@ -1980,6 +1980,110 @@ this was produced by adding the `style="fill: red; stroke: blue; stroke-width: 2
 </g>
 ```
 
+#### Driver Browser Build Mismatch
+
+* observation
+
+install the later `chromedriver`
+```sh
+python3 get-latest-chromedriver-for-testing.py  --install --download --out-dir /home/$USER/Downloads
+````
+(output truncated):
+```text
+'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json'
+version: 157
+downloading https://storage.googleapis.com/chrome-for-testing-public/157.0.8103.38/linux64/chromedriver-linux64.zip
+extracting /tmp/chromedriver-linux64.zip to /home/sergueik/Downloads
+temp_path="/tmp"
+moving /tmp/chromedriver-linux64/chromedriver
+```
+than 
+the available chrome:
+```sh
+sudo apt-get install google-chrome-stable
+```
+```text
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+google-chrome-stable is already the newest version (156.0.8078.79-1).
+```
+confirm there is not yet `selenium-devtools-v157` on [maven central]()
+```sh
+export HEADLESS=true
+mvn test
+```
+this will massively fail with
+```text
+org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. Message: session not created: This version of ChromeDriver only supports Chrome version 157
+Current browser version is 156.0.8078.79 with binary path /opt/google/chrome/chrome 
+Host info: host: 'sergueik172', ip: '127.0.1.1'
+Build info: version: '4.52.0', revision: '5b37fd4 5b37fd4d98c08d6a43a0790417f91b8f6f32fb5c'
+System info: os.name: 'Linux', os.arch: 'amd64', os.version: '5.4.0-150-generic', java.version: '11.0.19'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [null, newSession {capabilities=[Capabilities {browserName: chrome, goog:chromeOptions: {args: [--allow-insecure-localhost, --allow-running-insecure-co..., --browser.download.folderLi..., --browser.helperApps.neverA..., --disable-blink-features=Au..., --disable-default-app, --disable-dev-shm-usage, --disable-extensions, --disable-gpu, --disable-infobars, --disable-in-process-stack-..., --disable-logging, --disable-notifications, --disable-popup-blocking, --disable-save-password-bubble, --disable-translate, --disable-web-security, --enable-local-file-accesses, --ignore-certificate-errors, --ignore-certificate-errors, --ignore-ssl-errors=true, --log-level=3, --no-proxy-server, --no-sandbox, --output=/dev/null, --ssl-protocol=any, --user-agent=Mozilla/5.0 (W..., --headless=new, --disable-gpu], extensions: []}}]}]
+Capabilities {browserName: chrome, goog:chromeOptions: {args: [--allow-insecure-localhost, --allow-running-insecure-co..., --browser.download.folderLi..., --browser.helperApps.neverA..., --disable-blink-features=Au..., --disable-default-app, --disable-dev-shm-usage, --disable-extensions, --disable-gpu, --disable-infobars, --disable-in-process-stack-..., --disable-logging, --disable-notifications, --disable-popup-blocking, --disable-save-password-bubble, --disable-translate, --disable-web-security, --enable-local-file-accesses, --ignore-certificate-errors, --ignore-certificate-errors, --ignore-ssl-errors=true, --log-level=3, --no-proxy-server, --no-sandbox, --output=/dev/null, --ssl-protocol=any, --user-agent=Mozilla/5.0 (W..., --headless=new, --disable-gpu], extensions: []}}
+	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:115)
+	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:76)
+	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:62)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:228)
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.invokeExecute(DriverCommandExecutor.java:217)
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:175)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:705)
+	at org.openqa.selenium.remote.RemoteWebDriver.startSession(RemoteWebDriver.java:310)
+	at org.openqa.selenium.remote.RemoteWebDriver.<init>(RemoteWebDriver.java:260)
+	at org.openqa.selenium.remote.RemoteWebDriver.<init>(RremoteWebDriver.java:230)
+	at org.openqa.selenium.chromium.ChromiumDriver.<init>(ChromiumDriver.java:108)
+	at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:92)
+	...
+Running com.github.sergueik.selenium.AlertDevToolsTest
+```
+(truncated)
+modify the faulty `com.github.sergueik.selenium.BaseCdpTest.beforeClass` code:
+```java
+	driver = new ChromeDriver(options);
+```
+```java
+try {
+	driver = new ChromeDriver(options);
+	wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
+	Utils.setDriver(driver);
+	wait.pollingEvery(Duration.ofMillis(pollingInterval));
+} catch (SessionNotCreatedException e) {
+	System.err.println("Configuration excepion: " + e.toString());
+	return;
+}
+
+```
+and similar change in `BaseDevToolsTest.java`
+
+after the change tests still fail because they carelessly are not checking:
+
+```sh
+mvn test -Dtest=UserAgentOverrideCdpTest
+```
+```text
+ T E S T S
+-------------------------------------------------------
+Running com.github.sergueik.selenium.UserAgentOverrideCdpTest
+Configuration excepion: org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. Message: session not created: This version of ChromeDriver only supports Chrome version 157
+Current browser version is 156.0.8078.79 with binary path /opt/google/chrome/chrome 
+Host info: host: 'sergueik172', ip: '127.0.1.1'
+Build info: version: '4.52.0', revision: '5b37fd4 5b37fd4d98c08d6a43a0790417f91b8f6f32fb5c'
+System info: os.name: 'Linux', os.arch: 'amd64', os.version: '5.4.0-150-generic', java.version: '11.0.19'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [null, newSession {capabilities=[Capabilities {browserName: chrome, goog:chromeOptions: {args: [--allow-insecure-localhost, --allow-running-insecure-co..., --browser.download.folderLi..., --browser.helperApps.neverA..., --disable-blink-features=Au..., --disable-default-app, --disable-dev-shm-usage, --disable-extensions, --disable-gpu, --disable-infobars, --disable-in-process-stack-..., --disable-logging, --disable-notifications, --disable-popup-blocking, --disable-save-password-bubble, --disable-translate, --disable-web-security, --enable-local-file-accesses, --ignore-certificate-errors, --ignore-certificate-errors, --ignore-ssl-errors=true, --log-level=3, --no-proxy-server, --no-sandbox, --output=/dev/null, --ssl-protocol=any, --user-agent=Mozilla/5.0 (W..., --headless=new, --disable-gpu], extensions: []}}]}]
+Capabilities {browserName: chrome, goog:chromeOptions: {args: [--allow-insecure-localhost, --allow-running-insecure-co..., --browser.download.folderLi..., --browser.helperApps.neverA..., --disable-blink-features=Au..., --disable-default-app, --disable-dev-shm-usage, --disable-extensions, --disable-gpu, --disable-infobars, --disable-in-process-stack-..., --disable-logging, --disable-notifications, --disable-popup-blocking, --disable-save-password-bubble, --disable-translate, --disable-web-security, --enable-local-file-accesses, --ignore-certificate-errors, --ignore-certificate-errors, --ignore-ssl-errors=true, --log-level=3, --no-proxy-server, --no-sandbox, --output=/dev/null, --ssl-protocol=any, --user-agent=Mozilla/5.0 (W..., --headless=new, --disable-gpu], extensions: []}}
+Tests run: 10, Failures: 0, Errors: 10, Skipped: 0, Time elapsed: 3.47 sec <<< FAILURE!
+test1(com.github.sergueik.selenium.UserAgentOverrideCdpTest)  Time elapsed: 0.045 sec  <<< ERROR!
+java.lang.NullPointerException
+	at com.github.sergueik.selenium.UserAgentOverrideCdpTest.beforeTest(UserAgentOverrideCdpTest.java:56)
+
+```
+
+The test infrastructure converts an infrastructure/setup failure into a partially initialized test fixture. 
+Individual test methods then dereference `driver`, `wait`, or other objects that were never initialized.
+
 #### Underlying Mechanics
 
 There isn't Java class/method that appends the callback: it's provisioned by the WebDriver remote end (the browser driver) according to the W3C
@@ -2101,6 +2205,12 @@ public Object executeAsyncScript(String script, Object... args) {
 }
 ```
 
+### TODO
+How does Chrome detect the 
+```
+Google Chrome may not function correctly because it is no longer supported on this Linux distribution Learn more
+Version 156.0.8078.79 (Official Build) (x86_64)
+```
 ### See Also
 
   * [chrome devtools](https://github.com/ChromeDevTools/awesome-chrome-devtools) project

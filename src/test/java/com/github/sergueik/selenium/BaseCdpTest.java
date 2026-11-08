@@ -18,7 +18,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
+import org.openqa.selenium.SessionNotCreatedException;
 /**
  * Base class for selected test scenarios for Selenium 4 Chrome Developer Tools bridge
  *
@@ -121,10 +121,15 @@ public class BaseCdpTest {
 			options.addArguments("--headless=new", "--disable-gpu");
 		}
 
-		driver = new ChromeDriver(options);
-		wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
-		Utils.setDriver(driver);
-		wait.pollingEvery(Duration.ofMillis(pollingInterval));
+		try {
+			driver = new ChromeDriver(options);
+			wait = new WebDriverWait(driver, Duration.ofSeconds(flexibleWait));
+			Utils.setDriver(driver);
+			wait.pollingEvery(Duration.ofMillis(pollingInterval));
+		} catch (SessionNotCreatedException e) {
+			System.err.println("Configuration excepion: " + e.toString());
+			return;
+		}
 	}
 
 	@AfterClass
