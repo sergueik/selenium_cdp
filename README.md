@@ -2083,7 +2083,13 @@ java.lang.NullPointerException
 
 The test infrastructure converts an infrastructure/setup failure into a partially initialized test fixture. 
 Individual test methods then dereference `driver`, `wait`, or other objects that were never initialized.
-
+The correct fix  is to
+```java
+catch (SessionNotCreatedException e) {
+	System.err.println("Configuration excepion: " + e.getMessage());
+	Assume.assumeNoException(e);
+}
+```
 #### Underlying Mechanics
 
 There isn't Java class/method that appends the callback: it's provisioned by the WebDriver remote end (the browser driver) according to the W3C

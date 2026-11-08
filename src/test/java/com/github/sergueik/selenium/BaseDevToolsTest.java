@@ -1,25 +1,18 @@
 package com.github.sergueik.selenium;
 
 /**
-
  * Copyright 2021-2025 Serguei Kouzmine
-
  */
 
 import java.io.IOException;
-
 import java.net.InetSocketAddress;
-
 import java.net.Socket;
-
 import java.nio.file.Paths;
 
 
 
 import org.junit.AfterClass;
-
 import org.junit.Assume;
-
 import org.junit.BeforeClass;
 
 // need to use branch cdp_codegen of SeleniumHQ/selenium
@@ -31,26 +24,16 @@ import org.openqa.selenium.chrome.ChromeDriver;
 //NOTE: Java 8 error 
 
 //cannot access org.openqa.selenium.chrome.ChromeDriver
-
 //class file has wrong version 55.0, should be 52
 
-
-
 import org.openqa.selenium.chrome.ChromeOptions;
-
 import org.openqa.selenium.chromium.ChromiumDriver;
-
 import org.openqa.selenium.devtools.DevTools;
-
 import org.openqa.selenium.devtools.HasDevTools;
-
 import org.openqa.selenium.remote.DesiredCapabilities;
-
 import org.openqa.selenium.devtools.DevToolsException;
-
 import org.openqa.selenium.remote.http.ConnectionFailedException;
-
-
+import org.openqa.selenium.SessionNotCreatedException;
 
 /**
  * Base class for selected test scenarios for Selenium 4 Chrome Developer Tools bridge
@@ -140,9 +123,16 @@ public class BaseDevToolsTest {
 
 		// "--remote-allow-origins=*" ChromeDriver 111
 		// see also: https://github.com/SeleniumHQ/selenium/issues/11750
-		driver = new ChromeDriver(options);
-		Utils.setDriver(driver);
-		chromeDevTools = ((HasDevTools) driver).getDevTools();
+		try {
+			driver = new ChromeDriver(options);
+			Utils.setDriver(driver);
+			chromeDevTools = ((HasDevTools) driver).getDevTools();
+		} catch (SessionNotCreatedException e) {
+			System.err.println("Configuration excepion: " + e.getMessage());
+			// throw e;
+			Assume.assumeNoException(e);
+		}
+
 		// see also: https://www.baeldung.com/junit-conditional-assume
 		try {
 			chromeDevTools.createSession();

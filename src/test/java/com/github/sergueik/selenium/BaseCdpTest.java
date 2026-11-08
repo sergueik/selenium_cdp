@@ -11,8 +11,10 @@ import java.nio.file.Paths;
 import java.time.Duration;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
@@ -128,7 +130,8 @@ public class BaseCdpTest {
 			wait.pollingEvery(Duration.ofMillis(pollingInterval));
 		} catch (SessionNotCreatedException e) {
 			System.err.println("Configuration excepion: " + e.toString());
-			return;
+			// throw e;
+			Assume.assumeNoException(e);
 		}
 	}
 
