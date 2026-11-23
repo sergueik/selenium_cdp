@@ -15,12 +15,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.devtools.v156.dom.model.Rect;
-import org.openqa.selenium.devtools.v156.emulation.Emulation;
-import org.openqa.selenium.devtools.v156.emulation.Emulation.SetDeviceMetricsOverrideTextLayoutMode;
-import org.openqa.selenium.devtools.v156.emulation.Emulation.SetDeviceMetricsOverrideViewportMeta;
-import org.openqa.selenium.devtools.v156.page.Page;
-import org.openqa.selenium.devtools.v156.page.model.Viewport;
+import org.openqa.selenium.devtools.v157.dom.model.Rect;
+import org.openqa.selenium.devtools.v157.emulation.Emulation;
+import org.openqa.selenium.devtools.v157.emulation.Emulation.SetDeviceMetricsOverrideTextLayoutMode;
+import org.openqa.selenium.devtools.v157.emulation.Emulation.SetDeviceMetricsOverrideViewportMeta;
+import org.openqa.selenium.devtools.v157.page.Page;
+import org.openqa.selenium.devtools.v157.page.model.Viewport;
 import org.openqa.selenium.interactions.Actions;
 
 /**

@@ -9,12 +9,12 @@ import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.devtools.v156.dom.DOM;
-import org.openqa.selenium.devtools.v156.dom.model.Node;
-import org.openqa.selenium.devtools.v156.dom.model.NodeId;
-import org.openqa.selenium.devtools.v156.dom.model.RGBA;
-import org.openqa.selenium.devtools.v156.overlay.Overlay;
-import org.openqa.selenium.devtools.v156.overlay.model.HighlightConfig;
+import org.openqa.selenium.devtools.v157.dom.DOM;
+import org.openqa.selenium.devtools.v157.dom.model.Node;
+import org.openqa.selenium.devtools.v157.dom.model.NodeId;
+import org.openqa.selenium.devtools.v157.dom.model.RGBA;
+import org.openqa.selenium.devtools.v157.overlay.Overlay;
+import org.openqa.selenium.devtools.v157.overlay.model.HighlightConfig;
 
 /**
  * Selected test scenarios for Selenium Chrome Developer Tools Selenium 4 bridge
@@ -76,7 +76,7 @@ public class OverlayHighlightDevToolsTest extends BaseDevToolsTest {
 					Optional.empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(), Optional.empty(), Optional.empty(),
 					Optional.empty(),Optional.empty());
-			// java.util.Optional<org.openqa.selenium.devtools.v156.emulation.Emulation.SetDeviceMetricsOverrideTextLayoutMode>
+			// java.util.Optional<org.openqa.selenium.devtools.v157.emulation.Emulation.SetDeviceMetricsOverrideTextLayoutMode>
 
 			chromeDevTools
 					.send(Overlay.highlightNode(highlightConfig, Optional.of(nodeId),
