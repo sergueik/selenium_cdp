@@ -114,7 +114,7 @@ public class CdpWarningHandlerTest {
 			}
 
 			// focus on specific logger messages
-			if (filterLoggerName == null || filterLoggerName.equals(record.getLoggerName())
+			if ((filterLoggerName == null || filterLoggerName.equals(record.getLoggerName()))
 					&& record.getLevel().intValue() >= Level.WARNING.intValue()) {
 
 				warningRecord = record;
