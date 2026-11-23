@@ -14,6 +14,10 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -37,7 +41,7 @@ public class CdpWarningHandlerTest {
 	private static String osName = Utils.getOSName();
 	private static boolean runHeadless = false;
 
-	private static String warning = null;
+	private static List<String> warnings = new ArrayList<String>();
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -62,9 +66,9 @@ public class CdpWarningHandlerTest {
 		driver = new ChromeDriver(options);
 		Utils.setDriver(driver);
 
-		warning = warningHandler.getWarning();
-		if (warning != null) {
-			System.out.println("CDP compatibility issue: " + warning);
+		warnings = warningHandler.getWarnings();
+		if (warnings != null && warnings.size() > 0) {
+			System.out.println("CDP compatibility issue: " + String.join("\n", warnings));
 		} else {
 			System.out.println("No CDP warning observed.");
 		}
@@ -73,7 +77,8 @@ public class CdpWarningHandlerTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test	public void test1() {
+	@Test
+	public void test1() {
 
 	}
 
@@ -88,12 +93,13 @@ public class CdpWarningHandlerTest {
 	public static class WarningHandler extends Handler {
 
 		private String filterLoggerName = null;
-		private String warning;
+		private final List<String> warnings = new ArrayList<>();
 		private LogRecord warningRecord;
 
 		public void setFilterLoggerName(String value) {
 			filterLoggerName = value;
 		}
+
 		public WarningHandler() {
 			setLevel(Level.ALL);
 
@@ -112,9 +118,10 @@ public class CdpWarningHandlerTest {
 					&& record.getLevel().intValue() >= Level.WARNING.intValue()) {
 
 				warningRecord = record;
-				warning = getFormatter() == null
+				var warning = getFormatter() == null
 						? java.text.MessageFormat.format(record.getMessage(), record.getParameters())
 						: getFormatter().formatMessage(record);
+				warnings.add(warning);
 			}
 		}
 
@@ -127,8 +134,8 @@ public class CdpWarningHandlerTest {
 			Logger.getLogger("").removeHandler(this);
 		}
 
-		public String getWarning() {
-			return warning;
+		public List<String> getWarnings() {
+			return warnings;
 		}
 
 		public LogRecord getWarningRecord() {
