@@ -4,30 +4,15 @@ package com.github.sergueik.selenium;
  * Copyright 2026 Serguei Kouzmine
  */
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasKey;
-
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import com.google.gson.Gson;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
@@ -35,16 +20,19 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 /**
- * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge
+ * Selected test scenarios for Selenium 4 Chrome Developer Tools bridge See
+ * also:
+ * https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/devtools/CdpVersionFinder.html
  * 
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
 public class CdpWarningHandlerTest {
 
-	private static CdpWarningHandler handler;
+	private static WarningHandler warningHandler;
 
 	private static ChromiumDriver driver;
+	private static final String LOGGER_NAME = "org.openqa.selenium.devtools.CdpVersionFinder";
 
 	private static String osName = Utils.getOSName();
 	private static boolean runHeadless = false;
@@ -53,7 +41,9 @@ public class CdpWarningHandlerTest {
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		handler = new CdpWarningHandler(); 
+		warningHandler = new WarningHandler();
+		// NOTE: without setting Logger Name to filter - will collect all
+		warningHandler.setFilterLoggerName(LOGGER_NAME);
 		if ((System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)"))
 				|| (!(Utils.getOSName().equals("windows")) && !(System.getenv().containsKey("DISPLAY")))) {
 			runHeadless = true;
@@ -72,19 +62,18 @@ public class CdpWarningHandlerTest {
 		driver = new ChromeDriver(options);
 		Utils.setDriver(driver);
 
-		warning = handler.getWarning();
+		warning = warningHandler.getWarning();
 		if (warning != null) {
 			System.out.println("CDP compatibility issue: " + warning);
 		} else {
 			System.out.println("No CDP warning observed.");
 		}
 
-		handler.close();
+		warningHandler.close();
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test
-	public void test1() {
+	@Test	public void test1() {
 
 	}
 
@@ -95,25 +84,37 @@ public class CdpWarningHandlerTest {
 		}
 	}
 
-	public static class CdpWarningHandler extends Handler {
+	// https://docs.oracle.com/javase/8/docs/api/java/util/logging/Handler.html
+	public static class WarningHandler extends Handler {
 
-		private static final String LOGGER_NAME = "org.openqa.selenium.devtools.CdpVersionFinder";
-
+		private String filterLoggerName = null;
 		private String warning;
+		private LogRecord warningRecord;
 
-		public CdpWarningHandler() {
-			setLevel(Level.WARNING);
-			Logger.getLogger(LOGGER_NAME).addHandler(this);
+		public void setFilterLoggerName(String value) {
+			filterLoggerName = value;
+		}
+		public WarningHandler() {
+			setLevel(Level.ALL);
+
+			// Attach to the JUL root logger.
+			Logger.getLogger("").addHandler(this);
 		}
 
 		@Override
 		public void publish(LogRecord record) {
-			if (record.getLevel().intValue() >= Level.WARNING.intValue()) {
-				warning = record.getMessage();
-				// WARNING: Unable to find an exact match for CDP version 158, returning the
-				// closest version; found: 157; Please update to a Selenium version that
-				// supports CDP version 158
+			if (record == null || !isLoggable(record)) {
+				return;
+			}
 
+			// focus on specific logger messages
+			if (filterLoggerName == null || filterLoggerName.equals(record.getLoggerName())
+					&& record.getLevel().intValue() >= Level.WARNING.intValue()) {
+
+				warningRecord = record;
+				warning = getFormatter() == null
+						? java.text.MessageFormat.format(record.getMessage(), record.getParameters())
+						: getFormatter().formatMessage(record);
 			}
 		}
 
@@ -123,11 +124,15 @@ public class CdpWarningHandlerTest {
 
 		@Override
 		public void close() {
-			Logger.getLogger(LOGGER_NAME).removeHandler(this);
+			Logger.getLogger("").removeHandler(this);
 		}
 
 		public String getWarning() {
 			return warning;
+		}
+
+		public LogRecord getWarningRecord() {
+			return warningRecord;
 		}
 	}
 }
